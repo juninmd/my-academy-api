@@ -23,8 +23,8 @@ export class ExercisesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateExerciseDto: UpdateExerciseDto) {
-    return this.exercisesService.update(+id, updateExerciseDto);
+  update(@Param('id') id: string, @Body() updateDto: UpdateExerciseDto) {
+    return this.exercisesService.update(+id, updateDto);
   }
 
   @Delete(':id')

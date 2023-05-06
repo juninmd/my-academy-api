@@ -84,7 +84,6 @@ model Personals {
 model Students {
   id          Int        @id @default(autoincrement())
   userId      Int
-  personalId  Int
   personalsId Int?
   Personals   Personals? @relation(fields: [personalsId], references: [id])
   Users       Users      @relation(fields: [userId], references: [id])

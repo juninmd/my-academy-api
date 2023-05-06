@@ -20,8 +20,8 @@ export class ExercisesSeriesService {
     return this.prismaService.exercisesSeries.findUnique({ where: { id: Number(id) } })
   }
 
-  update(id: number, updateExerciseDto: UpdateExercisesSeryDto) {
-    return this.prismaService.exercisesSeries.update({ where: { id: Number(id) }, data: updateExerciseDto as ExercisesSeries })
+  update(id: number, updateDto: UpdateExercisesSeryDto) {
+    return this.prismaService.exercisesSeries.update({ where: { id: Number(id) }, data: updateDto as ExercisesSeries })
   }
 
   remove(id: number) {

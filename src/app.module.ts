@@ -7,12 +7,12 @@ import { MethodsModule } from './methods/methods.module';
 import { PersonalsModule } from './personals/personals.module';
 import { UsersModule } from './users/users.module';
 import { WorkoutsModule } from './workouts/workouts.module';
-import { WorkoutsCategoriesModule } from './workouts-categories/workouts-categories.module';
 import { WorkoutsGroupsModule } from './workouts-groups/workouts-groups.module';
-import { WorkoutsHistoryModule } from './workouts-history/workouts-history.module';
+import { WorkoutsSessionsModule } from './workouts-sessions/workouts-sessions.module';
+import { StudentsModule } from './students/students.module';
 
 @Module({
-  imports: [ExercisesModule, ExercisesSeriesModule, MethodsModule, PersonalsModule, UsersModule, WorkoutsModule, WorkoutsCategoriesModule, WorkoutsGroupsModule, WorkoutsHistoryModule],
+  imports: [ExercisesModule, ExercisesSeriesModule, MethodsModule, PersonalsModule, UsersModule, WorkoutsModule, WorkoutsSessionsModule, WorkoutsGroupsModule, StudentsModule],
   controllers: [AppController],
   providers: [AppService],
 })

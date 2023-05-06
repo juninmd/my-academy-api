@@ -20,8 +20,8 @@ export class WorkoutsSessionsService {
     return this.prismaService.workoutSessions.findUnique({ where: { id: Number(id) } })
   }
 
-  update(id: number, updateExerciseDto: UpdateWorkoutsSessionsDto) {
-    return this.prismaService.workoutSessions.update({ where: { id: Number(id) }, data: updateExerciseDto as WorkoutSessions })
+  update(id: number, updateDto: UpdateWorkoutsSessionsDto) {
+    return this.prismaService.workoutSessions.update({ where: { id: Number(id) }, data: updateDto as WorkoutSessions })
   }
 
   remove(id: number) {

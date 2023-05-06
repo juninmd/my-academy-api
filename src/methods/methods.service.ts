@@ -20,8 +20,8 @@ export class MethodsService {
     return this.prismaService.methods.findUnique({ where: { id: Number(id) } })
   }
 
-  update(id: number, updateExerciseDto: UpdateMethodDto) {
-    return this.prismaService.methods.update({ where: { id: Number(id) }, data: updateExerciseDto as Methods })
+  update(id: number, updateDto: UpdateMethodDto) {
+    return this.prismaService.methods.update({ where: { id: Number(id) }, data: updateDto as Methods })
   }
 
   remove(id: number) {

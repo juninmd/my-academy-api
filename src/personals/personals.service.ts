@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma.service';
 import { CreatePersonalDto } from './dto/create-personal.dto';
 import { UpdatePersonalDto } from './dto/update-personal.dto';
+import { Personals } from '@prisma/client';
 
 @Injectable()
 export class PersonalsService {
@@ -19,8 +20,8 @@ export class PersonalsService {
     return this.prismaService.personals.findUnique({ where: { id: Number(id) } })
   }
 
-  update(id: number, updateExerciseDto: UpdateMethodDto) {
-    return this.prismaService.personals.update({ where: { id: Number(id) }, data: updateExerciseDto as personals })
+  update(id: number, updateDto: UpdatePersonalDto) {
+    return this.prismaService.personals.update({ where: { id: Number(id) }, data: updateDto as Personals })
   }
 
   remove(id: number) {
