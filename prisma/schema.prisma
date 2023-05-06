@@ -53,6 +53,8 @@ model Users {
   id             Int              @id @default(autoincrement())
   name           String
   email          String
+  Personals      Personals[]
+  Students       Students[]
   WorkoutsGroups WorkoutsGroups[]
 }
 
@@ -70,4 +72,20 @@ model WorkoutSessions {
   workoutId Int
   date      DateTime
   Workouts  Workouts[]
+}
+
+model Personals {
+  id       Int        @id @default(autoincrement())
+  userId   Int
+  user     Users      @relation(fields: [userId], references: [id])
+  Students Students[]
+}
+
+model Students {
+  id          Int        @id @default(autoincrement())
+  userId      Int
+  personalId  Int
+  personalsId Int?
+  Personals   Personals? @relation(fields: [personalsId], references: [id])
+  Users       Users      @relation(fields: [userId], references: [id])
 }

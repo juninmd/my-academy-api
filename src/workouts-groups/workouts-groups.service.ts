@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import { CreateWorkoutsGroupDto } from './dto/create-workouts-group.dto';
 import { UpdateWorkoutsGroupDto } from './dto/update-workouts-group.dto';
+import { WorkoutsGroups } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class WorkoutsGroupsService {
-  create(createWorkoutsGroupDto: CreateWorkoutsGroupDto) {
-    return 'This action adds a new workoutsGroup';
+  constructor(private readonly prismaService: PrismaService) { }
+
+  create(createworkoutsDto: CreateWorkoutsGroupDto) {
+    return this.prismaService.workoutsGroups.create({ data: createworkoutsDto as WorkoutsGroups });
   }
 
   findAll() {
-    return `This action returns all workoutsGroups`;
+    return this.prismaService.workoutsGroups.findMany();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} workoutsGroup`;
+    return this.prismaService.workoutsGroups.findUnique({ where: { id: Number(id) } })
   }
 
-  update(id: number, updateWorkoutsGroupDto: UpdateWorkoutsGroupDto) {
-    return `This action updates a #${id} workoutsGroup`;
+  update(id: number, updateExerciseDto: UpdateWorkoutsGroupDto) {
+    return this.prismaService.workoutsGroups.update({ where: { id: Number(id) }, data: updateExerciseDto as WorkoutsGroups })
   }
 
   remove(id: number) {
-    return `This action removes a #${id} workoutsGroup`;
+    return this.prismaService.workoutsGroups.delete({ where: { id: Number(id) } })
   }
 }

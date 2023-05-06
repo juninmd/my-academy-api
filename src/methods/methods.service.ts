@@ -1,26 +1,30 @@
 import { Injectable } from '@nestjs/common';
+import { Methods } from '@prisma/client';
+import { PrismaService } from '../prisma.service';
 import { CreateMethodDto } from './dto/create-method.dto';
 import { UpdateMethodDto } from './dto/update-method.dto';
 
 @Injectable()
 export class MethodsService {
-  create(createMethodDto: CreateMethodDto) {
-    return 'This action adds a new method';
+  constructor(private readonly prismaService: PrismaService) { }
+
+  create(createMethodsDto: CreateMethodDto) {
+    return this.prismaService.methods.create({ data: createMethodsDto as Methods });
   }
 
   findAll() {
-    return `This action returns all methods`;
+    return this.prismaService.methods.findMany();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} method`;
+    return this.prismaService.methods.findUnique({ where: { id: Number(id) } })
   }
 
-  update(id: number, updateMethodDto: UpdateMethodDto) {
-    return `This action updates a #${id} method`;
+  update(id: number, updateExerciseDto: UpdateMethodDto) {
+    return this.prismaService.methods.update({ where: { id: Number(id) }, data: updateExerciseDto as Methods })
   }
 
   remove(id: number) {
-    return `This action removes a #${id} method`;
+    return this.prismaService.methods.delete({ where: { id: Number(id) } })
   }
 }
