@@ -1,11 +1,73 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "sqlite"
   url      = env("DATABASE_URL")
+}
+
+model Exercises {
+  id          Int        @id @default(autoincrement())
+  name        String     @unique
+  image       String
+  tips        String
+  mistakes    String
+  description String?
+  Workouts    Workouts[]
+}
+
+model Methods {
+  id             Int              @id @default(autoincrement())
+  name           String
+  description    String
+  WorkoutsGroups WorkoutsGroups[]
+}
+
+model Workouts {
+  id                 Int              @id @default(autoincrement())
+  exerciseId         Int
+  description        String
+  exercisesSeriesId  Int?
+  workoutsSessionsId Int?
+  Exercises          Exercises        @relation(fields: [exerciseId], references: [id])
+  ExercisesSeries    ExercisesSeries? @relation(fields: [exercisesSeriesId], references: [id])
+  WorkoutSessions    WorkoutSessions? @relation(fields: [workoutsSessionsId], references: [id])
+}
+
+model WorkoutsGroups {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
+  dateStart   DateTime
+  dateEnd     DateTime
+  level       Int
+  userId      Int
+  methodId    Int
+  user        Users    @relation(fields: [userId], references: [id])
+  method      Methods  @relation(fields: [methodId], references: [id])
+}
+
+model Users {
+  id             Int              @id @default(autoincrement())
+  name           String
+  email          String
+  WorkoutsGroups WorkoutsGroups[]
+}
+
+model ExercisesSeries {
+  id          Int        @id @default(autoincrement())
+  workoutId   Int
+  repetitions Int        @default(15)
+  weight      Int?
+  rest        Int
+  Workouts    Workouts[]
+}
+
+model WorkoutSessions {
+  id        Int        @id @default(autoincrement())
+  workoutId Int
+  date      DateTime
+  Workouts  Workouts[]
 }
