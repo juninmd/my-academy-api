@@ -1,0 +1,7 @@
+*.log
+rxjs/src/
+rxjs/bundles/
+rxjs/_esm5/
+rxjs/_esm2015/
+grpc/deps/grpc/third_party/
+aws-sdk/dist/
