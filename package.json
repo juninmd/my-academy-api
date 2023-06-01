@@ -11,7 +11,8 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "postinstall": "node-prune",
-    "build": "npm exec prisma generate --schema=./prisma/schema.prisma && nest build",
+    "prepare": "npx prisma generate",
+    "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node dist/src/main.js",
     "start:dev": "nest start --watch",
