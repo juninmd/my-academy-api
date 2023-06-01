@@ -11,7 +11,9 @@ describe('ExercisesSeriesController', () => {
       providers: [ExercisesSeriesService],
     }).compile();
 
-    controller = module.get<ExercisesSeriesController>(ExercisesSeriesController);
+    controller = module.get<ExercisesSeriesController>(
+      ExercisesSeriesController,
+    );
   });
 
   it('should be defined', () => {

@@ -6,10 +6,12 @@ import { Workouts } from '@prisma/client';
 
 @Injectable()
 export class WorkoutsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(createworkoutsDto: CreateWorkoutDto) {
-    return this.prismaService.workouts.create({ data: createworkoutsDto as Workouts });
+    return this.prismaService.workouts.create({
+      data: createworkoutsDto as Workouts,
+    });
   }
 
   findAll() {
@@ -17,14 +19,19 @@ export class WorkoutsService {
   }
 
   findOne(id: number) {
-    return this.prismaService.workouts.findUnique({ where: { id: Number(id) } })
+    return this.prismaService.workouts.findUnique({
+      where: { id: Number(id) },
+    });
   }
 
   update(id: number, updateDto: UpdateWorkoutDto) {
-    return this.prismaService.workouts.update({ where: { id: Number(id) }, data: updateDto as Workouts })
+    return this.prismaService.workouts.update({
+      where: { id: Number(id) },
+      data: updateDto as Workouts,
+    });
   }
 
   remove(id: number) {
-    return this.prismaService.workouts.delete({ where: { id: Number(id) } })
+    return this.prismaService.workouts.delete({ where: { id: Number(id) } });
   }
 }

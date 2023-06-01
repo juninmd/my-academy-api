@@ -6,7 +6,7 @@ import { Users } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(createUsersDto: CreateUserDto) {
     return this.prismaService.users.create({ data: createUsersDto as Users });
@@ -17,14 +17,17 @@ export class UsersService {
   }
 
   findOne(id: number) {
-    return this.prismaService.users.findUnique({ where: { id: Number(id) } })
+    return this.prismaService.users.findUnique({ where: { id: Number(id) } });
   }
 
   update(id: number, updateDto: UpdateUserDto) {
-    return this.prismaService.users.update({ where: { id: Number(id) }, data: updateDto as Users })
+    return this.prismaService.users.update({
+      where: { id: Number(id) },
+      data: updateDto as Users,
+    });
   }
 
   remove(id: number) {
-    return this.prismaService.users.delete({ where: { id: Number(id) } })
+    return this.prismaService.users.delete({ where: { id: Number(id) } });
   }
 }

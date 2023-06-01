@@ -1,8 +1,10 @@
 import { Workouts } from '@prisma/client';
 
-export class WorkoutsSessions {
+export class ExercisesSeries {
   id: number;
   workoutId: number;
-  date: Date;
+  repetitions: number;
+  weight: number | null;
+  rest: number;
   Workouts?: Workouts[];
 }

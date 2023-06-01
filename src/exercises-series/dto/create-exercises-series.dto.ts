@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class CreateStudentDto {
+export class CreateExercisesSeriesDto {
   @ApiProperty({ required: true })
-  id: number;
+  workoutId: number;
   @ApiProperty({ required: true })
-  userId: number;
+  weight?: number;
   @ApiProperty({ required: true })
-  personalsId: number | null;
+  rest: number;
 }

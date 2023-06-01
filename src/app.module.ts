@@ -12,8 +12,18 @@ import { WorkoutsSessionsModule } from './workouts-sessions/workouts-sessions.mo
 import { StudentsModule } from './students/students.module';
 
 @Module({
-  imports: [ExercisesModule, ExercisesSeriesModule, MethodsModule, PersonalsModule, UsersModule, WorkoutsModule, WorkoutsSessionsModule, WorkoutsGroupsModule, StudentsModule],
+  imports: [
+    ExercisesModule,
+    ExercisesSeriesModule,
+    MethodsModule,
+    PersonalsModule,
+    UsersModule,
+    WorkoutsModule,
+    WorkoutsSessionsModule,
+    WorkoutsGroupsModule,
+    StudentsModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

@@ -6,10 +6,12 @@ import { Personals } from '@prisma/client';
 
 @Injectable()
 export class PersonalsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(createpersonalsDto: CreatePersonalDto) {
-    return this.prismaService.personals.create({ data: createpersonalsDto as Personals });
+    return this.prismaService.personals.create({
+      data: createpersonalsDto as Personals,
+    });
   }
 
   findAll() {
@@ -17,14 +19,19 @@ export class PersonalsService {
   }
 
   findOne(id: number) {
-    return this.prismaService.personals.findUnique({ where: { id: Number(id) } })
+    return this.prismaService.personals.findUnique({
+      where: { id: Number(id) },
+    });
   }
 
   update(id: number, updateDto: UpdatePersonalDto) {
-    return this.prismaService.personals.update({ where: { id: Number(id) }, data: updateDto as Personals })
+    return this.prismaService.personals.update({
+      where: { id: Number(id) },
+      data: updateDto as Personals,
+    });
   }
 
   remove(id: number) {
-    return this.prismaService.personals.delete({ where: { id: Number(id) } })
+    return this.prismaService.personals.delete({ where: { id: Number(id) } });
   }
 }

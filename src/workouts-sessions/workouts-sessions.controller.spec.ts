@@ -12,7 +12,9 @@ describe('WorkoutsSessionsController', () => {
       providers: [WorkoutsSessionsService, PrismaService],
     }).compile();
 
-    controller = module.get<WorkoutsSessionsController>(WorkoutsSessionsController);
+    controller = module.get<WorkoutsSessionsController>(
+      WorkoutsSessionsController,
+    );
   });
 
   it('should be defined', () => {

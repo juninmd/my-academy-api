@@ -1,15 +1,30 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ExercisesSeriesService } from './exercises-series.service';
-import { CreateExercisesSeryDto } from './dto/create-exercises-sery.dto';
-import { UpdateExercisesSeryDto } from './dto/update-exercises-sery.dto';
+import { CreateExercisesSeriesDto } from './dto/create-exercises-series.dto';
+import { UpdateExercisesSeryDto } from './dto/update-exercises-series.dto';
 
 @Controller('exercises-series')
 export class ExercisesSeriesController {
-  constructor(private readonly exercisesSeriesService: ExercisesSeriesService) {}
+  constructor(
+    private readonly exercisesSeriesService: ExercisesSeriesService,
+  ) {}
 
   @Post()
-  create(@Body() createExercisesSeryDto: CreateExercisesSeryDto) {
-    return this.exercisesSeriesService.create(createExercisesSeryDto);
+  create(
+    @Body()
+    createExercisesSerCreateExercisesSeriesDto: CreateExercisesSeriesDto,
+  ) {
+    return this.exercisesSeriesService.create(
+      createExercisesSerCreateExercisesSeriesDto,
+    );
   }
 
   @Get()
@@ -23,7 +38,10 @@ export class ExercisesSeriesController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateExercisesSeryDto: UpdateExercisesSeryDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateExercisesSeryDto: UpdateExercisesSeryDto,
+  ) {
     return this.exercisesSeriesService.update(+id, updateExercisesSeryDto);
   }
 
