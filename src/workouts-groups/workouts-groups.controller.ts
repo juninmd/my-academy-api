@@ -13,7 +13,7 @@ import { UpdateWorkoutsGroupDto } from './dto/update-workouts-group.dto';
 
 @Controller('workouts-groups')
 export class WorkoutsGroupsController {
-  constructor(private readonly workoutsGroupsService: WorkoutsGroupsService) {}
+  constructor(private readonly workoutsGroupsService: WorkoutsGroupsService) { }
 
   @Post()
   create(@Body() createWorkoutsGroupDto: CreateWorkoutsGroupDto) {

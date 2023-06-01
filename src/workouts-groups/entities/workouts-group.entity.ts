@@ -8,7 +8,7 @@ export class WorkoutsGroup {
   dateEnd: Date;
   level: number;
   userId: number;
-  methodId: number;
+  methodId?: number;
   user?: Users;
   method?: Methods;
 }
