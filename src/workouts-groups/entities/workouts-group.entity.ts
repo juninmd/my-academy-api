@@ -4,6 +4,7 @@ export class WorkoutsGroup {
   id: number;
   name: string;
   description: string;
+  image: string;
   dateStart: Date;
   dateEnd: Date;
   level: number;

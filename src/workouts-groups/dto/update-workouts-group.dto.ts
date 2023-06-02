@@ -14,4 +14,6 @@ export class UpdateWorkoutsGroupDto extends PartialType(
   dateEnd?: Date;
   @ApiProperty({ required: true })
   level?: number;
+  @ApiProperty({ required: true })
+  image: string;
 }

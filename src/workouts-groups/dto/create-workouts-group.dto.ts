@@ -15,4 +15,6 @@ export class CreateWorkoutsGroupDto {
   userId: number;
   @ApiProperty({ required: true })
   methodId?: number;
+  @ApiProperty({ required: true })
+  image: string;
 }

@@ -45,6 +45,7 @@ model WorkoutsGroups {
   id          Int      @id @default(autoincrement())
   name        String
   description String
+  image       String
   dateStart   DateTime
   dateEnd     DateTime
   level       Int
