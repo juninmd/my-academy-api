@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'debug', 'log', 'verbose'],
   });
-
+  app.enableCors();
   const config = new DocumentBuilder()
     .setTitle('My Academy')
     .setDescription('A academia fácil')
