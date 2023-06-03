@@ -202,6 +202,72 @@ async function main() {
       image: "assets/images/cadeira_flexora.gif",
     }
   });
+
+  await prisma.exercises.create({
+    data: {
+      tips: "Mantenha o tronco ereto durante o movimento.",
+      mistakes: "Não mova o tronco para ajudar no movimento.",
+      name: "Flexora em pé unilateral (Vertical)",
+      image: "assets/images/cadeira_flexora.gif",
+    }
+  });
+
+  await prisma.users.create({
+    data: {
+      id: 1,
+      email: 'jr_acn@hotmail.com',
+      name: 'Antonio'
+    }
+  });
+
+  await prisma.workoutsGroups.create({
+    data: {
+      dateEnd: new Date(),
+      dateStart: new Date(),
+      description: 'Peitos',
+      image: 'assets/images/assets/images/supino_halteres.gif',
+      level: 1,
+      name: 'Peitos',
+      userId: 1,
+    }
+  });
+
+  await prisma.workoutsGroups.create({
+    data: {
+      dateEnd: new Date(),
+      dateStart: new Date(),
+      description: 'Peitos',
+      image: 'assets/images/assets/images/supino_halteres.gif',
+      level: 1,
+      name: 'Peitos',
+      userId: 1,
+    }
+  });
+
+  await prisma.workoutsGroups.create({
+    data: {
+      dateEnd: new Date(),
+      dateStart: new Date(),
+      description: 'Ombros',
+      image: 'assets/images/assets/images/supino_halteres.gif',
+      level: 1,
+      name: 'Ombros',
+      userId: 1,
+    }
+  });
+
+  await prisma.workoutsGroups.create({
+    data: {
+      dateEnd: new Date(),
+      dateStart: new Date(),
+      description: 'Costas',
+      image: 'assets/images/assets/images/supino_halteres.gif',
+      level: 1,
+      name: 'Costas',
+      userId: 1,
+    }
+  });
+
 }
 main()
   .then(async () => {

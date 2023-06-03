@@ -31,18 +31,18 @@ model Methods {
 }
 
 model Workouts {
-  id                 Int              @id @default(autoincrement())
-  exerciseId         Int
-  description        String
-  exercisesSeriesId  Int?
-  workoutsSessionsId Int?
-  Exercises          Exercises        @relation(fields: [exerciseId], references: [id])
-  ExercisesSeries    ExercisesSeries? @relation(fields: [exercisesSeriesId], references: [id])
-  WorkoutSessions    WorkoutSessions? @relation(fields: [workoutsSessionsId], references: [id])
+  id               Int               @id @default(autoincrement())
+  exerciseId       Int
+  description      String
+  workoutsGroupsId Int
+  workoutGroup     WorkoutsGroups    @relation(fields: [workoutsGroupsId], references: [id])
+  Exercise         Exercises         @relation(fields: [exerciseId], references: [id])
+  WorkoutSeries    WorkoutSeries[]
+  WorkoutSessions  WorkoutSessions[]
 }
 
 model WorkoutsGroups {
-  id          Int      @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   name        String
   description String
   image       String
@@ -51,8 +51,9 @@ model WorkoutsGroups {
   level       Int
   userId      Int
   methodId    Int?
-  user        Users    @relation(fields: [userId], references: [id])
-  method      Methods? @relation(fields: [methodId], references: [id])
+  user        Users      @relation(fields: [userId], references: [id])
+  method      Methods?   @relation(fields: [methodId], references: [id])
+  Workouts    Workouts[]
 }
 
 model Users {
@@ -64,20 +65,20 @@ model Users {
   WorkoutsGroups WorkoutsGroups[]
 }
 
-model ExercisesSeries {
-  id          Int        @id @default(autoincrement())
+model WorkoutSeries {
+  id          Int      @id @default(autoincrement())
   workoutId   Int
-  repetitions Int        @default(15)
+  repetitions Int      @default(15)
   weight      Int?
   rest        Int
-  Workouts    Workouts[]
+  Workout     Workouts @relation(fields: [workoutId], references: [id])
 }
 
 model WorkoutSessions {
-  id        Int        @id @default(autoincrement())
-  workoutId Int
-  date      DateTime
-  Workouts  Workouts[]
+  id              Int      @id @default(autoincrement())
+  workoutId       Int
+  date            DateTime
+  WorkoutSessions Workouts @relation(fields: [workoutId], references: [id])
 }
 
 model Personals {

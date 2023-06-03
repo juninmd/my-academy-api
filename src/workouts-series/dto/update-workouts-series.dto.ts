@@ -1,8 +1,8 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateExercisesSeriesDto } from './create-exercises-series.dto';
+import { CreateWorkoutsSeriesDto } from './create-workouts-series.dto';
 
-export class UpdateExercisesSeryDto extends PartialType(
-  CreateExercisesSeriesDto,
+export class UpdateExercisesSeriesDto extends PartialType(
+  CreateWorkoutsSeriesDto,
 ) {
   @ApiProperty({ required: true })
   workoutId?: number;

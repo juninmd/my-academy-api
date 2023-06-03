@@ -3,5 +3,11 @@ import { CreateWorkoutDto } from './create-workout.dto';
 
 export class UpdateWorkoutDto extends PartialType(CreateWorkoutDto) {
   @ApiProperty({ required: true })
-  description?: string;
+  exerciseId: number;
+
+  @ApiProperty({ required: true })
+  description: string;
+
+  @ApiProperty({ required: true })
+  workoutsGroupsId: number;
 }
