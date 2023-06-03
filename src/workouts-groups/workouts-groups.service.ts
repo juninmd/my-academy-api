@@ -28,8 +28,9 @@ export class WorkoutsGroupsService {
           include: {
             workoutSeries: true,
             exercise: true,
+            method: true,
           }
-        }, method: true
+        },
       },
     });
   }

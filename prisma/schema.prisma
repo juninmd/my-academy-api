@@ -24,10 +24,10 @@ model Exercises {
 }
 
 model Methods {
-  id             Int              @id @default(autoincrement())
-  name           String
-  description    String
-  workoutsGroups WorkoutsGroups[]
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String
+  workouts    Workouts[]
 }
 
 model Workouts {
@@ -39,6 +39,8 @@ model Workouts {
   exercise         Exercises         @relation(fields: [exerciseId], references: [id])
   workoutSeries    WorkoutSeries[]
   workoutSessions  WorkoutSessions[]
+  method           Methods?          @relation(fields: [methodId], references: [id])
+  methodId         Int?
 }
 
 model WorkoutsGroups {
@@ -50,9 +52,7 @@ model WorkoutsGroups {
   dateEnd     DateTime
   level       Int
   userId      Int
-  methodId    Int?
   user        Users      @relation(fields: [userId], references: [id])
-  method      Methods?   @relation(fields: [methodId], references: [id])
   workouts    Workouts[]
 }
 
