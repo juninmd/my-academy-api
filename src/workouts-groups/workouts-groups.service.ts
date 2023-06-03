@@ -23,7 +23,14 @@ export class WorkoutsGroupsService {
   findAllExercises(id: number) {
     return this.prismaService.workoutsGroups.findUnique({
       where: { id: Number(id) },
-      include: { Workouts: { include: { Exercise: true } }, method: true },
+      include: {
+        Workouts: {
+          include: {
+            WorkoutSeries: true,
+            Exercise: true,
+          }
+        }, method: true
+      },
     });
   }
 
