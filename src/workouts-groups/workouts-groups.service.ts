@@ -26,8 +26,8 @@ export class WorkoutsGroupsService {
       include: {
         Workouts: {
           include: {
-            WorkoutSeries: true,
-            Exercise: true,
+            workoutSeries: true,
+            exercise: true,
           }
         }, method: true
       },
