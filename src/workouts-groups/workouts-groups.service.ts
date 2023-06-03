@@ -3,10 +3,12 @@ import { CreateWorkoutsGroupDto } from './dto/create-workouts-group.dto';
 import { UpdateWorkoutsGroupDto } from './dto/update-workouts-group.dto';
 import { WorkoutsGroups } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
+import { Exercise } from '../exercises/entities/exercise.entity';
+import { Workout } from '../workouts/entities/workout.entity';
 
 @Injectable()
 export class WorkoutsGroupsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   create(createworkoutsDto: CreateWorkoutsGroupDto) {
     return this.prismaService.workoutsGroups.create({
@@ -16,6 +18,13 @@ export class WorkoutsGroupsService {
 
   findAll() {
     return this.prismaService.workoutsGroups.findMany();
+  }
+
+  findAllExercises(id: number) {
+    return this.prismaService.workoutsGroups.findUnique({
+      where: { id: Number(id) },
+      include: { Workouts: { include: { Exercise: true } }, method: true },
+    });
   }
 
   findOne(id: number) {
