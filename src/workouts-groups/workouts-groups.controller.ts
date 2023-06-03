@@ -31,7 +31,7 @@ export class WorkoutsGroupsController {
   }
 
 
-  @Get('/exercises/:id')
+  @Get(':id/exercises')
   findOneExercises(@Param('id') id: string) {
     return this.workoutsGroupsService.findAllExercises(+id);
   }
