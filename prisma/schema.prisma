@@ -20,14 +20,14 @@ model Exercises {
   tips        String
   mistakes    String
   description String?
-  Workouts    Workouts[]
+  workouts    Workouts[]
 }
 
 model Methods {
   id             Int              @id @default(autoincrement())
   name           String
   description    String
-  WorkoutsGroups WorkoutsGroups[]
+  workoutsGroups WorkoutsGroups[]
 }
 
 model Workouts {
@@ -53,16 +53,16 @@ model WorkoutsGroups {
   methodId    Int?
   user        Users      @relation(fields: [userId], references: [id])
   method      Methods?   @relation(fields: [methodId], references: [id])
-  Workouts    Workouts[]
+  workouts    Workouts[]
 }
 
 model Users {
   id             Int              @id @default(autoincrement())
   name           String
   email          String
-  Personals      Personals[]
-  Students       Students[]
-  WorkoutsGroups WorkoutsGroups[]
+  personals      Personals[]
+  students       Students[]
+  workoutsGroups WorkoutsGroups[]
 }
 
 model WorkoutSeries {
@@ -71,27 +71,27 @@ model WorkoutSeries {
   weight      Int?
   rest        Int
   workoutId   Int
-  Workout     Workouts @relation(fields: [workoutId], references: [id])
+  workout     Workouts @relation(fields: [workoutId], references: [id])
 }
 
 model WorkoutSessions {
-  id              Int      @id @default(autoincrement())
-  workoutId       Int
-  date            DateTime
-  WorkoutSessions Workouts @relation(fields: [workoutId], references: [id])
+  id        Int      @id @default(autoincrement())
+  workoutId Int
+  date      DateTime
+  workouts  Workouts @relation(fields: [workoutId], references: [id])
 }
 
 model Personals {
   id       Int        @id @default(autoincrement())
   userId   Int
   user     Users      @relation(fields: [userId], references: [id])
-  Students Students[]
+  students Students[]
 }
 
 model Students {
   id          Int        @id @default(autoincrement())
   userId      Int
   personalsId Int?
-  Personals   Personals? @relation(fields: [personalsId], references: [id])
-  Users       Users      @relation(fields: [userId], references: [id])
+  personals   Personals? @relation(fields: [personalsId], references: [id])
+  users       Users      @relation(fields: [userId], references: [id])
 }
