@@ -67,10 +67,10 @@ model Users {
 
 model WorkoutSeries {
   id          Int      @id @default(autoincrement())
-  workoutId   Int
   repetitions Int      @default(15)
   weight      Int?
   rest        Int
+  workoutId   Int
   Workout     Workouts @relation(fields: [workoutId], references: [id])
 }
 
