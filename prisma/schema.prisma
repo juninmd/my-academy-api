@@ -70,7 +70,7 @@ model WorkoutSeries {
   repetitions Int      @default(15)
   weight      Int?     @default(10)
   rest        Int?     @default(60)
-  workoutId   Int      @unique
+  workoutId   Int
   workout     Workouts @relation(fields: [workoutId], references: [id])
 }
 
