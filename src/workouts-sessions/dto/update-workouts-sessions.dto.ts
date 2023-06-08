@@ -5,7 +5,7 @@ export class UpdateWorkoutsSessionsDto extends PartialType(
   CreateWorkoutsSessionsDto,
 ) {
   @ApiProperty({ required: true })
-  workoutId?: number;
+  workoutGroupId: number;
   @ApiProperty({ required: true })
-  date?: Date;
+  date: Date;
 }

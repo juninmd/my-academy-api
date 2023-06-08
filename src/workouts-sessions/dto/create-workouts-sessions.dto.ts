@@ -4,7 +4,7 @@ export class CreateWorkoutsSessionsDto {
   @ApiProperty({})
   readonly id: number;
   @ApiProperty({ required: true, description: 'Treino' })
-  readonly workoutId: number;
+  readonly workoutGroupId: number;
   @ApiProperty({
     default: new Date().toJSON(),
   })

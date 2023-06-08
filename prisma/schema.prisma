@@ -31,29 +31,29 @@ model Methods {
 }
 
 model Workouts {
-  id               Int               @id @default(autoincrement())
+  id               Int             @id @default(autoincrement())
   exerciseId       Int
   description      String
   workoutsGroupsId Int
-  workoutGroup     WorkoutsGroups    @relation(fields: [workoutsGroupsId], references: [id])
-  exercise         Exercises         @relation(fields: [exerciseId], references: [id])
+  workoutGroup     WorkoutsGroups  @relation(fields: [workoutsGroupsId], references: [id])
+  exercise         Exercises       @relation(fields: [exerciseId], references: [id])
   workoutSeries    WorkoutSeries[]
-  workoutSessions  WorkoutSessions[]
-  method           Methods?          @relation(fields: [methodId], references: [id])
+  method           Methods?        @relation(fields: [methodId], references: [id])
   methodId         Int?
 }
 
 model WorkoutsGroups {
-  id          Int        @id @default(autoincrement())
-  name        String
-  description String
-  image       String
-  dateStart   DateTime
-  dateEnd     DateTime
-  level       Int
-  userId      Int
-  user        Users      @relation(fields: [userId], references: [id])
-  workouts    Workouts[]
+  id              Int               @id @default(autoincrement())
+  name            String
+  description     String
+  image           String
+  dateStart       DateTime
+  dateEnd         DateTime
+  level           Int
+  userId          Int
+  user            Users             @relation(fields: [userId], references: [id])
+  workouts        Workouts[]
+  WorkoutSessions WorkoutSessions[]
 }
 
 model Users {
@@ -75,10 +75,10 @@ model WorkoutSeries {
 }
 
 model WorkoutSessions {
-  id        Int      @id @default(autoincrement())
-  workoutId Int
-  date      DateTime
-  workouts  Workouts @relation(fields: [workoutId], references: [id])
+  id             Int            @id @default(autoincrement())
+  workoutGroupId Int
+  date           DateTime
+  workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id])
 }
 
 model Personals {
