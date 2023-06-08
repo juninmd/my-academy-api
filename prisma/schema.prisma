@@ -77,7 +77,7 @@ model WorkoutSeries {
 model WorkoutSessions {
   id             Int            @id @default(autoincrement())
   workoutGroupId Int
-  date           DateTime
+  date           DateTime       @default(now()) @db.Date
   workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id])
 }
 
