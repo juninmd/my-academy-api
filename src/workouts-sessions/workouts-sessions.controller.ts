@@ -22,9 +22,9 @@ export class WorkoutsSessionsController {
     return this.workoutsSessionsService.create(createWorkoutsSessionsDto);
   }
 
-  @Get()
-  findAll() {
-    return this.workoutsSessionsService.findAll();
+  @Get(':idUser')
+  findAll(@Param('idUser') idUser: number) {
+    return this.workoutsSessionsService.findAll(+idUser);
   }
 
   @Get(':idUser/summary')
