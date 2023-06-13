@@ -16,8 +16,8 @@ export class WorkoutsGroupsService {
     });
   }
 
-  findAll() {
-    return this.prismaService.workoutsGroups.findMany();
+  findAll(userId: number) {
+    return this.prismaService.workoutsGroups.findMany({ where: { userId } });
   }
 
   findAllExercises(id: number) {

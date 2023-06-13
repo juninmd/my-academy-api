@@ -20,9 +20,9 @@ export class WorkoutsGroupsController {
     return this.workoutsGroupsService.create(createWorkoutsGroupDto);
   }
 
-  @Get()
-  findAll() {
-    return this.workoutsGroupsService.findAll();
+  @Get(':userId')
+  findAll(@Param('userId') userId: string) {
+    return this.workoutsGroupsService.findAll(+userId);
   }
 
   @Get(':id')
