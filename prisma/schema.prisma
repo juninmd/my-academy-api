@@ -60,6 +60,7 @@ model Users {
   id             Int              @id @default(autoincrement())
   name           String
   email          String
+  photoUrl       String           @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
   personals      Personals[]
   students       Students[]
   workoutsGroups WorkoutsGroups[]

@@ -45,6 +45,13 @@ export class WorkoutsSessionsService {
   async findSummary(idUser: number) {
 
     let students = [];
+
+    const user = await this.prismaService.users.findFirst({
+      where: {
+        id: idUser,
+      },
+    });
+
     const iAmPersonal = await this.prismaService.personals.findFirst({
       where: {
         userId: idUser,
@@ -116,7 +123,7 @@ export class WorkoutsSessionsService {
 
     const counter = this.calculateSequence(sequencies, currentDate);
 
-    return { lastSession, counter, workoutGroupOfDay, students, personal };
+    return { lastSession, counter, workoutGroupOfDay, students, personal, user };
   }
 
   calculateSequence(sequences: any[], currentDate: Date): number {
