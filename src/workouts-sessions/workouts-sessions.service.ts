@@ -43,6 +43,32 @@ export class WorkoutsSessionsService {
   }
 
   async findSummary(idUser: number) {
+
+    let students = [];
+    const iAmPersonal = await this.prismaService.personals.findFirst({
+      where: {
+        userId: idUser,
+      },
+    });
+
+    if (iAmPersonal) {
+      const studentsTable = await this.prismaService.students.findMany({
+        where: {
+          personalsId: iAmPersonal.id,
+        },
+        include: { users: true }
+      });
+      students = studentsTable.map(x => x.users);
+    }
+
+    const { personals: { user: personal } } = await this.prismaService.students.findFirst({
+      where: {
+        userId: idUser,
+      },
+      include: { personals: { include: { user: true } } }
+    });
+
+
     const workoutGroups = await this.prismaService.workoutsGroups.findMany({
       where: {
         userId: idUser,
@@ -90,7 +116,7 @@ export class WorkoutsSessionsService {
 
     const counter = this.calculateSequence(sequencies, currentDate);
 
-    return { lastSession, counter, workoutGroupOfDay };
+    return { lastSession, counter, workoutGroupOfDay, students, personal };
   }
 
   calculateSequence(sequences: any[], currentDate: Date): number {
