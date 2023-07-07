@@ -8,7 +8,7 @@ import { Workout } from '../workouts/entities/workout.entity';
 
 @Injectable()
 export class WorkoutsGroupsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(createworkoutsDto: CreateWorkoutsGroupDto) {
     return this.prismaService.workoutsGroups.create({
@@ -29,7 +29,7 @@ export class WorkoutsGroupsService {
             workoutSeries: true,
             exercise: true,
             method: true,
-          }
+          },
         },
       },
     });

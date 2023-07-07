@@ -13,7 +13,7 @@ import { UpdateMethodDto } from './dto/update-method.dto';
 
 @Controller('methods')
 export class MethodsController {
-  constructor(private readonly methodsService: MethodsService) { }
+  constructor(private readonly methodsService: MethodsService) {}
 
   @Post()
   create(@Body() createMethodDto: CreateMethodDto) {

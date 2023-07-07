@@ -6,11 +6,11 @@ import { UpdateExercisesSeriesDto } from './dto/update-workouts-series.dto';
 
 @Injectable()
 export class WorkoutsSeriesService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(createWorkoutsSeriesDto: CreateWorkoutsSeriesDto) {
     return this.prismaService.workoutSeries.create({
-      data: createWorkoutsSeriesDto as WorkoutSeries,
+      data: createWorkoutsSeriesDto,
     });
   }
 
@@ -27,7 +27,7 @@ export class WorkoutsSeriesService {
   update(id: number, updateDto: UpdateExercisesSeriesDto) {
     return this.prismaService.workoutSeries.update({
       where: { id: Number(id) },
-      data: updateDto as WorkoutSeries,
+      data: updateDto,
     });
   }
 

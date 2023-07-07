@@ -15,7 +15,7 @@ import { UpdateWorkoutsSessionsDto } from './dto/update-workouts-sessions.dto';
 export class WorkoutsSessionsController {
   constructor(
     private readonly workoutsSessionsService: WorkoutsSessionsService,
-  ) { }
+  ) {}
 
   @Post()
   create(@Body() createWorkoutsSessionsDto: CreateWorkoutsSessionsDto) {

@@ -57,13 +57,14 @@ model WorkoutsGroups {
 }
 
 model Users {
-  id             Int              @id @default(autoincrement())
-  name           String
-  email          String
-  photoUrl       String           @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
-  personals      Personals[]
-  students       Students[]
-  workoutsGroups WorkoutsGroups[]
+  id                     Int                      @id @default(autoincrement())
+  name                   String
+  email                  String
+  photoUrl               String                   @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
+  personals              Personals[]
+  students               Students[]
+  workoutsGroups         WorkoutsGroups[]
+  WorkoutPeronalSessions WorkoutPeronalSessions[]
 }
 
 model WorkoutSeries {
@@ -83,10 +84,11 @@ model WorkoutSessions {
 }
 
 model Personals {
-  id       Int        @id @default(autoincrement())
-  userId   Int
-  user     Users      @relation(fields: [userId], references: [id])
-  students Students[]
+  id                     Int                      @id @default(autoincrement())
+  userId                 Int
+  user                   Users                    @relation(fields: [userId], references: [id])
+  students               Students[]
+  WorkoutPeronalSessions WorkoutPeronalSessions[]
 }
 
 model Students {
@@ -95,4 +97,14 @@ model Students {
   personalsId Int?
   personals   Personals? @relation(fields: [personalsId], references: [id])
   users       Users      @relation(fields: [userId], references: [id])
+}
+
+model WorkoutPeronalSessions {
+  id          Int       @id @default(autoincrement())
+  date        DateTime? @db.Date
+  personalsId Int
+  personals   Personals @relation(fields: [personalsId], references: [id])
+  users       Users     @relation(fields: [userId], references: [id])
+  userId      Int
+  observation String?
 }

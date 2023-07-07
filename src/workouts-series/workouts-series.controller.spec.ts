@@ -11,9 +11,7 @@ describe('WorkoutsSeriesController', () => {
       providers: [WorkoutsSeriesService],
     }).compile();
 
-    controller = module.get<WorkoutsSeriesController>(
-      WorkoutsSeriesController,
-    );
+    controller = module.get<WorkoutsSeriesController>(WorkoutsSeriesController);
   });
 
   it('should be defined', () => {

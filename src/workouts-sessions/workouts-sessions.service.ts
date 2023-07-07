@@ -6,7 +6,7 @@ import { WorkoutSessions } from '@prisma/client';
 
 @Injectable()
 export class WorkoutsSessionsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(createworkoutsDto: CreateWorkoutsSessionsDto) {
     return this.prismaService.workoutSessions.create({
@@ -19,7 +19,7 @@ export class WorkoutsSessionsService {
       where: {
         userId: idUser,
       },
-      orderBy: { id: 'asc' }
+      orderBy: { id: 'asc' },
     });
     const currentDate = new Date();
     const currentYear = currentDate.getUTCFullYear();
@@ -36,14 +36,13 @@ export class WorkoutsSessionsService {
       },
       include: {
         workoutsGroups: true,
-      }
+      },
     });
 
     return sequencies;
   }
 
   async findSummary(idUser: number) {
-
     let students = [];
 
     const user = await this.prismaService.users.findFirst({
@@ -63,24 +62,25 @@ export class WorkoutsSessionsService {
         where: {
           personalsId: iAmPersonal.id,
         },
-        include: { users: true }
+        include: { users: true },
       });
-      students = studentsTable.map(x => x.users);
+      students = studentsTable.map((x) => x.users);
     }
 
-    const { personals: { user: personal } } = await this.prismaService.students.findFirst({
+    const {
+      personals: { user: personal },
+    } = await this.prismaService.students.findFirst({
       where: {
         userId: idUser,
       },
-      include: { personals: { include: { user: true } } }
+      include: { personals: { include: { user: true } } },
     });
-
 
     const workoutGroups = await this.prismaService.workoutsGroups.findMany({
       where: {
         userId: idUser,
       },
-      orderBy: { id: 'asc' }
+      orderBy: { id: 'asc' },
     });
 
     const lastSession = await this.prismaService.workoutSessions.findFirst({
@@ -107,13 +107,18 @@ export class WorkoutsSessionsService {
 
     const currentDate = new Date();
 
-    let workoutGroupOfDay: { id: number; };
+    let workoutGroupOfDay: { id: number };
     if (!lastSession) {
       workoutGroupOfDay = workoutGroups[0];
-    } else if (lastSession.date.getUTCDate() === currentDate.getUTCDate() && lastSession.date.getUTCMonth() === currentDate.getUTCMonth() && lastSession.date.getUTCFullYear() === currentDate.getUTCFullYear()) {
+    } else if (
+      lastSession.date.getUTCDate() === currentDate.getUTCDate() &&
+      lastSession.date.getUTCMonth() === currentDate.getUTCMonth() &&
+      lastSession.date.getUTCFullYear() === currentDate.getUTCFullYear()
+    ) {
       workoutGroupOfDay = lastSession.workoutsGroups;
     } else {
-      const index = workoutGroups.map(x => x.id).indexOf(lastSession.workoutGroupId) + 1;
+      const index =
+        workoutGroups.map((x) => x.id).indexOf(lastSession.workoutGroupId) + 1;
       if (index < workoutGroups.length) {
         workoutGroupOfDay = workoutGroups[index];
       } else {
@@ -123,11 +128,17 @@ export class WorkoutsSessionsService {
 
     const counter = this.calculateSequence(sequencies, currentDate);
 
-    return { lastSession, counter, workoutGroupOfDay, students, personal, user };
+    return {
+      lastSession,
+      counter,
+      workoutGroupOfDay,
+      students,
+      personal,
+      user,
+    };
   }
 
   calculateSequence(sequences: any[], currentDate: Date): number {
-
     if (sequences.length === 0) {
       return 0;
     }
@@ -139,15 +150,20 @@ export class WorkoutsSessionsService {
       const sequence = new Date(sequences[i].date);
       const currentDayOfWeek = sequence.getUTCDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
 
-      if (currentDayOfWeek !== 0) { // Ignorar registros de Domingo
+      if (currentDayOfWeek !== 0) {
+        // Ignorar registros de Domingo
         if (i === 0) {
           currentSequence++;
         } else {
           const previousDate = new Date(sequences[i - 1].date);
-          const diffTime = Math.abs(sequence.getTime() - previousDate.getTime());
+          const diffTime = Math.abs(
+            sequence.getTime() - previousDate.getTime(),
+          );
           const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-          const canIncrement = previousDate.getUTCDay() === 6 && sequence.getUTCDay() === 1 || diffDays === 1;
+          const canIncrement =
+            (previousDate.getUTCDay() === 6 && sequence.getUTCDay() === 1) ||
+            diffDays === 1;
 
           if (canIncrement) {
             currentSequence++;
@@ -169,7 +185,9 @@ export class WorkoutsSessionsService {
     const lastDate = sequences[sequences.length - 1].date;
     const diffTime = Math.abs(currentDate.getTime() - lastDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    const canIncrement = lastDate.getUTCDay() === 6 && currentDate.getUTCDay() === 1 || diffDays === 1;
+    const canIncrement =
+      (lastDate.getUTCDay() === 6 && currentDate.getUTCDay() === 1) ||
+      diffDays === 1;
 
     if (!canIncrement) {
       count = 0; // Reinicia a sequência se houver uma lacuna (excluindo os Domingos)
@@ -183,14 +201,22 @@ export class WorkoutsSessionsService {
     const currentDayOfWeek = currentDate.getDay(); // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
 
     const diffDays = (dayOfWeek - currentDayOfWeek + 7) % 7;
-    const startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate() + diffDays);
+    const startDate = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate() + diffDays,
+    );
 
     return startDate;
   }
 
   getEndDateOfWeek(dayOfWeek: number): Date {
     const startDate = this.getStartDateOfWeek(dayOfWeek);
-    const endDate = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate() + 1);
+    const endDate = new Date(
+      startDate.getFullYear(),
+      startDate.getMonth(),
+      startDate.getDate() + 1,
+    );
     return endDate;
   }
 

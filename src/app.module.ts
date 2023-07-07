@@ -10,6 +10,7 @@ import { WorkoutsModule } from './workouts/workouts.module';
 import { WorkoutsGroupsModule } from './workouts-groups/workouts-groups.module';
 import { WorkoutsSessionsModule } from './workouts-sessions/workouts-sessions.module';
 import { StudentsModule } from './students/students.module';
+import { WorkoutsPersonalsSessionsModule } from './workouts-personals-sessions/workouts-personals-sessions.module';
 
 @Module({
   imports: [
@@ -22,8 +23,9 @@ import { StudentsModule } from './students/students.module';
     WorkoutsSessionsModule,
     WorkoutsGroupsModule,
     StudentsModule,
+    WorkoutsPersonalsSessionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {}

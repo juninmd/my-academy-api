@@ -13,9 +13,7 @@ import { UpdateExercisesSeriesDto } from './dto/update-workouts-series.dto';
 
 @Controller('workouts-series')
 export class WorkoutsSeriesController {
-  constructor(
-    private readonly exercisesSeriesService: WorkoutsSeriesService,
-  ) { }
+  constructor(private readonly exercisesSeriesService: WorkoutsSeriesService) {}
 
   @Post()
   create(

@@ -7,4 +7,4 @@ import { PrismaService } from '../prisma.service';
   controllers: [WorkoutsSeriesController],
   providers: [WorkoutsSeriesService, PrismaService],
 })
-export class WorkoutsSeriesModule { }
+export class WorkoutsSeriesModule {}
