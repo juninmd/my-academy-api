@@ -11,6 +11,7 @@ import { WorkoutsGroupsModule } from './workouts-groups/workouts-groups.module';
 import { WorkoutsSessionsModule } from './workouts-sessions/workouts-sessions.module';
 import { StudentsModule } from './students/students.module';
 import { WorkoutsPersonalsSessionsModule } from './workouts-personals-sessions/workouts-personals-sessions.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 @Module({
   imports: [
@@ -28,4 +29,4 @@ import { WorkoutsPersonalsSessionsModule } from './workouts-personals-sessions/w
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
