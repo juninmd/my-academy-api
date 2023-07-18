@@ -6,16 +6,18 @@ import {
   Put,
   Param,
   Delete,
+  UseInterceptors,
 } from '@nestjs/common';
 import { WorkoutsPersonalsSessionsService } from './workouts-personals-sessions.service';
 import { CreateWorkoutsPersonalsSessionDto } from './dto/create-workouts-personals-session.dto';
 import { UpdateWorkoutsPersonalsSessionDto } from './dto/update-workouts-personals-session.dto';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('workouts-personals-sessions')
 export class WorkoutsPersonalsSessionsController {
   constructor(
     private readonly workoutsPersonalsSessionsService: WorkoutsPersonalsSessionsService,
-  ) {}
+  ) { }
 
   @Post()
   create(
@@ -25,6 +27,13 @@ export class WorkoutsPersonalsSessionsController {
     return this.workoutsPersonalsSessionsService.create(
       createWorkoutsPersonalsSessionDto,
     );
+  }
+
+  @Get('students/:idUserPersonal')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(0)
+  findStudents(@Param('idUserPersonal') idUserPersonal: string) {
+    return this.workoutsPersonalsSessionsService.findStudents(+idUserPersonal);
   }
 
   @Get()

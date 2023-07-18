@@ -6,14 +6,16 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
 } from '@nestjs/common';
 import { MethodsService } from './methods.service';
 import { CreateMethodDto } from './dto/create-method.dto';
 import { UpdateMethodDto } from './dto/update-method.dto';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('methods')
 export class MethodsController {
-  constructor(private readonly methodsService: MethodsService) {}
+  constructor(private readonly methodsService: MethodsService) { }
 
   @Post()
   create(@Body() createMethodDto: CreateMethodDto) {
@@ -21,6 +23,8 @@ export class MethodsController {
   }
 
   @Get()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(0)
   async findAll() {
     try {
       return await this.methodsService.findAll();

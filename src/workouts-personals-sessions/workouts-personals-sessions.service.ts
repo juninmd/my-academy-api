@@ -5,34 +5,52 @@ import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class WorkoutsPersonalsSessionsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   create(createWorkoutsPersonalsSessionDto: CreateWorkoutsPersonalsSessionDto) {
-    return this.prismaService.workoutPeronalSessions.create({
+    return this.prismaService.workoutPersonalSessions.create({
       data: createWorkoutsPersonalsSessionDto,
     });
   }
 
   findAll() {
-    return this.prismaService.workoutPeronalSessions.findMany();
+    return this.prismaService.workoutPersonalSessions.findMany();
   }
 
   findOne(id: number) {
-    return this.prismaService.workoutPeronalSessions.findUnique({
+    return this.prismaService.workoutPersonalSessions.findUnique({
       where: { id: Number(id) },
     });
   }
 
   update(id: number, updateDto: UpdateWorkoutsPersonalsSessionDto) {
-    return this.prismaService.workoutPeronalSessions.update({
+    return this.prismaService.workoutPersonalSessions.update({
       where: { id: Number(id) },
       data: updateDto,
     });
   }
 
   remove(id: number) {
-    return this.prismaService.workoutPeronalSessions.delete({
+    return this.prismaService.workoutPersonalSessions.delete({
       where: { id: Number(id) },
     });
+  }
+
+  async findStudents(idUserPersonal: number) {
+    const { id: idPersonal } = await this.prismaService.personals.findFirst({
+      where: { userId: idUserPersonal },
+    });
+
+    const currentDate = new Date();
+    currentDate.setHours(0, 0, 0, 0); // Define a hora para 00:00:00.000 do dia atual
+
+    return this.prismaService.workoutPersonalSessions.findMany({
+      where: {
+        personalsId: idPersonal,
+        date: { gte: currentDate, lte: new Date(currentDate.getTime() + 24 * 60 * 60 * 1000) }
+      },
+      include: { users: true }
+    });
+
   }
 }

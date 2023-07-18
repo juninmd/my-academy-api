@@ -6,7 +6,7 @@ import { WorkoutSessions } from '@prisma/client';
 
 @Injectable()
 export class WorkoutsSessionsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   create(createworkoutsDto: CreateWorkoutsSessionsDto) {
     return this.prismaService.workoutSessions.create({
@@ -44,6 +44,7 @@ export class WorkoutsSessionsService {
 
   async findSummary(idUser: number) {
     let students = [];
+    let personal = undefined;
 
     const user = await this.prismaService.users.findFirst({
       where: {
@@ -67,14 +68,16 @@ export class WorkoutsSessionsService {
       students = studentsTable.map((x) => x.users);
     }
 
-    const {
-      personals: { user: personal },
-    } = await this.prismaService.students.findFirst({
+    const student = await this.prismaService.students.findFirst({
       where: {
         userId: idUser,
       },
       include: { personals: { include: { user: true } } },
     });
+
+    if (student) {
+      personal = student?.personals?.user;
+    }
 
     const workoutGroups = await this.prismaService.workoutsGroups.findMany({
       where: {

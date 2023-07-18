@@ -39,6 +39,8 @@ export class WorkoutsSessionsController {
   }
 
   @Get(':id')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(0)
   findOne(@Param('id') id: string) {
     return this.workoutsSessionsService.findOne(+id);
   }
