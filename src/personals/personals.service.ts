@@ -6,7 +6,7 @@ import { Personals } from '@prisma/client';
 
 @Injectable()
 export class PersonalsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   create(createpersonalsDto: CreatePersonalDto) {
     return this.prismaService.personals.create({
@@ -19,8 +19,8 @@ export class PersonalsService {
   }
 
   findOne(id: number) {
-    return this.prismaService.personals.findUnique({
-      where: { id: Number(id) },
+    return this.prismaService.personals.findFirst({
+      where: { userId: id },
     });
   }
 
