@@ -5,12 +5,15 @@ export class CreateWorkoutDto {
   @ApiProperty({ required: true })
   exerciseId: number;
 
-  @ApiProperty({ required: true })
-  description: string;
+  @ApiProperty({ required: false })
+  description?: string;
 
-  @ApiProperty({ required: true })
-  workoutsGroupsId: number;
+  @ApiProperty({ required: false })
+  workoutsGroupsId?: number;
 
-  @ApiProperty({ required: true })
-  workoutSeries?: CreateWorkoutsSeriesDto;
+  @ApiProperty({ required: false, type: [CreateWorkoutsSeriesDto] })
+  workoutSeries?: CreateWorkoutsSeriesDto[];
+
+  @ApiProperty({ required: false })
+  methodId?: number;
 }

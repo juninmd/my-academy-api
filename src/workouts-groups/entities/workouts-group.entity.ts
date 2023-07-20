@@ -1,4 +1,4 @@
-import { Users, Methods } from '@prisma/client';
+import { Users, Methods, Workouts } from '@prisma/client';
 
 export class WorkoutsGroup {
   id: number;
@@ -12,4 +12,5 @@ export class WorkoutsGroup {
   methodId?: number;
   user?: Users;
   method?: Methods;
+  workouts?: Workouts[];
 }

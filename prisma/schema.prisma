@@ -6,10 +6,6 @@ datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
-  // If you want to use Prisma Migrate, you will need to manually create a shadow database
-  // https://neon.tech/docs/guides/prisma-migrate#configure-a-shadow-database-for-prisma-migrate
-  // make sure to append ?connect_timeout=10 to the connection string
-  // shadowDatabaseUrl = env(“SHADOW_DATABASE_URL”)
 }
 
 model Exercises {
@@ -34,10 +30,10 @@ model Workouts {
   exerciseId       Int
   description      String
   workoutsGroupsId Int
-  workoutGroup     WorkoutsGroups  @relation(fields: [workoutsGroupsId], references: [id])
-  exercise         Exercises       @relation(fields: [exerciseId], references: [id])
+  workoutGroup     WorkoutsGroups  @relation(fields: [workoutsGroupsId], references: [id], onDelete: Cascade)
+  exercise         Exercises       @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   workoutSeries    WorkoutSeries[]
-  method           Methods?        @relation(fields: [methodId], references: [id])
+  method           Methods?        @relation(fields: [methodId], references: [id], onDelete: Cascade)
   methodId         Int?
 }
 
@@ -72,7 +68,7 @@ model WorkoutSeries {
   weight      Int?     @default(10)
   rest        Int?     @default(60)
   workoutId   Int
-  workout     Workouts @relation(fields: [workoutId], references: [id])
+  workout     Workouts @relation(fields: [workoutId], references: [id], onDelete: Cascade)
 }
 
 model WorkoutSessions {

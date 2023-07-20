@@ -3,16 +3,43 @@ import { CreateWorkoutsGroupDto } from './dto/create-workouts-group.dto';
 import { UpdateWorkoutsGroupDto } from './dto/update-workouts-group.dto';
 import { WorkoutsGroups } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
-import { Exercise } from '../exercises/entities/exercise.entity';
-import { Workout } from '../workouts/entities/workout.entity';
 
 @Injectable()
 export class WorkoutsGroupsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
-  create(createworkoutsDto: CreateWorkoutsGroupDto) {
+  create(data: CreateWorkoutsGroupDto) {
     return this.prismaService.workoutsGroups.create({
-      data: createworkoutsDto as WorkoutsGroups,
+      data: {
+        name: data.name,
+        description: data.description,
+        image: data.image,
+        dateStart: data.dateStart,
+        dateEnd: data.dateEnd,
+        level: data.level,
+        userId: data.userId, // Use connect here
+        workouts: {
+          create: data.workouts.map((workout) => ({
+            exerciseId: workout.exerciseId, // Use connect here
+            description: workout.description,
+            methodId: workout.methodId,
+            workoutSeries: {
+              create: workout.workoutSeries.map((series) => ({
+                repetitions: series.repetitions,
+                weight: series.weight,
+                rest: series.rest,
+              })),
+            },
+          })),
+        },
+      },
+      include: {
+        workouts: {
+          include: {
+            workoutSeries: true,
+          },
+        },
+      },
     });
   }
 
