@@ -23,8 +23,6 @@ export class WorkoutsGroupsController {
   }
 
   @Get(':userId')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(0)
   findAll(@Param('userId') userId: string) {
     return this.workoutsGroupsService.findAll(+userId);
   }
