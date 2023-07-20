@@ -9,11 +9,11 @@ import {
 } from '@nestjs/common';
 import { WorkoutsSeriesService } from './workouts-series.service';
 import { CreateWorkoutsSeriesDto } from './dto/create-workouts-series.dto';
-import { UpdateExercisesSeriesDto } from './dto/update-workouts-series.dto';
+import { UpdateWorkoutsSeriesDto } from './dto/update-workouts-series.dto';
 
 @Controller('workouts-series')
 export class WorkoutsSeriesController {
-  constructor(private readonly exercisesSeriesService: WorkoutsSeriesService) {}
+  constructor(private readonly exercisesSeriesService: WorkoutsSeriesService) { }
 
   @Post()
   create(
@@ -38,7 +38,7 @@ export class WorkoutsSeriesController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateExercisesSeriesDto: UpdateExercisesSeriesDto,
+    @Body() updateExercisesSeriesDto: UpdateWorkoutsSeriesDto,
   ) {
     return this.exercisesSeriesService.update(+id, updateExercisesSeriesDto);
   }

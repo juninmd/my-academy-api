@@ -6,7 +6,7 @@ import { Workouts } from '@prisma/client';
 
 @Injectable()
 export class WorkoutsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   create(createworkoutsDto: CreateWorkoutDto) {
     return this.prismaService.workouts.create({
@@ -27,7 +27,7 @@ export class WorkoutsService {
   update(id: number, updateDto: UpdateWorkoutDto) {
     return this.prismaService.workouts.update({
       where: { id: Number(id) },
-      data: updateDto as Workouts,
+      data: updateDto as any,
     });
   }
 

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { CreateWorkoutDto } from '../../workouts/dto/create-workout.dto';
 
 export class CreateWorkoutsGroupDto {
   @ApiProperty({ required: true, description: 'Treino' })
@@ -17,4 +18,6 @@ export class CreateWorkoutsGroupDto {
   methodId?: number;
   @ApiProperty({ required: true })
   image: string;
+  @ApiProperty({ required: true })
+  workouts?: CreateWorkoutDto;
 }
