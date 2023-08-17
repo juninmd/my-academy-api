@@ -75,8 +75,8 @@ Nest is [MIT licensed](LICENSE).
 
 # Construir a imagem Docker
 
-docker build -t my-academy .
+docker build -t my-academy-api .
 
 # Executar o contêiner
 
-docker run -p 5000:5000 my-academy
+docker run -p 5000:5000 my-academy-api
