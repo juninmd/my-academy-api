@@ -5,4 +5,4 @@ WORKDIR /usr/src/app
 COPY . /usr/src/app
 RUN npm install
 EXPOSE 5000
-CMD ["node", "app.js"]
+CMD ["npm", "start"]
