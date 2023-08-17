@@ -11,7 +11,7 @@
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "npm exec prisma generate --schema=./prisma/schema.prisma && nest build",
-    "postinstall": "npm run build && node-prune",
+    "postinstall": "npm run build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "node dist/src/main.js",
     "start:dev": "nest start --watch",
@@ -55,7 +55,6 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "28.1.2",
-    "node-prune": "^1.0.2",
     "prettier": "^2.3.2",
     "prisma": "^5.0.0",
     "source-map-support": "^0.5.20",
