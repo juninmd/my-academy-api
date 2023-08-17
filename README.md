@@ -72,3 +72,11 @@ Nest is [MIT licensed](LICENSE).
 <https://app.diagrams.net/#G1s3D1kHTtljAtmFGQCpHJCDz3uvAGX5vU>
 <https://rich-cyan-skunk-tutu.cyclic.app>
 <https://my-academy-api.onrender.com/>
+
+# Construir a imagem Docker
+
+docker build -t my-academy .
+
+# Executar o contêiner
+
+docker run -p 5000:5000 my-academy

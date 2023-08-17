@@ -22,7 +22,7 @@ export class WorkoutsGroupsController {
     return this.workoutsGroupsService.create(createWorkoutsGroupDto);
   }
 
-  @Get(':userId')
+  @Get('/user/:userId')
   findAll(@Param('userId') userId: string) {
     return this.workoutsGroupsService.findAll(+userId);
   }
