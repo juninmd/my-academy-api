@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { WorkoutsGroupsService } from './workouts-groups.service';
 import { CreateWorkoutsGroupDto } from './dto/create-workouts-group.dto';
@@ -23,8 +24,8 @@ export class WorkoutsGroupsController {
   }
 
   @Get('/user/:userId')
-  findAll(@Param('userId') userId: string) {
-    return this.workoutsGroupsService.findAll(+userId);
+  findAll(@Param('userId') userId: string, @Query() query = { activated: true }) {
+    return this.workoutsGroupsService.findAll(+userId, Boolean(query.activated));
   }
 
   @Get(':id')
@@ -52,5 +53,10 @@ export class WorkoutsGroupsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.workoutsGroupsService.remove(+id);
+  }
+
+  @Delete('/disable/:id')
+  disable(@Param('id') id: string) {
+    return this.workoutsGroupsService.disable(+id);
   }
 }

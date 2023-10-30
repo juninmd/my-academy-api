@@ -39,6 +39,7 @@ model Workouts {
 
 model WorkoutsGroups {
   id              Int               @id @default(autoincrement())
+  activated       Boolean           @default(true)
   name            String
   description     String
   image           String
