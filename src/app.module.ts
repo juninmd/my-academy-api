@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, RequestMethod } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ExercisesModule } from './exercises/exercises.module';
@@ -12,6 +12,8 @@ import { WorkoutsSessionsModule } from './workouts-sessions/workouts-sessions.mo
 import { StudentsModule } from './students/students.module';
 import { WorkoutsPersonalsSessionsModule } from './workouts-personals-sessions/workouts-personals-sessions.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { PreauthMiddleware } from './auth/firebase.auth';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -25,8 +27,15 @@ import { CacheModule } from '@nestjs/cache-manager';
     WorkoutsGroupsModule,
     StudentsModule,
     WorkoutsPersonalsSessionsModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule { }
+export class AppModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(PreauthMiddleware).forRoutes({
+      path: '*', method: RequestMethod.ALL
+    });
+  }
+}
