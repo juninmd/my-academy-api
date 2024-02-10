@@ -45,7 +45,6 @@ model WorkoutsGroups {
   image           String
   dateStart       DateTime
   dateEnd         DateTime
-  level           Int
   userId          Int
   user            Users             @relation(fields: [userId], references: [id])
   workouts        Workouts[]

@@ -18,9 +18,6 @@ export class CreateWorkoutsGroupDto {
   dateEnd: Date;
 
   @ApiProperty({ required: true })
-  level: number;
-
-  @ApiProperty({ required: true })
   userId: number;
 
   @ApiProperty({ required: false, type: [CreateWorkoutDto] })

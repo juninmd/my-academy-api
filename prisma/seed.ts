@@ -226,7 +226,6 @@ async function main() {
       dateStart: new Date(),
       description: 'Peitos',
       image: 'assets/images/assets/images/supino_halteres.gif',
-      level: 1,
       name: 'Peitos',
       userId: 1,
     }
@@ -238,7 +237,6 @@ async function main() {
       dateStart: new Date(),
       description: 'Peitos',
       image: 'assets/images/assets/images/supino_halteres.gif',
-      level: 1,
       name: 'Peitos',
       userId: 1,
     }
@@ -250,7 +248,6 @@ async function main() {
       dateStart: new Date(),
       description: 'Ombros',
       image: 'assets/images/assets/images/supino_halteres.gif',
-      level: 1,
       name: 'Ombros',
       userId: 1,
     }
@@ -262,7 +259,6 @@ async function main() {
       dateStart: new Date(),
       description: 'Costas',
       image: 'assets/images/assets/images/supino_halteres.gif',
-      level: 1,
       name: 'Costas',
       userId: 1,
     }

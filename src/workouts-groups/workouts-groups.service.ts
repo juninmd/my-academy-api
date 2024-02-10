@@ -16,7 +16,6 @@ export class WorkoutsGroupsService {
         image: data.image,
         dateStart: data.dateStart,
         dateEnd: data.dateEnd,
-        level: data.level,
         userId: data.userId, // Use connect here
         workouts: {
           create: data.workouts.map((workout) => ({

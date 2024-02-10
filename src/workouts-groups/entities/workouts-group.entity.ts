@@ -7,7 +7,6 @@ export class WorkoutsGroup {
   image: string;
   dateStart: Date;
   dateEnd: Date;
-  level: number;
   userId: number;
   methodId?: number;
   user?: Users;
