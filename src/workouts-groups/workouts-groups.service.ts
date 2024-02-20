@@ -12,25 +12,24 @@ export class WorkoutsGroupsService {
     return this.prismaService.workoutsGroups.create({
       data: {
         name: data.name,
-        description: data.description,
         image: data.image,
-        dateStart: data.dateStart,
-        dateEnd: data.dateEnd,
-        userId: data.userId, // Use connect here
+        userId: data.userId,
         workouts: {
-          create: data.workouts.map((workout) => ({
-            exerciseId: workout.exerciseId, // Use connect here
-            description: workout.description,
-            methodId: workout.methodId,
-            workoutSeries: {
-              create: workout.workoutSeries.map((series) => ({
-                repetitions: series.repetitions,
-                weight: series.weight,
-                rest: series.rest,
-              })),
-            },
-          })),
-        },
+          createMany: {
+            data: data.workouts.map((workout) => ({
+              exerciseId: workout.exerciseId,
+              description: workout.description || '',
+              methodId: workout.methodId,
+              workoutSeries: {
+                create: workout.workoutSeries.map((series) => ({
+                  repetitions: series.repetitions,
+                  weight: series.weight,
+                  rest: series.rest,
+                })),
+              },
+            })),
+          },
+        }
       },
       include: {
         workouts: {
@@ -64,16 +63,60 @@ export class WorkoutsGroupsService {
   findOne(id: number) {
     return this.prismaService.workoutsGroups.findUnique({
       where: { id: Number(id) },
+      include: {
+        workouts: {
+          include: {
+            workoutSeries: true,
+            exercise: true,
+            method: true,
+          },
+        },
+      },
     });
   }
 
-  update(id: number, updateDto: UpdateWorkoutsGroupDto) {
+  async update(id: number, data: UpdateWorkoutsGroupDto) {
+    // Primeiro, obtenha todos os workouts atuais do grupo
+    const currentGroup = await this.prismaService.workoutsGroups.findUnique({
+      where: { id: Number(id) },
+      include: { workouts: { include: { workoutSeries: true } } },
+    });
+
+    const workoutsDelete = await this.prismaService.workouts.deleteMany({ where: { workoutsGroupsId: id } })
+
+    console.log(currentGroup, workoutsDelete);
+
+    // Agora, atualize o grupo de workouts como antes
     return this.prismaService.workoutsGroups.update({
       where: { id: Number(id) },
-      data: updateDto as WorkoutsGroups,
+      data: {
+        name: data.name,
+        image: data.image,
+        userId: data.userId, // Use connect here
+        workouts: {
+          create: data.workouts.map((workout) => ({
+            exerciseId: workout.exerciseId, // Use connect here
+            description: workout.description,
+            methodId: workout.methodId,
+            workoutSeries: {
+              create: workout.workoutSeries.map((series) => ({
+                repetitions: series.repetitions,
+                weight: series.weight,
+                rest: series.rest,
+              })),
+            },
+          })),
+        },
+      },
+      include: {
+        workouts: {
+          include: {
+            workoutSeries: true,
+          },
+        },
+      },
     });
   }
-
   remove(id: number) {
     return this.prismaService.workoutsGroups.delete({
       where: { id: Number(id) },

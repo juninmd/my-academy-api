@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
   UseInterceptors,
@@ -19,7 +19,7 @@ export class WorkoutsGroupsController {
   constructor(private readonly workoutsGroupsService: WorkoutsGroupsService) { }
 
   @Post()
-  create(@Body() createWorkoutsGroupDto: CreateWorkoutsGroupDto) {
+  async create(@Body() createWorkoutsGroupDto: CreateWorkoutsGroupDto) {
     return this.workoutsGroupsService.create(createWorkoutsGroupDto);
   }
 
@@ -29,20 +29,16 @@ export class WorkoutsGroupsController {
   }
 
   @Get(':id')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(0)
   findOne(@Param('id') id: string) {
     return this.workoutsGroupsService.findOne(+id);
   }
 
   @Get(':id/exercises')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(0)
   findOneExercises(@Param('id') id: string) {
     return this.workoutsGroupsService.findAllExercises(+id);
   }
 
-  @Patch(':id')
+  @Put(':id')
   update(
     @Param('id') id: string,
     @Body() updateWorkoutsGroupDto: UpdateWorkoutsGroupDto,

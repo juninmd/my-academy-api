@@ -30,8 +30,6 @@ export class WorkoutsPersonalsSessionsController {
   }
 
   @Get('students/:idUserPersonal')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(0)
   findStudents(@Param('idUserPersonal') idUserPersonal: string) {
     return this.workoutsPersonalsSessionsService.findStudents(+idUserPersonal);
   }

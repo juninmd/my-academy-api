@@ -24,7 +24,7 @@ export class MethodsController {
 
   @Get()
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(0)
+  @CacheTTL(60)
   async findAll() {
     try {
       return await this.methodsService.findAll();

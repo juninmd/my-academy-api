@@ -222,9 +222,6 @@ async function main() {
 
   await prisma.workoutsGroups.create({
     data: {
-      dateEnd: new Date(),
-      dateStart: new Date(),
-      description: 'Peitos',
       image: 'assets/images/assets/images/supino_halteres.gif',
       name: 'Peitos',
       userId: 1,
@@ -233,9 +230,6 @@ async function main() {
 
   await prisma.workoutsGroups.create({
     data: {
-      dateEnd: new Date(),
-      dateStart: new Date(),
-      description: 'Peitos',
       image: 'assets/images/assets/images/supino_halteres.gif',
       name: 'Peitos',
       userId: 1,
@@ -244,9 +238,6 @@ async function main() {
 
   await prisma.workoutsGroups.create({
     data: {
-      dateEnd: new Date(),
-      dateStart: new Date(),
-      description: 'Ombros',
       image: 'assets/images/assets/images/supino_halteres.gif',
       name: 'Ombros',
       userId: 1,
@@ -255,9 +246,6 @@ async function main() {
 
   await prisma.workoutsGroups.create({
     data: {
-      dateEnd: new Date(),
-      dateStart: new Date(),
-      description: 'Costas',
       image: 'assets/images/assets/images/supino_halteres.gif',
       name: 'Costas',
       userId: 1,

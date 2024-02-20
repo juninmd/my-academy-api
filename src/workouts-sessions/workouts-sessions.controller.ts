@@ -25,22 +25,16 @@ export class WorkoutsSessionsController {
   }
 
   @Get(':idUser')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(0)
   findAll(@Param('idUser') idUser: number) {
     return this.workoutsSessionsService.findAll(+idUser);
   }
 
   @Get(':idUser/summary')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(0)
   findSummary(@Param('idUser') idUser: number) {
     return this.workoutsSessionsService.findSummary(+idUser);
   }
 
   @Get(':id')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(0)
   findOne(@Param('id') id: string) {
     return this.workoutsSessionsService.findOne(+id);
   }
