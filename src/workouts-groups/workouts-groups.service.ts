@@ -41,8 +41,8 @@ export class WorkoutsGroupsService {
     });
   }
 
-  findAll(userId: number, activated: boolean) {
-    return this.prismaService.workoutsGroups.findMany({ where: { userId, activated } });
+  findAll(userId: number) {
+    return this.prismaService.workoutsGroups.findMany({ where: { userId } });
   }
 
   findAllExercises(id: number) {
@@ -121,16 +121,5 @@ export class WorkoutsGroupsService {
     return this.prismaService.workoutsGroups.delete({
       where: { id: Number(id) },
     });
-  }
-
-  async disable(id: number) {
-    try {
-      return await this.prismaService.workoutsGroups.update({
-        where: { id: Number(id) },
-        data: { activated: false }
-      });
-    } catch (error) {
-      throw error;
-    }
   }
 }

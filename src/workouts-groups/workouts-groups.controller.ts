@@ -24,8 +24,8 @@ export class WorkoutsGroupsController {
   }
 
   @Get('/user/:userId')
-  findAll(@Param('userId') userId: string, @Query() query = { activated: true }) {
-    return this.workoutsGroupsService.findAll(+userId, Boolean(query.activated));
+  findAll(@Param('userId') userId: string) {
+    return this.workoutsGroupsService.findAll(+userId);
   }
 
   @Get(':id')
@@ -51,8 +51,4 @@ export class WorkoutsGroupsController {
     return this.workoutsGroupsService.remove(+id);
   }
 
-  @Delete('/disable/:id')
-  disable(@Param('id') id: string) {
-    return this.workoutsGroupsService.disable(+id);
-  }
 }

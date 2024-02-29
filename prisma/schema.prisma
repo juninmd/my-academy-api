@@ -42,7 +42,6 @@ model WorkoutsGroups {
   name            String
   image           String
   userId          Int
-  activated       Boolean           @default(true)
   WorkoutSessions WorkoutSessions[]
   workouts        Workouts[]
   user            Users             @relation(fields: [userId], references: [id])
