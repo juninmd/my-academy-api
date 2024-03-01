@@ -11,7 +11,7 @@ sudo docker stop $DOCKER_CONTAINER && sudo docker rm $DOCKER_CONTAINER
 git pull origin $BRANCH
 
 # Atualize a imagem docker
-sudo docker build .
+sudo docker build . -t my-academy-api
 
 # Reconstrua e inicie o contêiner Docker
-docker run -p 80:80 -e PORT=80 -e DIRECT_URL=$DIRECT_URL -e DATABASE_URL=$DATABASE_URL --name $DOCKER_CONTAINER $DOCKER_CONTAINER
+docker run -p 80:80 -e PORT=80 -e DIRECT_URL=$DIRECT_URL -e DATABASE_URL=$DATABASE_URL --name $DOCKER_CONTAINER --restart unless-stopped $DOCKER_CONTAINER
