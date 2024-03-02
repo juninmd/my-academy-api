@@ -34,8 +34,10 @@ import { HealthModule } from './health/health.module';
 })
 export class AppModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(PreauthMiddleware).forRoutes({
-      path: '*', method: RequestMethod.ALL
-    });
+    if (process.env.FIREBASE_ENABLED === 'true') {
+      consumer.apply(PreauthMiddleware).forRoutes({
+        path: '*', method: RequestMethod.ALL
+      });
+    }
   }
 }
