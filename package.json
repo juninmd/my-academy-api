@@ -13,6 +13,7 @@
     "build": "npm exec prisma generate --schema=./prisma/schema.prisma && nest build",
     "postinstall": "npm run build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "prestart": "npm run build && npm run prisma:pull && npm run prisma:push",
     "start": "node dist/src/main.js",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
