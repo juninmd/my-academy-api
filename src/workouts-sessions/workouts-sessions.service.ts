@@ -14,7 +14,7 @@ export class WorkoutsSessionsService {
     });
   }
 
-  async findAll(idUser: number) {
+  async findAll(idUser: string) {
     const workoutGroups = await this.prismaService.workoutsGroups.findMany({
       where: {
         userId: idUser,
@@ -42,7 +42,7 @@ export class WorkoutsSessionsService {
     return sequencies;
   }
 
-  async findSummary(idUser: number) {
+  async findSummary(idUser: string) {
     let students = [];
     let personal = undefined;
 
@@ -225,20 +225,20 @@ export class WorkoutsSessionsService {
 
   findOne(id: number) {
     return this.prismaService.workoutSessions.findUnique({
-      where: { id: Number(id) },
+      where: { id },
     });
   }
 
   update(id: number, updateDto: UpdateWorkoutsSessionsDto) {
     return this.prismaService.workoutSessions.update({
-      where: { id: Number(id) },
+      where: { id },
       data: updateDto as WorkoutSessions,
     });
   }
 
   remove(id: number) {
     return this.prismaService.workoutSessions.delete({
-      where: { id: Number(id) },
+      where: { id },
     });
   }
 }

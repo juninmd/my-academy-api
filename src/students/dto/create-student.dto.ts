@@ -4,7 +4,7 @@ export class CreateStudentDto {
   @ApiProperty({ required: true })
   id: number;
   @ApiProperty({ required: true })
-  userId: number;
+  userId: string;
   @ApiProperty({ required: true })
   personalsId: number | null;
 }

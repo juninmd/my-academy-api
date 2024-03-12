@@ -19,24 +19,24 @@ export class WorkoutsPersonalsSessionsService {
 
   findOne(id: number) {
     return this.prismaService.workoutPersonalSessions.findUnique({
-      where: { id: Number(id) },
+      where: { id },
     });
   }
 
   update(id: number, updateDto: UpdateWorkoutsPersonalsSessionDto) {
     return this.prismaService.workoutPersonalSessions.update({
-      where: { id: Number(id) },
+      where: { id },
       data: updateDto,
     });
   }
 
   remove(id: number) {
     return this.prismaService.workoutPersonalSessions.delete({
-      where: { id: Number(id) },
+      where: { id },
     });
   }
 
-  async findStudents(idUserPersonal: number) {
+  async findStudents(idUserPersonal: string) {
     const { id: idPersonal } = await this.prismaService.personals.findFirst({
       where: { userId: idUserPersonal },
     });

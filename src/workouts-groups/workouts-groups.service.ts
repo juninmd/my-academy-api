@@ -33,13 +33,13 @@ export class WorkoutsGroupsService {
   }
 
 
-  findAll(userId: number) {
+  findAll(userId: string) {
     return this.prismaService.workoutsGroups.findMany({ where: { userId } });
   }
 
   findAllExercises(id: number) {
     return this.prismaService.workoutsGroups.findUnique({
-      where: { id: Number(id) },
+      where: { id },
       include: {
         workouts: {
           include: {
@@ -54,7 +54,7 @@ export class WorkoutsGroupsService {
 
   findOne(id: number) {
     return this.prismaService.workoutsGroups.findUnique({
-      where: { id: Number(id) },
+      where: { id },
       include: {
         workouts: {
           include: {
@@ -70,7 +70,7 @@ export class WorkoutsGroupsService {
   async update(id: number, data: UpdateWorkoutsGroupDto) {
     // Primeiro, obtenha todos os workouts atuais do grupo
     const currentGroup = await this.prismaService.workoutsGroups.findUnique({
-      where: { id: Number(id) },
+      where: { id },
       include: { workouts: { include: { workoutSeries: true } } },
     });
 
@@ -80,7 +80,7 @@ export class WorkoutsGroupsService {
 
     // Agora, atualize o grupo de workouts como antes
     return this.prismaService.workoutsGroups.update({
-      where: { id: Number(id) },
+      where: { id },
       data: {
         name: data.name,
         image: data.image,
@@ -111,7 +111,8 @@ export class WorkoutsGroupsService {
   }
   remove(id: number) {
     return this.prismaService.workoutsGroups.delete({
-      where: { id: Number(id) },
+      where: { id },
+      include: { WorkoutSessions: {} }
     });
   }
 }

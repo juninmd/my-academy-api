@@ -7,7 +7,7 @@ import { Exercises } from '@prisma/client';
 
 @Injectable()
 export class ExercisesService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   create(createExerciseDto: CreateExerciseDto) {
     return this.prismaService.exercises.create({
@@ -21,18 +21,18 @@ export class ExercisesService {
 
   findOne(id: number) {
     return this.prismaService.exercises.findUnique({
-      where: { id: Number(id) },
+      where: { id },
     });
   }
 
   update(id: number, updateDto: UpdateExerciseDto) {
     return this.prismaService.exercises.update({
-      where: { id: Number(id) },
+      where: { id },
       data: updateDto as Exercises,
     });
   }
 
   remove(id: number) {
-    return this.prismaService.exercises.delete({ where: { id: Number(id) } });
+    return this.prismaService.exercises.delete({ where: { id } });
   }
 }

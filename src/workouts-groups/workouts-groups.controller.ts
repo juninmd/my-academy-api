@@ -6,26 +6,26 @@ import {
   Put,
   Param,
   Delete,
-  UseInterceptors,
-  Query,
+  Req,
 } from '@nestjs/common';
 import { WorkoutsGroupsService } from './workouts-groups.service';
 import { CreateWorkoutsGroupDto } from './dto/create-workouts-group.dto';
 import { UpdateWorkoutsGroupDto } from './dto/update-workouts-group.dto';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('workouts-groups')
 export class WorkoutsGroupsController {
   constructor(private readonly workoutsGroupsService: WorkoutsGroupsService) { }
 
   @Post()
-  async create(@Body() createWorkoutsGroupDto: CreateWorkoutsGroupDto) {
+  async create(@Body() createWorkoutsGroupDto: CreateWorkoutsGroupDto, @Req() req) {
+    console.info(req.user);
     return this.workoutsGroupsService.create(createWorkoutsGroupDto);
   }
 
   @Get('/user/:userId')
-  findAll(@Param('userId') userId: string) {
-    return this.workoutsGroupsService.findAll(+userId);
+  findAll(@Param('userId') userId: string, @Req() req) {
+    console.info(req.user);
+    return this.workoutsGroupsService.findAll(userId);
   }
 
   @Get(':id')

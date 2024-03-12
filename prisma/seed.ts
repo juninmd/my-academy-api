@@ -214,7 +214,7 @@ async function main() {
 
   await prisma.users.create({
     data: {
-      id: 1,
+      id: 'db6i035Vjtb77a7cBDnXQVPd3oL2',
       email: 'jr_acn@hotmail.com',
       name: 'Antonio'
     }
@@ -224,7 +224,7 @@ async function main() {
     data: {
       image: 'assets/images/supino_halteres.gif',
       name: 'Peitos',
-      userId: 1,
+      userId: 'db6i035Vjtb77a7cBDnXQVPd3oL2',
     }
   });
 
@@ -232,7 +232,7 @@ async function main() {
     data: {
       image: 'assets/images/supino_halteres.gif',
       name: 'Peitos',
-      userId: 1,
+      userId: 'db6i035Vjtb77a7cBDnXQVPd3oL2',
     }
   });
 
@@ -240,7 +240,7 @@ async function main() {
     data: {
       image: 'assets/images/supino_halteres.gif',
       name: 'Ombros',
-      userId: 1,
+      userId: 'db6i035Vjtb77a7cBDnXQVPd3oL2',
     }
   });
 
@@ -248,7 +248,7 @@ async function main() {
     data: {
       image: 'assets/images/supino_halteres.gif',
       name: 'Costas',
-      userId: 1,
+      userId: 'db6i035Vjtb77a7cBDnXQVPd3oL2',
     }
   });
 

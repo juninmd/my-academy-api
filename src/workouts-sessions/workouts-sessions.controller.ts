@@ -11,7 +11,6 @@ import {
 import { WorkoutsSessionsService } from './workouts-sessions.service';
 import { CreateWorkoutsSessionsDto } from './dto/create-workouts-sessions.dto';
 import { UpdateWorkoutsSessionsDto } from './dto/update-workouts-sessions.dto';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('workouts-sessions')
 export class WorkoutsSessionsController {
@@ -25,13 +24,13 @@ export class WorkoutsSessionsController {
   }
 
   @Get(':idUser')
-  findAll(@Param('idUser') idUser: number) {
-    return this.workoutsSessionsService.findAll(+idUser);
+  findAll(@Param('idUser') idUser: string) {
+    return this.workoutsSessionsService.findAll(idUser);
   }
 
   @Get(':idUser/summary')
-  findSummary(@Param('idUser') idUser: number) {
-    return this.workoutsSessionsService.findSummary(+idUser);
+  findSummary(@Param('idUser') idUser: string) {
+    return this.workoutsSessionsService.findSummary(idUser);
   }
 
   @Get(':id')

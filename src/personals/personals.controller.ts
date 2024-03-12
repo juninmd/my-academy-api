@@ -13,7 +13,7 @@ import { UpdatePersonalDto } from './dto/update-personal.dto';
 
 @Controller('personals')
 export class PersonalsController {
-  constructor(private readonly personalsService: PersonalsService) {}
+  constructor(private readonly personalsService: PersonalsService) { }
 
   @Post()
   create(@Body() createPersonalDto: CreatePersonalDto) {
@@ -27,7 +27,7 @@ export class PersonalsController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.personalsService.findOne(+id);
+    return this.personalsService.findOne(id);
   }
 
   @Patch(':id')

@@ -9,7 +9,7 @@ export class CreateWorkoutsGroupDto {
   image: string;
 
   @ApiProperty({ required: true })
-  userId: number;
+  userId: string;
 
   @ApiProperty({ required: false, type: [CreateWorkoutDto] })
   workouts?: CreateWorkoutDto[];

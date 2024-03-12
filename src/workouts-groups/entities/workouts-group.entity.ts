@@ -4,7 +4,7 @@ export class WorkoutsGroup {
   id: number;
   name: string;
   image: string;
-  userId: number;
+  userId: string;
   methodId?: number;
   user?: Users;
   method?: Methods;

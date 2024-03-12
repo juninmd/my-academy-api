@@ -5,5 +5,5 @@ export class UpdatePersonalDto extends PartialType(CreatePersonalDto) {
   @ApiProperty()
   id?: number;
   @ApiProperty()
-  userId?: number;
+  userId?: string;
 }

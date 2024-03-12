@@ -41,14 +41,14 @@ model WorkoutsGroups {
   id              Int               @id @default(autoincrement())
   name            String
   image           String
-  userId          Int
+  userId          String
   WorkoutSessions WorkoutSessions[]
   workouts        Workouts[]
-  user            Users             @relation(fields: [userId], references: [id])
+  user            Users             @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Users {
-  id                      Int                       @id @default(autoincrement())
+  id                      String                       @id
   name                    String
   email                   String
   photoUrl                String                    @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
@@ -71,31 +71,31 @@ model WorkoutSessions {
   id             Int            @id @default(autoincrement())
   date           DateTime       @default(now()) @db.Date
   workoutGroupId Int
-  workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id])
+  workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id],  onDelete: Cascade)
 }
 
 model Personals {
   id                      Int                       @id @default(autoincrement())
-  userId                  Int
-  user                    Users                     @relation(fields: [userId], references: [id])
+  userId                  String
+  user                    Users                     @relation(fields: [userId], references: [id], onDelete: Cascade)
   students                Students[]
   WorkoutPersonalSessions WorkoutPersonalSessions[]
 }
 
 model Students {
-  id          Int        @id @default(autoincrement())
-  userId      Int
+  id          Int                       @id @default(autoincrement())
+  userId      String
   personalsId Int?
-  personals   Personals? @relation(fields: [personalsId], references: [id])
-  users       Users      @relation(fields: [userId], references: [id])
+  personals   Personals? @relation(fields: [personalsId], references: [id], onDelete: Cascade)
+  users       Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model WorkoutPersonalSessions {
   id          Int       @id @default(autoincrement())
   date        DateTime?
   personalsId Int
-  userId      Int
+  userId      String
   observation String?
-  personals   Personals @relation(fields: [personalsId], references: [id])
-  users       Users     @relation(fields: [userId], references: [id])
+  personals   Personals @relation(fields: [personalsId], references: [id], onDelete: Cascade)
+  users       Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
