@@ -222,7 +222,7 @@ async function main() {
 
   await prisma.workoutsGroups.create({
     data: {
-      image: 'assets/images/assets/images/supino_halteres.gif',
+      image: 'assets/images/supino_halteres.gif',
       name: 'Peitos',
       userId: 1,
     }
@@ -230,7 +230,7 @@ async function main() {
 
   await prisma.workoutsGroups.create({
     data: {
-      image: 'assets/images/assets/images/supino_halteres.gif',
+      image: 'assets/images/supino_halteres.gif',
       name: 'Peitos',
       userId: 1,
     }
@@ -238,7 +238,7 @@ async function main() {
 
   await prisma.workoutsGroups.create({
     data: {
-      image: 'assets/images/assets/images/supino_halteres.gif',
+      image: 'assets/images/supino_halteres.gif',
       name: 'Ombros',
       userId: 1,
     }
@@ -246,7 +246,7 @@ async function main() {
 
   await prisma.workoutsGroups.create({
     data: {
-      image: 'assets/images/assets/images/supino_halteres.gif',
+      image: 'assets/images/supino_halteres.gif',
       name: 'Costas',
       userId: 1,
     }
