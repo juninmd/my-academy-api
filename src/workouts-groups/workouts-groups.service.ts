@@ -15,31 +15,23 @@ export class WorkoutsGroupsService {
         image: data.image,
         userId: data.userId,
         workouts: {
-          createMany: {
-            data: data.workouts.map((workout) => ({
-              exerciseId: workout.exerciseId,
-              description: workout.description || '',
-              methodId: workout.methodId,
-              workoutSeries: {
-                create: workout.workoutSeries.map((series) => ({
-                  repetitions: series.repetitions,
-                  weight: series.weight,
-                  rest: series.rest,
-                })),
-              },
-            })),
-          },
+          create: data.workouts.map((workout) => ({
+            exerciseId: workout.exerciseId,
+            description: workout.description || '',
+            methodId: workout.methodId,
+            workoutSeries: {
+              create: workout.workoutSeries.map((series) => ({
+                repetitions: series.repetitions,
+                weight: series.weight,
+                rest: series.rest,
+              })),
+            },
+          })),
         }
-      },
-      include: {
-        workouts: {
-          include: {
-            workoutSeries: true,
-          },
-        },
       },
     });
   }
+
 
   findAll(userId: number) {
     return this.prismaService.workoutsGroups.findMany({ where: { userId } });
