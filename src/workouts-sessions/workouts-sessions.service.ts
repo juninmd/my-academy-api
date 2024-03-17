@@ -13,7 +13,7 @@ export class WorkoutsSessionsService {
     const user = await this.prismaService.users.findUniqueOrThrow({ where: { id: userId } });
     if (user.telegramId) {
       const date = new Date();
-      const dateText = `${date.getDate().toString().padStart(2, '0')}/${date.getMonth().toString().padStart(2, '0')}/${date.getFullYear()}`;
+      const dateText = `${date.getUTCDate().toString().padStart(2, '0')}/${(date.getUTCMonth() + 1).toString().padStart(2, '0')}/${date.getUTCFullYear()}`;
       const workoutGroup = await this.prismaService.workoutsGroups.findUniqueOrThrow({ where: { id: createworkoutsDto.workoutGroupId } });
       const message = `${dateText} - ${workoutGroup.name}`;
       await this.telegramService.postChannelMessage(message, user.telegramId);
