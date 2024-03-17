@@ -10,5 +10,11 @@ export default {
     tokenUri: process.env.SA_TOKEN_URI,
     authProviderX509CertUrl: process.env.SA_AUTH_PROVIDER,
     clientX509CertUrl: process.env.SA_CLIENT_X509,
-  }
+  },
+  authMoc: {
+    enabled: process.env.AUTH_MOC_ENABLED,
+    token: process.env.AUTH_MOC_TOKEN,
+    json: process.env.AUTH_MOC_JSON,
+  },
+  telegramToken: process.env.TELEGRAM_TOKEN,
 }

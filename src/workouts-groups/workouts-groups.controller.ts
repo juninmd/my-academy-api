@@ -17,14 +17,12 @@ export class WorkoutsGroupsController {
   constructor(private readonly workoutsGroupsService: WorkoutsGroupsService) { }
 
   @Post()
-  async create(@Body() createWorkoutsGroupDto: CreateWorkoutsGroupDto, @Req() req) {
-    console.info(req.user);
+  async create(@Body() createWorkoutsGroupDto: CreateWorkoutsGroupDto) {
     return this.workoutsGroupsService.create(createWorkoutsGroupDto);
   }
 
   @Get('/user/:userId')
-  findAll(@Param('userId') userId: string, @Req() req) {
-    console.info(req.user);
+  findAll(@Param('userId') userId: string) {
     return this.workoutsGroupsService.findAll(userId);
   }
 

@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseInterceptors,
+  Req,
 } from '@nestjs/common';
 import { WorkoutsSessionsService } from './workouts-sessions.service';
 import { CreateWorkoutsSessionsDto } from './dto/create-workouts-sessions.dto';
@@ -19,8 +20,8 @@ export class WorkoutsSessionsController {
   ) { }
 
   @Post()
-  create(@Body() createWorkoutsSessionsDto: CreateWorkoutsSessionsDto) {
-    return this.workoutsSessionsService.create(createWorkoutsSessionsDto);
+  create(@Body() createWorkoutsSessionsDto: CreateWorkoutsSessionsDto, @Req() req) {
+    return this.workoutsSessionsService.create(createWorkoutsSessionsDto, req.user.uid);
   }
 
   @Get(':idUser')

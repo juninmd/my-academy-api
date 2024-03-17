@@ -9,13 +9,12 @@ datasource db {
 }
 
 model Exercises {
-  id          Int        @id @default(autoincrement())
-  name        String     @unique
-  image       String
-  tips        String
-  mistakes    String
-  description String?
-  workouts    Workouts[]
+  id       Int        @id @default(autoincrement())
+  name     String     @unique
+  image    String
+  tips     String
+  mistakes String
+  workouts Workouts[]
 }
 
 model Methods {
@@ -48,10 +47,11 @@ model WorkoutsGroups {
 }
 
 model Users {
-  id                      String                       @id
+  id                      String                    @id
   name                    String
   email                   String
   photoUrl                String                    @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
+  telegramId              String?
   personals               Personals[]
   students                Students[]
   WorkoutPersonalSessions WorkoutPersonalSessions[]
@@ -71,7 +71,7 @@ model WorkoutSessions {
   id             Int            @id @default(autoincrement())
   date           DateTime       @default(now()) @db.Date
   workoutGroupId Int
-  workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id],  onDelete: Cascade)
+  workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id], onDelete: Cascade)
 }
 
 model Personals {
@@ -83,9 +83,9 @@ model Personals {
 }
 
 model Students {
-  id          Int                       @id @default(autoincrement())
   userId      String
   personalsId Int?
+  id          Int        @id @default(autoincrement())
   personals   Personals? @relation(fields: [personalsId], references: [id], onDelete: Cascade)
   users       Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

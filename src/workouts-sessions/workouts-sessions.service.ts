@@ -3,21 +3,31 @@ import { CreateWorkoutsSessionsDto } from './dto/create-workouts-sessions.dto';
 import { UpdateWorkoutsSessionsDto } from './dto/update-workouts-sessions.dto';
 import { PrismaService } from '../prisma.service';
 import { WorkoutSessions } from '@prisma/client';
+import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class WorkoutsSessionsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService, private readonly telegramService: TelegramService) { }
 
-  create(createworkoutsDto: CreateWorkoutsSessionsDto) {
+  async create(createworkoutsDto: CreateWorkoutsSessionsDto, userId: string) {
+    const user = await this.prismaService.users.findUniqueOrThrow({ where: { id: userId } });
+    if (user.telegramId) {
+      const date = new Date();
+      const dateText = `${date.getDate().toString().padStart(2, '0')}/${date.getMonth().toString().padStart(2, '0')}/${date.getFullYear()}`;
+      const workoutGroup = await this.prismaService.workoutsGroups.findUniqueOrThrow({ where: { id: createworkoutsDto.workoutGroupId } });
+      const message = `${dateText} - ${workoutGroup.name}`;
+      await this.telegramService.postChannelMessage(message, user.telegramId);
+    }
+
     return this.prismaService.workoutSessions.create({
       data: createworkoutsDto as WorkoutSessions,
     });
   }
 
-  async findAll(idUser: string) {
+  async findAll(userId: string) {
     const workoutGroups = await this.prismaService.workoutsGroups.findMany({
       where: {
-        userId: idUser,
+        userId,
       },
       orderBy: { id: 'asc' },
     });

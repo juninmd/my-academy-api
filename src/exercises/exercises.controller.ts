@@ -24,7 +24,7 @@ export class ExercisesController {
 
   @Get()
   @UseInterceptors(CacheInterceptor)
-  @CacheTTL(0)
+  @CacheTTL(60)
   findAll() {
     return this.exercisesService.findAll();
   }

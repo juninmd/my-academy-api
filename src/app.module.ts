@@ -13,6 +13,7 @@ import { StudentsModule } from './students/students.module';
 import { WorkoutsPersonalsSessionsModule } from './workouts-personals-sessions/workouts-personals-sessions.module';
 import { PreauthMiddleware } from './auth/firebase.auth';
 import { HealthModule } from './health/health.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { HealthModule } from './health/health.module';
     StudentsModule,
     WorkoutsPersonalsSessionsModule,
     HealthModule,
+    TelegramModule,
   ],
   controllers: [AppController],
   providers: [AppService],

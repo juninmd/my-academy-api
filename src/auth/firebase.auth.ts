@@ -17,12 +17,19 @@ export class PreauthMiddleware implements NestMiddleware {
   }
 
   async use(req: Request, res: Response, next: Function) {
+    if (configs.authMoc.enabled) {
+      const decodedToken = JSON.parse(configs.authMoc.json);
+      req['user'] = decodedToken;
+      return next();
+    }
+
     const token = req.headers.authorization;
     if (!token) {
-      return next();
+      return this.accessDenied(req.url, res);
     }
     try {
       const decodedToken = await this.defaultApp.auth().verifyIdToken(token.replace('Bearer ', ''));
+
       req['user'] = decodedToken;
       next();
     } catch (error) {
