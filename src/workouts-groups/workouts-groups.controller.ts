@@ -6,13 +6,10 @@ import {
   Put,
   Param,
   Delete,
-  UseInterceptors,
-  Query,
 } from '@nestjs/common';
 import { WorkoutsGroupsService } from './workouts-groups.service';
 import { CreateWorkoutsGroupDto } from './dto/create-workouts-group.dto';
 import { UpdateWorkoutsGroupDto } from './dto/update-workouts-group.dto';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('workouts-groups')
 export class WorkoutsGroupsController {

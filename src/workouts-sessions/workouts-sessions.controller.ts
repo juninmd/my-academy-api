@@ -6,12 +6,11 @@ import {
   Patch,
   Param,
   Delete,
-  UseInterceptors,
+  Query,
 } from '@nestjs/common';
 import { WorkoutsSessionsService } from './workouts-sessions.service';
 import { CreateWorkoutsSessionsDto } from './dto/create-workouts-sessions.dto';
 import { UpdateWorkoutsSessionsDto } from './dto/update-workouts-sessions.dto';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('workouts-sessions')
 export class WorkoutsSessionsController {
@@ -25,8 +24,8 @@ export class WorkoutsSessionsController {
   }
 
   @Get(':idUser')
-  findAll(@Param('idUser') idUser: number) {
-    return this.workoutsSessionsService.findAll(+idUser);
+  findAll(@Param('idUser') idUser: number, @Query() query: any) {
+    return this.workoutsSessionsService.findAll(+idUser, +query.year, +query.month);
   }
 
   @Get(':idUser/summary')

@@ -14,24 +14,21 @@ export class WorkoutsSessionsService {
     });
   }
 
-  async findAll(idUser: number) {
+  async findAll(idUser: number, year: number, month: number) {
     const workoutGroups = await this.prismaService.workoutsGroups.findMany({
       where: {
         userId: idUser,
       },
       orderBy: { id: 'asc' },
     });
-    const currentDate = new Date();
-    const currentYear = currentDate.getUTCFullYear();
-    const currentMonth = currentDate.getUTCMonth();
     const sequencies = await this.prismaService.workoutSessions.findMany({
       where: {
         workoutGroupId: {
           in: workoutGroups.map((x) => x.id),
         },
         date: {
-          gte: new Date(currentYear, currentMonth, 1),
-          lt: new Date(currentYear, currentMonth + 1, 1),
+          gte: new Date(year, month, 1),
+          lt: new Date(year, month + 1, 1),
         },
       },
       include: {
