@@ -37,8 +37,8 @@ export class WorkoutsSessionsService {
           in: workoutGroups.map((x) => x.id),
         },
         date: {
-          gte: new Date(year, month, 1),
-          lt: new Date(year, month + 1, 1),
+          gte: new Date(year, month - 1, 1),
+          lt: new Date(year, month, 1),
         },
       },
       include: {

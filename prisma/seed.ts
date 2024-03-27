@@ -212,6 +212,33 @@ async function main() {
     }
   });
 
+  await prisma.exercises.create({
+    data: {
+      tips: "Mantenha o tronco ereto durante o movimento.",
+      mistakes: "Não mova o tronco para ajudar no movimento.",
+      name: "Elevação Frontal com Kettlebel",
+      image: "assets/images/cadeira_flexora.gif",
+    }
+  });
+
+  await prisma.exercises.create({
+    data: {
+      tips: "Mantenha o tronco ereto durante o movimento.",
+      mistakes: "Não mova o tronco para ajudar no movimento.",
+      name: "Abdução de Quadril Máquina",
+      image: "assets/images/cadeira_flexora.gif",
+    }
+  });
+
+  await prisma.exercises.create({
+    data: {
+      tips: "Mantenha o tronco ereto durante o movimento.",
+      mistakes: "Não mova o tronco para ajudar no movimento.",
+      name: "Elevação de Quadril com Step",
+      image: "assets/images/cadeira_flexora.gif",
+    }
+  });
+
   await prisma.users.create({
     data: {
       id: 'db6i035Vjtb77a7cBDnXQVPd3oL2',
