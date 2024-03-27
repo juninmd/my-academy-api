@@ -6,7 +6,7 @@ import { UpdateMethodDto } from './dto/update-method.dto';
 
 @Injectable()
 export class MethodsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   create(createMethodsDto: CreateMethodDto) {
     return this.prismaService.methods.create({
@@ -19,17 +19,17 @@ export class MethodsService {
   }
 
   findOne(id: number) {
-    return this.prismaService.methods.findUnique({ where: { id: Number(id) } });
+    return this.prismaService.methods.findUnique({ where: { id } });
   }
 
   update(id: number, updateDto: UpdateMethodDto) {
     return this.prismaService.methods.update({
-      where: { id: Number(id) },
+      where: { id },
       data: updateDto as Methods,
     });
   }
 
   remove(id: number) {
-    return this.prismaService.methods.delete({ where: { id: Number(id) } });
+    return this.prismaService.methods.delete({ where: { id } });
   }
 }

@@ -17,26 +17,34 @@ export class PreauthMiddleware implements NestMiddleware {
   }
 
   async use(req: Request, res: Response, next: Function) {
+    if (configs.authMoc.enabled === 'true') {
+      const decodedToken = JSON.parse(configs.authMoc.json);
+      req['user'] = decodedToken;
+      return next();
+    }
+
     const token = req.headers.authorization;
     if (!token) {
-      return next();
+      return res.status(403).json({
+        statusCode: 403,
+        timestamp: new Date().toISOString(),
+        path: req.url,
+        message: 'token required'
+      });
     }
     try {
       const decodedToken = await this.defaultApp.auth().verifyIdToken(token.replace('Bearer ', ''));
+
       req['user'] = decodedToken;
       next();
     } catch (error) {
       console.error(error);
-      return this.accessDenied(req.url, res);
+      return res.status(403).json({
+        statusCode: 403,
+        timestamp: new Date().toISOString(),
+        path: req.url,
+        message: 'Access Denied'
+      });
     }
-  }
-
-  private accessDenied(url: string, res: Response) {
-    res.status(403).json({
-      statusCode: 403,
-      timestamp: new Date().toISOString(),
-      path: url,
-      message: 'Access Denied'
-    });
   }
 }

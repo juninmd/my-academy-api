@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  Req,
 } from '@nestjs/common';
 import { WorkoutsSessionsService } from './workouts-sessions.service';
 import { CreateWorkoutsSessionsDto } from './dto/create-workouts-sessions.dto';
@@ -19,18 +20,18 @@ export class WorkoutsSessionsController {
   ) { }
 
   @Post()
-  create(@Body() createWorkoutsSessionsDto: CreateWorkoutsSessionsDto) {
-    return this.workoutsSessionsService.create(createWorkoutsSessionsDto);
+  create(@Body() createWorkoutsSessionsDto: CreateWorkoutsSessionsDto, @Req() req) {
+    return this.workoutsSessionsService.create(createWorkoutsSessionsDto, req.user.uid);
   }
 
   @Get(':idUser')
-  findAll(@Param('idUser') idUser: number, @Query() query: any) {
-    return this.workoutsSessionsService.findAll(+idUser, +query.year, +query.month);
+  findAll(@Param('idUser') idUser: string, @Query() query: any) {
+    return this.workoutsSessionsService.findAll(idUser, +query.year, +query.month);
   }
 
   @Get(':idUser/summary')
-  findSummary(@Param('idUser') idUser: number) {
-    return this.workoutsSessionsService.findSummary(+idUser);
+  findSummary(@Param('idUser') idUser: string) {
+    return this.workoutsSessionsService.findSummary(idUser);
   }
 
   @Get(':id')

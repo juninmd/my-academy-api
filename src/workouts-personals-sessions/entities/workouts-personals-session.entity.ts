@@ -7,6 +7,6 @@ export class WorkoutsPersonalsSession {
   personalsId: string;
   personals: Personal[];
   users: Users[];
-  userId: number;
+  userId: string;
   observation?: string;
 }

@@ -80,3 +80,6 @@ docker build -t my-academy-api .
 # Executar o contêiner
 
 docker run -p 5000:5000 my-academy-api -e "NOME_VARIAVEL=valor"
+
+## ChatId
+-1001661357785

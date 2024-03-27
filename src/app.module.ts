@@ -11,9 +11,9 @@ import { WorkoutsGroupsModule } from './workouts-groups/workouts-groups.module';
 import { WorkoutsSessionsModule } from './workouts-sessions/workouts-sessions.module';
 import { StudentsModule } from './students/students.module';
 import { WorkoutsPersonalsSessionsModule } from './workouts-personals-sessions/workouts-personals-sessions.module';
-import { CacheModule } from '@nestjs/cache-manager';
 import { PreauthMiddleware } from './auth/firebase.auth';
 import { HealthModule } from './health/health.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -28,6 +28,7 @@ import { HealthModule } from './health/health.module';
     StudentsModule,
     WorkoutsPersonalsSessionsModule,
     HealthModule,
+    TelegramModule,
   ],
   controllers: [AppController],
   providers: [AppService],

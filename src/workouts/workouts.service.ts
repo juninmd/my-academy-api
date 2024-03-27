@@ -20,18 +20,18 @@ export class WorkoutsService {
 
   findOne(id: number) {
     return this.prismaService.workouts.findUnique({
-      where: { id: Number(id) },
+      where: { id },
     });
   }
 
   update(id: number, updateDto: UpdateWorkoutDto) {
     return this.prismaService.workouts.update({
-      where: { id: Number(id) },
+      where: { id },
       data: updateDto as any,
     });
   }
 
   remove(id: number) {
-    return this.prismaService.workouts.delete({ where: { id: Number(id) } });
+    return this.prismaService.workouts.delete({ where: { id } });
   }
 }

@@ -5,6 +5,7 @@ export class User {
   name: string;
   email: string;
   photoUrl: string;
+  telegramId?: string;
   Personals?: Personals[];
   Students?: Students[];
   WorkoutsGroups?: WorkoutsGroups[];

@@ -31,7 +31,7 @@ export class WorkoutsPersonalsSessionsController {
 
   @Get('students/:idUserPersonal')
   findStudents(@Param('idUserPersonal') idUserPersonal: string) {
-    return this.workoutsPersonalsSessionsService.findStudents(+idUserPersonal);
+    return this.workoutsPersonalsSessionsService.findStudents(idUserPersonal);
   }
 
   @Get()

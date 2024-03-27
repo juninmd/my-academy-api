@@ -3,21 +3,31 @@ import { CreateWorkoutsSessionsDto } from './dto/create-workouts-sessions.dto';
 import { UpdateWorkoutsSessionsDto } from './dto/update-workouts-sessions.dto';
 import { PrismaService } from '../prisma.service';
 import { WorkoutSessions } from '@prisma/client';
+import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class WorkoutsSessionsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService, private readonly telegramService: TelegramService) { }
 
-  create(createworkoutsDto: CreateWorkoutsSessionsDto) {
+  async create(createworkoutsDto: CreateWorkoutsSessionsDto, userId: string) {
+    const user = await this.prismaService.users.findUniqueOrThrow({ where: { id: userId } });
+    if (user.telegramId) {
+      const date = new Date();
+      const dateText = `${date.getUTCDate().toString().padStart(2, '0')}/${(date.getUTCMonth() + 1).toString().padStart(2, '0')}/${date.getUTCFullYear()}`;
+      const workoutGroup = await this.prismaService.workoutsGroups.findUniqueOrThrow({ where: { id: createworkoutsDto.workoutGroupId } });
+      const message = `${dateText} - ${workoutGroup.name}`;
+      await this.telegramService.postChannelMessage(message, user.telegramId);
+    }
+
     return this.prismaService.workoutSessions.create({
       data: createworkoutsDto as WorkoutSessions,
     });
   }
 
-  async findAll(idUser: number, year: number, month: number) {
+  async findAll(userId: string, year: number, month: number) {
     const workoutGroups = await this.prismaService.workoutsGroups.findMany({
       where: {
-        userId: idUser,
+        userId: userId,
       },
       orderBy: { id: 'asc' },
     });
@@ -39,7 +49,7 @@ export class WorkoutsSessionsService {
     return sequencies;
   }
 
-  async findSummary(idUser: number) {
+  async findSummary(idUser: string) {
     let students = [];
     let personal = undefined;
 
@@ -222,20 +232,20 @@ export class WorkoutsSessionsService {
 
   findOne(id: number) {
     return this.prismaService.workoutSessions.findUnique({
-      where: { id: Number(id) },
+      where: { id },
     });
   }
 
   update(id: number, updateDto: UpdateWorkoutsSessionsDto) {
     return this.prismaService.workoutSessions.update({
-      where: { id: Number(id) },
+      where: { id },
       data: updateDto as WorkoutSessions,
     });
   }
 
   remove(id: number) {
     return this.prismaService.workoutSessions.delete({
-      where: { id: Number(id) },
+      where: { id },
     });
   }
 }

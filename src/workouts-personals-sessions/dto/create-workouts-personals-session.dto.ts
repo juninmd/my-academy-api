@@ -8,7 +8,7 @@ export class CreateWorkoutsPersonalsSessionDto {
   personalsId: number;
 
   @ApiProperty({ required: true })
-  userId: number;
+  userId: string;
 
   @ApiProperty({ required: true })
   observation: string;
