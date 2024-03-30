@@ -243,7 +243,8 @@ async function main() {
     data: {
       id: 'db6i035Vjtb77a7cBDnXQVPd3oL2',
       email: 'jr_acn@hotmail.com',
-      name: 'Antonio'
+      name: 'Antonio',
+      photoUrl: ''
     }
   });
 
@@ -258,7 +259,7 @@ async function main() {
   await prisma.workoutsGroups.create({
     data: {
       image: 'assets/images/supino_halteres.gif',
-      name: 'Peitos',
+      name: 'Pernas',
       userId: 'db6i035Vjtb77a7cBDnXQVPd3oL2',
     }
   });

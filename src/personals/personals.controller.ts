@@ -21,13 +21,13 @@ export class PersonalsController {
   }
 
   @Get()
-  findAll() {
-    return this.personalsService.findAll();
+  findAll(@Param('personalUserId') personalUserId: string) {
+    return this.personalsService.findAll(personalUserId);
   }
 
-  @Get(':id')
+  @Get(':id/students')
   findOne(@Param('id') id: string) {
-    return this.personalsService.findOne(id);
+    return this.personalsService.findStudents(id);
   }
 
   @Patch(':id')

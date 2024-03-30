@@ -14,14 +14,21 @@ export class PersonalsService {
     });
   }
 
-  findAll() {
-    return this.prismaService.personals.findMany();
+  findAll(personalUserId: string) {
+    return this.prismaService.personals.findMany({
+      where: {
+        personalUserId,
+      },
+      include: { PersonalUser: true, StudentUser: true }
+    });
   }
 
-  findOne(id: string) {
-    return this.prismaService.personals.findFirst({
-      where: { userId: id },
+  async findStudents(personalUserId: string) {
+    const personal = await this.prismaService.personals.findMany({
+      where: { personalUserId },
+      include: { StudentUser: true, PersonalClassSchedule: true }
     });
+    return personal.map(q => ({ student: q.StudentUser, schedule: q.PersonalClassSchedule })).flat(1);
   }
 
   update(id: number, updateDto: UpdatePersonalDto) {

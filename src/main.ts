@@ -1,26 +1,35 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import { Logger } from '@nestjs/common';
+import { version, name, description } from '../package.json';
 
+const logger = new Logger('Bootstrap');
 async function bootstrap() {
   try {
     const app = await NestFactory.create(AppModule, {
-      logger: ['error', 'warn', 'debug', 'log', 'verbose'],
+      logger: ['error', 'warn', 'log'],
     });
+
+    // Habilita CORS
     app.enableCors();
+
+    // Configuração do Swagger
     const config = new DocumentBuilder()
-      .setTitle('My Academy')
-      .setDescription('A academia fácil')
-      .setVersion('1.0')
+      .setTitle(name)
+      .setDescription(description)
+      .setVersion(version)
+      .addBearerAuth()
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
 
     const port = process.env.PORT || 9000;
     await app.listen(port);
-    console.log(`http://localhost:${port}/api`);
+    logger.log(`Servidor iniciado na porta ${port}`);
   } catch (error) {
-    console.error(error);
+    logger.error(`Erro ao iniciar a aplicação: ${error.message}`);
+    process.exit(1);
   }
 }
-bootstrap();
+bootstrap().catch(err => logger.error(err));

@@ -1,8 +1,9 @@
-import { Users, Students } from '@prisma/client';
+import { Users } from '@prisma/client';
 
 export class Personal {
   id: number;
   userId: string;
   user?: Users;
-  Students?: Students[];
+  Students?: Users[];
+  Personals?: Users[];
 }

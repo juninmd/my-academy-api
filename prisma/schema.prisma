@@ -34,6 +34,8 @@ model Workouts {
   exercise         Exercises       @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   method           Methods?        @relation(fields: [methodId], references: [id], onDelete: Cascade)
   workoutGroup     WorkoutsGroups  @relation(fields: [workoutsGroupsId], references: [id], onDelete: Cascade)
+
+  @@unique([workoutsGroupsId, exerciseId])
 }
 
 model WorkoutsGroups {
@@ -44,18 +46,19 @@ model WorkoutsGroups {
   WorkoutSessions WorkoutSessions[]
   workouts        Workouts[]
   user            Users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name])
 }
 
 model Users {
-  id                      String                    @id
-  name                    String
-  email                   String
-  photoUrl                String                    @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
-  telegramId              String?
-  personals               Personals[]
-  students                Students[]
-  WorkoutPersonalSessions WorkoutPersonalSessions[]
-  workoutsGroups          WorkoutsGroups[]
+  id             String           @id
+  name           String
+  email          String
+  photoUrl       String           @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
+  telegramId     String?
+  workoutsGroups WorkoutsGroups[]
+  Personals      Personals[]      @relation("personal")
+  Students       Personals[]      @relation("student")
 }
 
 model WorkoutSeries {
@@ -75,27 +78,20 @@ model WorkoutSessions {
 }
 
 model Personals {
-  id                      Int                       @id @default(autoincrement())
-  userId                  String
-  user                    Users                     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  students                Students[]
-  WorkoutPersonalSessions WorkoutPersonalSessions[]
+  id                    Int                     @id @default(autoincrement())
+  StudentUser           Users                   @relation("student", fields: [studentUserId], references: [id], onDelete: Cascade)
+  studentUserId         String
+  PersonalUser          Users                   @relation("personal", fields: [personalUserId], references: [id], onDelete: Cascade)
+  personalUserId        String
+  PersonalClassSchedule PersonalClassSchedule[]
+
+  @@unique([studentUserId, personalUserId])
 }
 
-model Students {
-  userId      String
-  personalsId Int?
-  id          Int        @id @default(autoincrement())
-  personals   Personals? @relation(fields: [personalsId], references: [id], onDelete: Cascade)
-  users       Users      @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
-model WorkoutPersonalSessions {
+model PersonalClassSchedule {
   id          Int       @id @default(autoincrement())
-  date        DateTime?
-  personalsId Int
-  userId      String
-  observation String?
+  dayOfWeek   Int // Dia da semana (ex: "Monday", "Tuesday", etc.)
+  time        String // Horário da aula (ex: "18:30", "07:00")
+  personalsId Int // Chave estrangeira para o modelo Personals
   personals   Personals @relation(fields: [personalsId], references: [id], onDelete: Cascade)
-  users       Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

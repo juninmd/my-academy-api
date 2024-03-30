@@ -53,37 +53,26 @@ export class WorkoutsSessionsService {
     let students = [];
     let personal = undefined;
 
-    const user = await this.prismaService.users.findFirst({
+    const iAmPersonal = await this.prismaService.personals.findMany({
       where: {
-        id: idUser,
+        personalUserId: idUser,
       },
+      include: { StudentUser: true },
     });
 
-    const iAmPersonal = await this.prismaService.personals.findFirst({
-      where: {
-        userId: idUser,
-      },
-    });
-
-    if (iAmPersonal) {
-      const studentsTable = await this.prismaService.students.findMany({
-        where: {
-          personalsId: iAmPersonal.id,
-        },
-        include: { users: true },
-      });
-      students = studentsTable.map((x) => x.users);
+    if (iAmPersonal.length > 0) {
+      students = iAmPersonal.map(q => q.StudentUser).flat(1);
     }
 
-    const student = await this.prismaService.students.findFirst({
+    const iAmStudent = await this.prismaService.personals.findFirst({
       where: {
-        userId: idUser,
+        personalUserId: idUser,
       },
-      include: { personals: { include: { user: true } } },
-    });
+      include: { PersonalUser: true },
+    })
 
-    if (student) {
-      personal = student?.personals?.user;
+    if (iAmStudent) {
+      personal = iAmStudent.PersonalUser;
     }
 
     const workoutGroups = await this.prismaService.workoutsGroups.findMany({
@@ -144,7 +133,6 @@ export class WorkoutsSessionsService {
       workoutGroupOfDay,
       students,
       personal,
-      user,
     };
   }
 

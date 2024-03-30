@@ -1,4 +1,4 @@
-import { Personals, Students, WorkoutsGroups } from '@prisma/client';
+import { Personals, WorkoutsGroups } from '@prisma/client';
 
 export class User {
   id: number;
@@ -6,7 +6,7 @@ export class User {
   email: string;
   photoUrl: string;
   telegramId?: string;
-  Personals?: Personals[];
-  Students?: Students[];
+  Personals?: User[];
+  Students?: User[];
   WorkoutsGroups?: WorkoutsGroups[];
 }
