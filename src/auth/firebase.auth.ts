@@ -1,20 +1,11 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response } from 'express';
-import * as firebase from 'firebase-admin';
+import { FirebaseService } from '../firebase/firebase.service'; // Importa o FirebaseService
 import configs from '../configs';
-
-const firebase_params = configs.serviceAccount;
 
 @Injectable()
 export class PreauthMiddleware implements NestMiddleware {
-
-  private defaultApp: any;
-
-  constructor() {
-    this.defaultApp = firebase.initializeApp({
-      credential: firebase.credential.cert(firebase_params),
-    });
-  }
+  constructor(private readonly firebaseService: FirebaseService) {} // Injeta o FirebaseService
 
   async use(req: Request, res: Response, next: Function) {
     if (configs.authMoc.enabled === 'true') {
@@ -33,7 +24,8 @@ export class PreauthMiddleware implements NestMiddleware {
       });
     }
     try {
-      const decodedToken = await this.defaultApp.auth().verifyIdToken(token.replace('Bearer ', ''));
+      // Usa a instância do Firebase do FirebaseService
+      const decodedToken = await this.firebaseService.firebaseAppInstance.auth().verifyIdToken(token.replace('Bearer ', ''));
 
       req['user'] = decodedToken;
       next();

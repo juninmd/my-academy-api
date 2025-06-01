@@ -27,6 +27,7 @@ async function bootstrap() {
     const port = process.env.PORT || 9000;
     await app.listen(port);
     logger.log(`Servidor iniciado na porta ${port}`);
+    console.log(`Swagger disponível em http://localhost:${port}/api`); // Log do endpoint do Swagger
   } catch (error) {
     logger.error(`Erro ao iniciar a aplicação: ${error.message}`);
     process.exit(1);
