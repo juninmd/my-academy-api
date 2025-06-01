@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreatePhysicalAssessmentScheduleDto } from './dto/create-physical-assessment-schedule.dto';
 import { UpdatePhysicalAssessmentScheduleDto } from './dto/update-physical-assessment-schedule.dto';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class PhysicalAssessmentSchedulesService {
