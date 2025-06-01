@@ -43,6 +43,7 @@ model WorkoutsGroups {
   id              Int               @id @default(autoincrement())
   name            String
   image           String
+  observations    String? // New field for observations
   userId          String // User who owns this workout group (student)
   personalId      Int? // Personal who created/modified this workout group
   WorkoutSessions WorkoutSessions[]
@@ -75,6 +76,7 @@ model Users {
   ClassBookings     ClassBooking[]
   fcmToken          String? // New field for Firebase Cloud Messaging token
   subscriptions     Subscription[]
+  physicalAssessmentSchedules PhysicalAssessmentSchedule[]
 }
 
 model WorkoutBlock {
@@ -126,6 +128,7 @@ model Personals {
   personalUserId        String
   PersonalClassSchedule PersonalClassSchedule[]
   WorkoutsGroups        WorkoutsGroups[] // Personal can manage workout groups
+  physicalAssessmentSchedules PhysicalAssessmentSchedule[]
 
   @@unique([studentUserId, personalUserId])
 }
@@ -184,4 +187,16 @@ model ClassBooking {
   status                  String                @default("booked") // "booked", "confirmed", "cancelled", "completed"
   personalClassSchedule   PersonalClassSchedule @relation(fields: [personalClassScheduleId], references: [id], onDelete: Cascade)
   student                 Users                 @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+// New model for Physical Assessment Schedules
+model PhysicalAssessmentSchedule {
+  id         Int      @id @default(autoincrement())
+  date       DateTime @db.Date
+  time       String
+  userId     String
+  personalId Int
+  status     String   @default("scheduled") // e.g., "scheduled", "completed", "cancelled"
+  user       Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personal   Personals @relation(fields: [personalId], references: [id], onDelete: Cascade)
 }

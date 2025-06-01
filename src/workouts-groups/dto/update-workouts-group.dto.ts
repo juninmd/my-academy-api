@@ -4,8 +4,10 @@ import { CreateWorkoutsGroupDto } from './create-workouts-group.dto';
 export class UpdateWorkoutsGroupDto extends PartialType(
   CreateWorkoutsGroupDto,
 ) {
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: false })
   name?: string;
-  @ApiProperty({ required: true })
-  image: string;
+  @ApiProperty({ required: false })
+  image?: string;
+  @ApiProperty({ required: false })
+  observations?: string;
 }

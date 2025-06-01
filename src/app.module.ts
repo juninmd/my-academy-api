@@ -19,6 +19,7 @@ import { ClassBookingsModule } from './class-bookings/class-bookings.module';
 import { FirebaseModule } from './firebase/firebase.module';
 import { AuthModule } from './auth/auth.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
+import { PhysicalAssessmentSchedulesModule } from './physical-assessment-schedules/physical-assessment-schedules.module';
 
 @Module({
   imports: [
@@ -32,13 +33,14 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     WorkoutsModule,
     WorkoutsSessionsModule,
     WorkoutsGroupsModule,
-    WorkoutsBlocksModule, // Adiciona o novo módulo
+    WorkoutsBlocksModule,
     HealthModule,
     TelegramModule,
     PhysicalAssessmentsModule,
     NotificationsModule,
     ClassBookingsModule,
     SubscriptionsModule,
+    PhysicalAssessmentSchedulesModule, // Adiciona o novo módulo de agendamento de avaliações físicas
   ],
   controllers: [AppController],
   providers: [AppService],
