@@ -17,4 +17,7 @@ export default {
     json: process.env.AUTH_MOC_JSON,
   },
   telegramToken: process.env.TELEGRAM_TOKEN,
+  pushNotifications: {
+    enabled: process.env.PUSH_NOTIFICATIONS_ENABLED === 'true',
+  },
 }

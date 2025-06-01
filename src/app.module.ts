@@ -12,9 +12,17 @@ import { WorkoutsSessionsModule } from './workouts-sessions/workouts-sessions.mo
 import { PreauthMiddleware } from './auth/firebase.auth';
 import { HealthModule } from './health/health.module';
 import { TelegramModule } from './telegram/telegram.module';
+import { PhysicalAssessmentsModule } from './physical-assessments/physical-assessments.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { ClassBookingsModule } from './class-bookings/class-bookings.module';
+import { FirebaseModule } from './firebase/firebase.module';
+import { AuthModule } from './auth/auth.module';
+import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 
 @Module({
   imports: [
+    AuthModule,
+    FirebaseModule,
     ExercisesModule,
     WorkoutsSeriesModule,
     MethodsModule,
@@ -25,6 +33,10 @@ import { TelegramModule } from './telegram/telegram.module';
     WorkoutsGroupsModule,
     HealthModule,
     TelegramModule,
+    PhysicalAssessmentsModule,
+    NotificationsModule,
+    ClassBookingsModule,
+    SubscriptionsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

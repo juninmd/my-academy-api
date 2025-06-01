@@ -4,10 +4,17 @@ import { UpdateWorkoutsSessionsDto } from './dto/update-workouts-sessions.dto';
 import { PrismaService } from '../prisma.service';
 import { WorkoutSessions } from '@prisma/client';
 import { TelegramService } from '../telegram/telegram.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class WorkoutsSessionsService {
-  constructor(private readonly prismaService: PrismaService, private readonly telegramService: TelegramService) { }
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly telegramService: TelegramService,
+    private readonly notificationsService: NotificationsService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async create(createworkoutsDto: CreateWorkoutsSessionsDto, userId: string) {
     const user = await this.prismaService.users.findUniqueOrThrow({ where: { id: userId } });
@@ -224,11 +231,50 @@ export class WorkoutsSessionsService {
     });
   }
 
-  update(id: number, updateDto: UpdateWorkoutsSessionsDto) {
-    return this.prismaService.workoutSessions.update({
+  async update(id: number, updateDto: UpdateWorkoutsSessionsDto) {
+    if (updateDto.isCompleted && !updateDto.completedAt) {
+      updateDto.completedAt = new Date();
+    }
+
+    const updatedSession = await this.prismaService.workoutSessions.update({
       where: { id },
       data: updateDto as WorkoutSessions,
+      include: {
+        workoutsGroups: {
+          include: {
+            user: true, // Include the student user
+          },
+        },
+      },
     });
+
+    if (updatedSession.isCompleted && updatedSession.workoutsGroups.user.id) {
+      const studentId = updatedSession.workoutsGroups.user.id;
+      const workoutGroupName = updatedSession.workoutsGroups.name;
+
+      // Find the personal trainer associated with this student
+      const personalRelation = await this.prismaService.personals.findFirst({
+        where: {
+          studentUserId: studentId,
+        },
+        include: { PersonalUser: true },
+      });
+
+      if (personalRelation && personalRelation.PersonalUser) {
+        const personalTrainerId = personalRelation.PersonalUser.id;
+        const message = `O aluno ${updatedSession.workoutsGroups.user.name} completou o treino "${workoutGroupName}" em ${updatedSession.completedAt?.toLocaleDateString('pt-BR')}.`;
+
+        await this.notificationsService.create({
+          senderId: studentId,
+          receiverId: personalTrainerId,
+          message: message,
+          type: 'workout_completed',
+          workoutSessionId: updatedSession.id,
+        });
+      }
+    }
+
+    return updatedSession;
   }
 
   remove(id: number) {

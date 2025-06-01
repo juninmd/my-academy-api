@@ -20,6 +20,31 @@ export class UsersService {
     return this.prismaService.users.findUnique({ where: { id } });
   }
 
+  findOneByEmail(email: string) {
+    return this.prismaService.users.findFirst({ where: { email } });
+  }
+
+  async findUserWithPhysicalAssessments(userId: string) {
+    return this.prismaService.users.findUnique({
+      where: { id: userId },
+      include: { PhysicalAssessments: true },
+    });
+  }
+
+  async findUserNotifications(userId: string) {
+    return this.prismaService.users.findUnique({
+      where: { id: userId },
+      include: { NotificationsReceived: true, NotificationsSent: true },
+    });
+  }
+
+  async findUserClassBookings(userId: string) {
+    return this.prismaService.users.findUnique({
+      where: { id: userId },
+      include: { ClassBookings: true },
+    });
+  }
+
   update(id: string, updateDto: UpdateUserDto) {
     return this.prismaService.users.update({
       where: { id },

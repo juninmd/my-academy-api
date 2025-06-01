@@ -42,23 +42,38 @@ model WorkoutsGroups {
   id              Int               @id @default(autoincrement())
   name            String
   image           String
-  userId          String
+  userId          String // User who owns this workout group (student)
+  personalId      Int? // Personal who created/modified this workout group
   WorkoutSessions WorkoutSessions[]
   workouts        Workouts[]
   user            Users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personal        Personals?        @relation(fields: [personalId], references: [id]) // Optional relation to personal
 
   @@unique([userId, name])
 }
 
+enum Role {
+  STUDENT
+  PERSONAL
+  ACADEMY_OWNER
+}
+
 model Users {
-  id             String           @id
-  name           String
-  email          String
-  photoUrl       String           @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
-  telegramId     String?
-  workoutsGroups WorkoutsGroups[]
-  Personals      Personals[]      @relation("personal")
-  Students       Personals[]      @relation("student")
+  id                String              @id
+  name              String
+  email             String
+  photoUrl          String              @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
+  telegramId        String?
+  role              Role                @default(STUDENT) // New field for user role
+  workoutsGroups    WorkoutsGroups[]
+  Personals         Personals[]         @relation("personal")
+  Students          Personals[]         @relation("student")
+  PhysicalAssessments PhysicalAssessment[]
+  NotificationsSent Notifications[]     @relation("sender")
+  NotificationsReceived Notifications[] @relation("receiver")
+  ClassBookings     ClassBooking[]
+  fcmToken          String? // New field for Firebase Cloud Messaging token
+  subscriptions     Subscription[]
 }
 
 model WorkoutSeries {
@@ -70,11 +85,26 @@ model WorkoutSeries {
   workout     Workouts @relation(fields: [workoutId], references: [id], onDelete: Cascade)
 }
 
+// New model for Subscriptions/Payments
+model Subscription {
+  id          Int      @id @default(autoincrement())
+  userId      String
+  startDate   DateTime @default(now()) @db.Date
+  endDate     DateTime?
+  status      String   @default("ACTIVE") // e.g., "ACTIVE", "INACTIVE", "PENDING", "CANCELLED"
+  amount      Float
+  paymentDate DateTime @default(now()) @db.Date
+  user        Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
 model WorkoutSessions {
   id             Int            @id @default(autoincrement())
   date           DateTime       @default(now()) @db.Date
   workoutGroupId Int
+  isCompleted    Boolean        @default(false) // New field: indicates if the workout session was completed
+  completedAt    DateTime?      // New field: timestamp of completion
   workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id], onDelete: Cascade)
+  notification   Notifications? // New field: link to a notification if sent
 }
 
 model Personals {
@@ -84,6 +114,7 @@ model Personals {
   PersonalUser          Users                   @relation("personal", fields: [personalUserId], references: [id], onDelete: Cascade)
   personalUserId        String
   PersonalClassSchedule PersonalClassSchedule[]
+  WorkoutsGroups        WorkoutsGroups[] // Personal can manage workout groups
 
   @@unique([studentUserId, personalUserId])
 }
@@ -92,6 +123,54 @@ model PersonalClassSchedule {
   id          Int       @id @default(autoincrement())
   dayOfWeek   Int // Dia da semana (ex: "Monday", "Tuesday", etc.)
   time        String // Horário da aula (ex: "18:30", "07:00")
+  status      String @default("scheduled") // New field: "scheduled", "completed", "cancelled"
   personalsId Int // Chave estrangeira para o modelo Personals
   personals   Personals @relation(fields: [personalsId], references: [id], onDelete: Cascade)
+  bookings    ClassBooking[]
+}
+
+// New model for Physical Assessments
+model PhysicalAssessment {
+  id                  Int       @id @default(autoincrement())
+  userId              String
+  date                DateTime  @default(now()) @db.Date
+  weight              Float?
+  height              Float?
+  bodyFatPercentage   Float?
+  muscleMassPercentage Float?
+  tricepsSkinfold      Float?
+  bicepsSkinfold       Float?
+  subscapularSkinfold  Float?
+  suprailiacSkinfold   Float?
+  midaxillarySkinfold  Float?
+  pectoralSkinfold     Float?
+  thighSkinfold        Float?
+  observations        String?
+  user                Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// New model for Notifications
+model Notifications {
+  id                Int             @id @default(autoincrement())
+  senderId          String
+  receiverId        String
+  message           String
+  type              String // e.g., "workout_completed", "class_reminder", "new_assessment"
+  readStatus        Boolean         @default(false)
+  timestamp         DateTime        @default(now())
+  workoutSessionId  Int?            @unique // Optional: link to a specific workout session
+  sender            Users           @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver          Users           @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  workoutSession    WorkoutSessions? @relation(fields: [workoutSessionId], references: [id])
+}
+
+// New model for Class Bookings
+model ClassBooking {
+  id                      Int                   @id @default(autoincrement())
+  personalClassScheduleId Int
+  studentId               String
+  bookingDate             DateTime              @default(now()) @db.Date
+  status                  String                @default("booked") // "booked", "confirmed", "cancelled", "completed"
+  personalClassSchedule   PersonalClassSchedule @relation(fields: [personalClassScheduleId], references: [id], onDelete: Cascade)
+  student                 Users                 @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
