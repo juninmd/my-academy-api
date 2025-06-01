@@ -4,7 +4,7 @@ import { Reflector } from '@nestjs/core';
 import { FirebaseJwtStrategy } from './firebase-jwt.strategy';
 import { FirebaseJwtAuthGuard } from './firebase-jwt.guard';
 import { RolesGuard } from './roles.guard';
-import { PrismaModule } from 'src/prisma.module';
+import { PrismaModule } from '../prisma.module';
 
 @Module({
   imports: [PassportModule, PrismaModule],

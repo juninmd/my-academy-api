@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { WorkoutsModule } from './workouts/workouts.module';
 import { WorkoutsGroupsModule } from './workouts-groups/workouts-groups.module';
 import { WorkoutsSessionsModule } from './workouts-sessions/workouts-sessions.module';
+import { WorkoutsBlocksModule } from './workouts-blocks/workouts-blocks.module'; // Importa o novo módulo
 import { PreauthMiddleware } from './auth/firebase.auth';
 import { HealthModule } from './health/health.module';
 import { TelegramModule } from './telegram/telegram.module';
@@ -31,6 +32,7 @@ import { SubscriptionsModule } from './subscriptions/subscriptions.module';
     WorkoutsModule,
     WorkoutsSessionsModule,
     WorkoutsGroupsModule,
+    WorkoutsBlocksModule, // Adiciona o novo módulo
     HealthModule,
     TelegramModule,
     PhysicalAssessmentsModule,

@@ -30,7 +30,8 @@ model Workouts {
   description      String
   workoutsGroupsId Int
   methodId         Int?
-  workoutSeries    WorkoutSeries[]
+  workoutBlocks    WorkoutBlock[] // Adiciona a relação com WorkoutBlock
+  workoutSeries    WorkoutSeries[] // Mantém o campo, mas sem a anotação @deprecated
   exercise         Exercises       @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   method           Methods?        @relation(fields: [methodId], references: [id], onDelete: Cascade)
   workoutGroup     WorkoutsGroups  @relation(fields: [workoutsGroupsId], references: [id], onDelete: Cascade)
@@ -76,13 +77,23 @@ model Users {
   subscriptions     Subscription[]
 }
 
+model WorkoutBlock {
+  id            Int           @id @default(autoincrement())
+  workoutId     Int
+  order         Int // Ordem do bloco dentro de um treino
+  workout       Workouts      @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workoutSeries WorkoutSeries[]
+}
+
 model WorkoutSeries {
-  id          Int      @id @default(autoincrement())
-  workoutId   Int
-  repetitions Int      @default(15)
-  weight      Int?     @default(10)
-  rest        Int?     @default(60)
-  workout     Workouts @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  id             Int         @id @default(autoincrement())
+  workoutId      Int
+  workoutBlockId Int? // Chave estrangeira para WorkoutBlock
+  repetitions    Int         @default(15)
+  weight         Int?        @default(10)
+  rest           Int?        @default(60)
+  workout        Workouts    @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workoutBlock   WorkoutBlock? @relation(fields: [workoutBlockId], references: [id], onDelete: Cascade) // Relação com WorkoutBlock
 }
 
 // New model for Subscriptions/Payments

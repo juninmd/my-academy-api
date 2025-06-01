@@ -3,7 +3,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-firebase-jwt';
 import * as admin from 'firebase-admin';
 import configs from '../configs';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class FirebaseJwtStrategy extends PassportStrategy(Strategy, 'firebase-jwt') {

@@ -3,9 +3,9 @@ import { SubscriptionsService } from './subscriptions.service';
 import { CreateSubscriptionDto } from './dto/create-subscription.dto';
 import { UpdateSubscriptionDto } from './dto/update-subscription.dto';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
-import { FirebaseJwtAuthGuard } from 'src/auth/firebase-jwt.guard';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { Roles } from 'src/auth/roles.decorator';
+import { FirebaseJwtAuthGuard } from '../auth/firebase-jwt.guard';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
 import { Role } from '@prisma/client';
 
 @ApiBearerAuth()
