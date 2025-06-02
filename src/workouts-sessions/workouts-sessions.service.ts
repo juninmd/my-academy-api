@@ -60,6 +60,7 @@ export class WorkoutsSessionsService {
     let students = [];
     let personal = undefined;
 
+    // Verifica se o usuário é um personal trainer
     const iAmPersonal = await this.prismaService.personals.findMany({
       where: {
         personalUserId: idUser,
@@ -71,17 +72,19 @@ export class WorkoutsSessionsService {
       students = iAmPersonal.map(q => q.StudentUser).flat(1);
     }
 
+    // Verifica se o usuário é um estudante e encontra seu personal
     const iAmStudent = await this.prismaService.personals.findFirst({
       where: {
-        personalUserId: idUser,
+        studentUserId: idUser, // Corrigido: era personalUserId, deveria ser studentUserId
       },
       include: { PersonalUser: true },
-    })
+    });
 
     if (iAmStudent) {
       personal = iAmStudent.PersonalUser;
     }
 
+    // Busca os grupos de treino do usuário
     const workoutGroups = await this.prismaService.workoutsGroups.findMany({
       where: {
         userId: idUser,
@@ -89,6 +92,7 @@ export class WorkoutsSessionsService {
       orderBy: { id: 'asc' },
     });
 
+    // Busca a última sessão de treino
     const lastSession = await this.prismaService.workoutSessions.findFirst({
       where: {
         workoutGroupId: {
@@ -100,6 +104,7 @@ export class WorkoutsSessionsService {
       take: 1,
     });
 
+    // Busca todas as sessões para calcular sequências
     const sequencies = await this.prismaService.workoutSessions.findMany({
       where: {
         workoutGroupId: {
@@ -113,6 +118,7 @@ export class WorkoutsSessionsService {
 
     const currentDate = new Date();
 
+    // Define o treino do dia
     let workoutGroupOfDay: { id: number };
     if (!lastSession) {
       workoutGroupOfDay = workoutGroups[0];
@@ -132,14 +138,68 @@ export class WorkoutsSessionsService {
       }
     }
 
+    // Busca a próxima avaliação física agendada
+    const nextPhysicalAssessment = await this.prismaService.physicalAssessmentSchedule.findFirst({
+      where: {
+        userId: idUser,
+        status: 'scheduled',
+        date: {
+          gte: currentDate, // Data maior ou igual à atual
+        },
+      },
+      orderBy: {
+        date: 'asc',
+      },
+      take: 1,
+    });
+
+    // Calcula quantos treinos foram feitos no mês atual
+    const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+
+    const workoutsThisMonth = await this.prismaService.workoutSessions.count({
+      where: {
+        workoutGroupId: {
+          in: workoutGroups.map((x) => x.id),
+        },
+        date: {
+          gte: startOfMonth,
+          lte: endOfMonth,
+        },
+        isCompleted: true, // Apenas treinos completados
+      },
+    });
+
+    // Busca uma frase motivadora aleatória
+    const motivationalPhrasesCount = await this.prismaService.motivationalPhrases.count({
+      where: {
+        isActive: true,
+      },
+    });
+
+    let motivationalPhrase = null;
+    if (motivationalPhrasesCount > 0) {
+      const randomIndex = Math.floor(Math.random() * motivationalPhrasesCount);
+      motivationalPhrase = await this.prismaService.motivationalPhrases.findFirst({
+        where: {
+          isActive: true,
+        },
+        skip: randomIndex,
+        take: 1,
+      });
+    }
+
     const counter = this.calculateSequence(sequencies, currentDate);
 
     return {
       lastSession,
       counter,
-      workoutGroupOfDay,
+      workoutGroupOfDay, // Próximo treino
+      nextPhysicalAssessment, // Próxima avaliação física
+      personal, // Personal trainer do usuário
+      workoutsThisMonth, // Quantidade de treinos no mês
+      motivationalPhrase, // Frase motivadora
       students,
-      personal,
     };
   }
 

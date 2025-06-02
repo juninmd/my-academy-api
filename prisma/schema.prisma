@@ -225,3 +225,12 @@ model PersonalTrainingPlan {
   personal                 Personals               @relation(fields: [personalId], references: [id], onDelete: Cascade)
   classSchedules           PersonalClassSchedule[] // Relação com as aulas agendadas
 }
+
+model MotivationalPhrases {
+  id          Int    @id @default(autoincrement())
+  title       String // Título em negrito, ex: "Continue Superando Seus Limites!"
+  description String // Descrição da frase motivadora
+  isActive    Boolean @default(true) // Para ativar/desativar frases
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
