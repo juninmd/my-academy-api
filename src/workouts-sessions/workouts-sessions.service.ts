@@ -14,7 +14,7 @@ export class WorkoutsSessionsService {
     private readonly telegramService: TelegramService,
     private readonly notificationsService: NotificationsService,
     private readonly usersService: UsersService,
-  ) {}
+  ) { }
 
   async create(createworkoutsDto: CreateWorkoutsSessionsDto, userId: string) {
     const user = await this.prismaService.users.findUniqueOrThrow({ where: { id: userId } });
@@ -123,9 +123,9 @@ export class WorkoutsSessionsService {
     if (!lastSession) {
       workoutGroupOfDay = workoutGroups[0];
     } else if (
-      lastSession.completedAt.getUTCDate() === currentDate.getUTCDate() &&
-      lastSession.completedAt.getUTCMonth() === currentDate.getUTCMonth() &&
-      lastSession.completedAt.getUTCFullYear() === currentDate.getUTCFullYear()
+      lastSession.completedAt?.getUTCDate() === currentDate.getUTCDate() &&
+      lastSession.completedAt?.getUTCMonth() === currentDate.getUTCMonth() &&
+      lastSession.completedAt?.getUTCFullYear() === currentDate.getUTCFullYear()
     ) {
       workoutGroupOfDay = lastSession.workoutsGroups;
     } else {
@@ -211,8 +211,8 @@ export class WorkoutsSessionsService {
     let count = 0;
     let currentSequence = 0;
 
-    for (let i = 0; i < sequences.length; i++) {
-      const sequence = new Date(sequences[i].date);
+    for (let i = 0; i < sequences.filter(q => q.completedAt).length; i++) {
+      const sequence = new Date(sequences[i].completedAt);
       const currentDayOfWeek = sequence.getUTCDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
 
       if (currentDayOfWeek !== 0) {
@@ -220,7 +220,7 @@ export class WorkoutsSessionsService {
         if (i === 0) {
           currentSequence++;
         } else {
-          const previousDate = new Date(sequences[i - 1].date);
+          const previousDate = new Date(sequences[i - 1].completedAt);
           const diffTime = Math.abs(
             sequence.getTime() - previousDate.getTime(),
           );
@@ -247,7 +247,13 @@ export class WorkoutsSessionsService {
       }
     }
 
-    const lastDate = sequences[sequences.length - 1].date;
+    const lastDate = sequences[sequences.length - 1].completedAt;
+
+    if (!lastDate) {
+      return 0; // Se não houver data de conclusão, retorna 0
+    }
+
+
     const diffTime = Math.abs(currentDate.getTime() - lastDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
     const canIncrement =
