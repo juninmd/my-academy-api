@@ -570,10 +570,9 @@ async function main() {
 
     await prisma.workoutSessions.create({
       data: {
-        date: date,
         workoutGroupId: randomGroup.id,
         isCompleted: Math.random() > 0.2, // 80% completados
-        completedAt: Math.random() > 0.2 ? date : null
+        completedAt: date
       }
     });
   }

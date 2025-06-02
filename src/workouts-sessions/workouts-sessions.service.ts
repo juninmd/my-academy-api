@@ -43,7 +43,7 @@ export class WorkoutsSessionsService {
         workoutGroupId: {
           in: workoutGroups.map((x) => x.id),
         },
-        date: {
+        completedAt: {
           gte: new Date(year, month - 1, 1),
           lt: new Date(year, month, 1),
         },
@@ -100,7 +100,7 @@ export class WorkoutsSessionsService {
         },
       },
       include: { workoutsGroups: true },
-      orderBy: { date: 'desc' },
+      orderBy: { completedAt: 'desc' },
       take: 1,
     });
 
@@ -112,7 +112,7 @@ export class WorkoutsSessionsService {
         },
       },
       orderBy: {
-        date: 'asc',
+        completedAt: 'asc',
       },
     });
 
@@ -123,9 +123,9 @@ export class WorkoutsSessionsService {
     if (!lastSession) {
       workoutGroupOfDay = workoutGroups[0];
     } else if (
-      lastSession.date.getUTCDate() === currentDate.getUTCDate() &&
-      lastSession.date.getUTCMonth() === currentDate.getUTCMonth() &&
-      lastSession.date.getUTCFullYear() === currentDate.getUTCFullYear()
+      lastSession.completedAt.getUTCDate() === currentDate.getUTCDate() &&
+      lastSession.completedAt.getUTCMonth() === currentDate.getUTCMonth() &&
+      lastSession.completedAt.getUTCFullYear() === currentDate.getUTCFullYear()
     ) {
       workoutGroupOfDay = lastSession.workoutsGroups;
     } else {
@@ -162,7 +162,7 @@ export class WorkoutsSessionsService {
         workoutGroupId: {
           in: workoutGroups.map((x) => x.id),
         },
-        date: {
+        completedAt: {
           gte: startOfMonth,
           lte: endOfMonth,
         },

@@ -113,7 +113,6 @@ model Subscription {
 
 model WorkoutSessions {
   id             Int            @id @default(autoincrement())
-  date           DateTime       @default(now()) @db.Date
   workoutGroupId Int
   isCompleted    Boolean        @default(false) // New field: indicates if the workout session was completed
   completedAt    DateTime? // New field: timestamp of completion
