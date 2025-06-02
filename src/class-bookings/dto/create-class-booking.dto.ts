@@ -14,4 +14,11 @@ export class CreateClassBookingDto {
   @IsOptional()
   @IsString()
   status?: string;
+
+  @IsOptional()
+  isRescheduled?: boolean;
+
+  @IsOptional()
+  @IsInt()
+  originalClassBookingId?: number;
 }

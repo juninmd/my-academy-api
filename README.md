@@ -115,3 +115,6 @@ docker run -p 5000:5000 my-academy-api -e "NOME_VARIAVEL=valor"
 
 ## ChatId
 -1001661357785
+
+
++https://studio.firebase.google.com/studio-2390794831

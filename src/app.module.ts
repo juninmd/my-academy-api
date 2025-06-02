@@ -20,6 +20,7 @@ import { FirebaseModule } from './firebase/firebase.module';
 import { AuthModule } from './auth/auth.module';
 import { SubscriptionsModule } from './subscriptions/subscriptions.module';
 import { PhysicalAssessmentSchedulesModule } from './physical-assessment-schedules/physical-assessment-schedules.module';
+import { PersonalTrainingPlansModule } from './personal-training-plans/personal-training-plans.module';
 
 @Module({
   imports: [
@@ -40,7 +41,8 @@ import { PhysicalAssessmentSchedulesModule } from './physical-assessment-schedul
     NotificationsModule,
     ClassBookingsModule,
     SubscriptionsModule,
-    PhysicalAssessmentSchedulesModule, // Adiciona o novo módulo de agendamento de avaliações físicas
+    PhysicalAssessmentSchedulesModule,
+    PersonalTrainingPlansModule, // Adiciona o novo módulo de planos de treino personal
   ],
   controllers: [AppController],
   providers: [AppService],

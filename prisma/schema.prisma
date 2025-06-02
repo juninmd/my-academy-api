@@ -77,6 +77,7 @@ model Users {
   fcmToken          String? // New field for Firebase Cloud Messaging token
   subscriptions     Subscription[]
   physicalAssessmentSchedules PhysicalAssessmentSchedule[]
+  personalTrainingPlans PersonalTrainingPlan[]
 }
 
 model WorkoutBlock {
@@ -129,6 +130,7 @@ model Personals {
   PersonalClassSchedule PersonalClassSchedule[]
   WorkoutsGroups        WorkoutsGroups[] // Personal can manage workout groups
   physicalAssessmentSchedules PhysicalAssessmentSchedule[]
+  personalTrainingPlans PersonalTrainingPlan[]
 
   @@unique([studentUserId, personalUserId])
 }
@@ -141,6 +143,8 @@ model PersonalClassSchedule {
   personalsId Int // Chave estrangeira para o modelo Personals
   personals   Personals @relation(fields: [personalsId], references: [id], onDelete: Cascade)
   bookings    ClassBooking[]
+  personalTrainingPlan PersonalTrainingPlan? @relation(fields: [personalTrainingPlanId], references: [id])
+  personalTrainingPlanId Int?
 }
 
 // New model for Physical Assessments
@@ -185,6 +189,10 @@ model ClassBooking {
   studentId               String
   bookingDate             DateTime              @default(now()) @db.Date
   status                  String                @default("booked") // "booked", "confirmed", "cancelled", "completed"
+  isRescheduled           Boolean               @default(false) // New field: indicates if this is a rescheduled class
+  originalClassBookingId  Int?                  // New field: ID of the original class booking if this is a reschedule
+  originalClassBooking    ClassBooking?         @relation("RescheduledClass", fields: [originalClassBookingId], references: [id])
+  rescheduledClasses      ClassBooking[]        @relation("RescheduledClass")
   personalClassSchedule   PersonalClassSchedule @relation(fields: [personalClassScheduleId], references: [id], onDelete: Cascade)
   student                 Users                 @relation(fields: [studentId], references: [id], onDelete: Cascade)
 }
@@ -199,4 +207,21 @@ model PhysicalAssessmentSchedule {
   status     String   @default("scheduled") // e.g., "scheduled", "completed", "cancelled"
   user       Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
   personal   Personals @relation(fields: [personalId], references: [id], onDelete: Cascade)
+}
+
+// New model for Personal Training Plans
+model PersonalTrainingPlan {
+  id             Int       @id @default(autoincrement())
+  userId         String
+  personalId     Int
+  startDate      DateTime  @db.Date
+  endDate        DateTime? @db.Date
+  sessionsPerWeek Int
+  reschedulesPerMonthLimit Int @default(0) // New field: limit for class reschedules per month
+  pricePerSession Float? // New field for price per session
+  billingType    String?   @default("separate") // New field: "included" or "separate"
+  status         String    @default("active") // e.g., "active", "paused", "completed", "cancelled"
+  user           Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personal       Personals @relation(fields: [personalId], references: [id], onDelete: Cascade)
+  classSchedules PersonalClassSchedule[] // Relação com as aulas agendadas
 }
