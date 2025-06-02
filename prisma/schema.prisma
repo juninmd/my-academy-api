@@ -19,7 +19,7 @@ model Exercises {
 
 model Methods {
   id          Int        @id @default(autoincrement())
-  name        String
+  name        String     @unique
   description String
   workouts    Workouts[]
 }
@@ -61,54 +61,54 @@ enum Role {
 }
 
 model Users {
-  id                String              @id
-  name              String
-  email             String
-  photoUrl          String              @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
-  telegramId        String?
-  role              Role                @default(STUDENT) // New field for user role
-  workoutsGroups    WorkoutsGroups[]
-  Personals         Personals[]         @relation("personal")
-  Students          Personals[]         @relation("student")
-  PhysicalAssessments PhysicalAssessment[]
-  NotificationsSent Notifications[]     @relation("sender")
-  NotificationsReceived Notifications[] @relation("receiver")
-  ClassBookings     ClassBooking[]
-  fcmToken          String? // New field for Firebase Cloud Messaging token
-  subscriptions     Subscription[]
+  id                          String                       @id
+  name                        String
+  email                       String
+  photoUrl                    String                       @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
+  telegramId                  String?
+  role                        Role                         @default(STUDENT) // New field for user role
+  workoutsGroups              WorkoutsGroups[]
+  Personals                   Personals[]                  @relation("personal")
+  Students                    Personals[]                  @relation("student")
+  PhysicalAssessments         PhysicalAssessment[]
+  NotificationsSent           Notifications[]              @relation("sender")
+  NotificationsReceived       Notifications[]              @relation("receiver")
+  ClassBookings               ClassBooking[]
+  fcmToken                    String? // New field for Firebase Cloud Messaging token
+  subscriptions               Subscription[]
   physicalAssessmentSchedules PhysicalAssessmentSchedule[]
-  personalTrainingPlans PersonalTrainingPlan[]
+  personalTrainingPlans       PersonalTrainingPlan[]
 }
 
 model WorkoutBlock {
-  id            Int           @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   workoutId     Int
   order         Int // Ordem do bloco dentro de um treino
-  workout       Workouts      @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  workout       Workouts        @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   workoutSeries WorkoutSeries[]
 }
 
 model WorkoutSeries {
-  id             Int         @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   workoutId      Int
   workoutBlockId Int? // Chave estrangeira para WorkoutBlock
-  repetitions    Int         @default(15)
-  weight         Int?        @default(10)
-  rest           Int?        @default(60)
-  workout        Workouts    @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  repetitions    Int           @default(15)
+  weight         Int?          @default(10)
+  rest           Int?          @default(60)
+  workout        Workouts      @relation(fields: [workoutId], references: [id], onDelete: Cascade)
   workoutBlock   WorkoutBlock? @relation(fields: [workoutBlockId], references: [id], onDelete: Cascade) // Relação com WorkoutBlock
 }
 
 // New model for Subscriptions/Payments
 model Subscription {
-  id          Int      @id @default(autoincrement())
+  id          Int       @id @default(autoincrement())
   userId      String
-  startDate   DateTime @default(now()) @db.Date
+  startDate   DateTime  @default(now()) @db.Date
   endDate     DateTime?
-  status      String   @default("ACTIVE") // e.g., "ACTIVE", "INACTIVE", "PENDING", "CANCELLED"
+  status      String    @default("ACTIVE") // e.g., "ACTIVE", "INACTIVE", "PENDING", "CANCELLED"
   amount      Float
-  paymentDate DateTime @default(now()) @db.Date
-  user        Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  paymentDate DateTime  @default(now()) @db.Date
+  user        Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model WorkoutSessions {
@@ -116,45 +116,45 @@ model WorkoutSessions {
   date           DateTime       @default(now()) @db.Date
   workoutGroupId Int
   isCompleted    Boolean        @default(false) // New field: indicates if the workout session was completed
-  completedAt    DateTime?      // New field: timestamp of completion
+  completedAt    DateTime? // New field: timestamp of completion
   workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id], onDelete: Cascade)
   notification   Notifications? // New field: link to a notification if sent
 }
 
 model Personals {
-  id                    Int                     @id @default(autoincrement())
-  StudentUser           Users                   @relation("student", fields: [studentUserId], references: [id], onDelete: Cascade)
-  studentUserId         String
-  PersonalUser          Users                   @relation("personal", fields: [personalUserId], references: [id], onDelete: Cascade)
-  personalUserId        String
-  PersonalClassSchedule PersonalClassSchedule[]
-  WorkoutsGroups        WorkoutsGroups[] // Personal can manage workout groups
+  id                          Int                          @id @default(autoincrement())
+  StudentUser                 Users                        @relation("student", fields: [studentUserId], references: [id], onDelete: Cascade)
+  studentUserId               String
+  PersonalUser                Users                        @relation("personal", fields: [personalUserId], references: [id], onDelete: Cascade)
+  personalUserId              String
+  PersonalClassSchedule       PersonalClassSchedule[]
+  WorkoutsGroups              WorkoutsGroups[] // Personal can manage workout groups
   physicalAssessmentSchedules PhysicalAssessmentSchedule[]
-  personalTrainingPlans PersonalTrainingPlan[]
+  personalTrainingPlans       PersonalTrainingPlan[]
 
   @@unique([studentUserId, personalUserId])
 }
 
 model PersonalClassSchedule {
-  id          Int       @id @default(autoincrement())
-  dayOfWeek   Int // Dia da semana (ex: "Monday", "Tuesday", etc.)
-  time        String // Horário da aula (ex: "18:30", "07:00")
-  status      String @default("scheduled") // New field: "scheduled", "completed", "cancelled"
-  personalsId Int // Chave estrangeira para o modelo Personals
-  personals   Personals @relation(fields: [personalsId], references: [id], onDelete: Cascade)
-  bookings    ClassBooking[]
-  personalTrainingPlan PersonalTrainingPlan? @relation(fields: [personalTrainingPlanId], references: [id])
+  id                     Int                   @id @default(autoincrement())
+  dayOfWeek              Int // Dia da semana (ex: "Monday", "Tuesday", etc.)
+  time                   String // Horário da aula (ex: "18:30", "07:00")
+  status                 String                @default("scheduled") // New field: "scheduled", "completed", "cancelled"
+  personalsId            Int // Chave estrangeira para o modelo Personals
+  personals              Personals             @relation(fields: [personalsId], references: [id], onDelete: Cascade)
+  bookings               ClassBooking[]
+  personalTrainingPlan   PersonalTrainingPlan? @relation(fields: [personalTrainingPlanId], references: [id])
   personalTrainingPlanId Int?
 }
 
 // New model for Physical Assessments
 model PhysicalAssessment {
-  id                  Int       @id @default(autoincrement())
-  userId              String
-  date                DateTime  @default(now()) @db.Date
-  weight              Float?
-  height              Float?
-  bodyFatPercentage   Float?
+  id                   Int      @id @default(autoincrement())
+  userId               String
+  date                 DateTime @default(now()) @db.Date
+  weight               Float?
+  height               Float?
+  bodyFatPercentage    Float?
   muscleMassPercentage Float?
   tricepsSkinfold      Float?
   bicepsSkinfold       Float?
@@ -163,23 +163,23 @@ model PhysicalAssessment {
   midaxillarySkinfold  Float?
   pectoralSkinfold     Float?
   thighSkinfold        Float?
-  observations        String?
-  user                Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  observations         String?
+  user                 Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 // New model for Notifications
 model Notifications {
-  id                Int             @id @default(autoincrement())
-  senderId          String
-  receiverId        String
-  message           String
-  type              String // e.g., "workout_completed", "class_reminder", "new_assessment"
-  readStatus        Boolean         @default(false)
-  timestamp         DateTime        @default(now())
-  workoutSessionId  Int?            @unique // Optional: link to a specific workout session
-  sender            Users           @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver          Users           @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
-  workoutSession    WorkoutSessions? @relation(fields: [workoutSessionId], references: [id])
+  id               Int              @id @default(autoincrement())
+  senderId         String
+  receiverId       String
+  message          String
+  type             String // e.g., "workout_completed", "class_reminder", "new_assessment"
+  readStatus       Boolean          @default(false)
+  timestamp        DateTime         @default(now())
+  workoutSessionId Int?             @unique // Optional: link to a specific workout session
+  sender           Users            @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver         Users            @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  workoutSession   WorkoutSessions? @relation(fields: [workoutSessionId], references: [id])
 }
 
 // New model for Class Bookings
@@ -190,7 +190,7 @@ model ClassBooking {
   bookingDate             DateTime              @default(now()) @db.Date
   status                  String                @default("booked") // "booked", "confirmed", "cancelled", "completed"
   isRescheduled           Boolean               @default(false) // New field: indicates if this is a rescheduled class
-  originalClassBookingId  Int?                  // New field: ID of the original class booking if this is a reschedule
+  originalClassBookingId  Int? // New field: ID of the original class booking if this is a reschedule
   originalClassBooking    ClassBooking?         @relation("RescheduledClass", fields: [originalClassBookingId], references: [id])
   rescheduledClasses      ClassBooking[]        @relation("RescheduledClass")
   personalClassSchedule   PersonalClassSchedule @relation(fields: [personalClassScheduleId], references: [id], onDelete: Cascade)
@@ -199,29 +199,29 @@ model ClassBooking {
 
 // New model for Physical Assessment Schedules
 model PhysicalAssessmentSchedule {
-  id         Int      @id @default(autoincrement())
-  date       DateTime @db.Date
+  id         Int       @id @default(autoincrement())
+  date       DateTime  @db.Date
   time       String
   userId     String
   personalId Int
-  status     String   @default("scheduled") // e.g., "scheduled", "completed", "cancelled"
-  user       Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status     String    @default("scheduled") // e.g., "scheduled", "completed", "cancelled"
+  user       Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
   personal   Personals @relation(fields: [personalId], references: [id], onDelete: Cascade)
 }
 
 // New model for Personal Training Plans
 model PersonalTrainingPlan {
-  id             Int       @id @default(autoincrement())
-  userId         String
-  personalId     Int
-  startDate      DateTime  @db.Date
-  endDate        DateTime? @db.Date
-  sessionsPerWeek Int
-  reschedulesPerMonthLimit Int @default(0) // New field: limit for class reschedules per month
-  pricePerSession Float? // New field for price per session
-  billingType    String?   @default("separate") // New field: "included" or "separate"
-  status         String    @default("active") // e.g., "active", "paused", "completed", "cancelled"
-  user           Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  personal       Personals @relation(fields: [personalId], references: [id], onDelete: Cascade)
-  classSchedules PersonalClassSchedule[] // Relação com as aulas agendadas
+  id                       Int                     @id @default(autoincrement())
+  userId                   String
+  personalId               Int
+  startDate                DateTime                @db.Date
+  endDate                  DateTime?               @db.Date
+  sessionsPerWeek          Int
+  reschedulesPerMonthLimit Int                     @default(0) // New field: limit for class reschedules per month
+  pricePerSession          Float? // New field for price per session
+  billingType              String?                 @default("separate") // New field: "included" or "separate"
+  status                   String                  @default("active") // e.g., "active", "paused", "completed", "cancelled"
+  user                     Users                   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  personal                 Personals               @relation(fields: [personalId], references: [id], onDelete: Cascade)
+  classSchedules           PersonalClassSchedule[] // Relação com as aulas agendadas
 }
