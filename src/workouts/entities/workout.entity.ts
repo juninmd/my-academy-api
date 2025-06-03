@@ -1,4 +1,4 @@
-import { Exercises, WorkoutSeries, WorkoutSessions } from '@prisma/client';
+import { Exercises, WorkoutSeries, WorkoutGroupSession } from '@prisma/client';
 import { WorkoutsGroup } from '../../workouts-groups/entities/workouts-group.entity';
 
 export class Workout {
@@ -9,5 +9,5 @@ export class Workout {
   Exercise: Exercises;
   workoutGroup: WorkoutsGroup;
   WorkoutSeries?: WorkoutSeries[];
-  WorkoutSessions?: WorkoutSessions[];
+  WorkoutGroupSession?: WorkoutGroupSession[];
 }

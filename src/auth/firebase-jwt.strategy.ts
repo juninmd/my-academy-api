@@ -20,7 +20,7 @@ export class FirebaseJwtStrategy extends PassportStrategy(Strategy, 'firebase-jw
       const firebaseUser = await this.firebaseService.firebaseAppInstance.auth().verifyIdToken(token);
       const user = await this.prisma.users.findUnique({
         where: { id: firebaseUser.uid },
-        select: { id: true, role: true }, // Select only necessary fields
+        select: { id: true, roles: { select: { roleUser: { select: { name: true } } } } }, // Select only necessary fields
       });
 
       if (!user) {
@@ -28,7 +28,7 @@ export class FirebaseJwtStrategy extends PassportStrategy(Strategy, 'firebase-jw
       }
 
       // Attach the user's role to the request object
-      return { uid: firebaseUser.uid, role: user.role };
+      return { uid: firebaseUser.uid, roles: user.roles.map(ur => ur.roleUser.name) };
     } catch (error) {
       throw new UnauthorizedException('Invalid or expired token');
     }

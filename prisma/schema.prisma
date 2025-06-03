@@ -24,79 +24,57 @@ model Methods {
   workouts    Workouts[]
 }
 
+model WorkoutsBlocks {
+  id             Int            @id @default(autoincrement())
+  workoutGroupId Int // Referencia WorkoutGroup
+  order          Int // Ordem do bloco dentro de um treino
+  workoutGroup   WorkoutsGroups @relation(fields: [workoutGroupId], references: [id], onDelete: Cascade) // Relação com WorkoutGroup
+  workouts       Workouts[] // Relação com Workout (ajustado conforme feedback)
+}
+
 model Workouts {
   id               Int             @id @default(autoincrement())
   exerciseId       Int
   description      String
-  workoutsGroupsId Int
+  workoutsBlocksId Int
   methodId         Int?
-  workoutBlocks    WorkoutBlock[] // Adiciona a relação com WorkoutBlock
   workoutSeries    WorkoutSeries[] // Mantém o campo, mas sem a anotação @deprecated
   exercise         Exercises       @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   method           Methods?        @relation(fields: [methodId], references: [id], onDelete: Cascade)
-  workoutGroup     WorkoutsGroups  @relation(fields: [workoutsGroupsId], references: [id], onDelete: Cascade)
+  workoutBlock     WorkoutsBlocks  @relation(fields: [workoutsBlocksId], references: [id], onDelete: Cascade)
 
-  @@unique([workoutsGroupsId, exerciseId])
+  @@unique([workoutsBlocksId, exerciseId])
 }
 
 model WorkoutsGroups {
-  id              Int               @id @default(autoincrement())
-  name            String
-  image           String
-  observations    String? // New field for observations
-  userId          String // User who owns this workout group (student)
-  personalId      Int? // Personal who created/modified this workout group
-  WorkoutSessions WorkoutSessions[]
-  workouts        Workouts[]
-  user            Users             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  personal        Personals?        @relation(fields: [personalId], references: [id]) // Optional relation to personal
+  id                  Int                   @id @default(autoincrement())
+  name                String
+  observations        String? // New field for observations
+  userId              String // User who owns this workout group (student)
+  personalId          Int? // Personal who created/modified this workout group (referencia PersonalStudent)
+  workoutGroupSession WorkoutGroupSession[] // Relação com WorkoutSession
+  workoutsBlocks       WorkoutsBlocks[] // Relação com WorkoutBlock (ajustado conforme feedback)
+  user                Users                 @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, name])
 }
 
-enum Role {
-  STUDENT
-  PERSONAL
-  ACADEMY_OWNER
-}
-
-model Users {
-  id                          String                       @id
-  name                        String
-  email                       String
-  photoUrl                    String                       @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
-  telegramId                  String?
-  role                        Role                         @default(STUDENT) // New field for user role
-  workoutsGroups              WorkoutsGroups[]
-  Personals                   Personals[]                  @relation("personal")
-  Students                    Personals[]                  @relation("student")
-  PhysicalAssessments         PhysicalAssessment[]
-  NotificationsSent           Notifications[]              @relation("sender")
-  NotificationsReceived       Notifications[]              @relation("receiver")
-  ClassBookings               ClassBooking[]
-  fcmToken                    String? // New field for Firebase Cloud Messaging token
-  subscriptions               Subscription[]
-  physicalAssessmentSchedules PhysicalAssessmentSchedule[]
-  personalTrainingPlans       PersonalTrainingPlan[]
-}
-
-model WorkoutBlock {
-  id            Int             @id @default(autoincrement())
-  workoutId     Int
-  order         Int // Ordem do bloco dentro de um treino
-  workout       Workouts        @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  workoutSeries WorkoutSeries[]
-}
-
 model WorkoutSeries {
-  id             Int           @id @default(autoincrement())
-  workoutId      Int
-  workoutBlockId Int? // Chave estrangeira para WorkoutBlock
-  repetitions    Int           @default(15)
-  weight         Int?          @default(10)
-  rest           Int?          @default(60)
-  workout        Workouts      @relation(fields: [workoutId], references: [id], onDelete: Cascade)
-  workoutBlock   WorkoutBlock? @relation(fields: [workoutBlockId], references: [id], onDelete: Cascade) // Relação com WorkoutBlock
+  id          Int      @id @default(autoincrement())
+  workoutId   Int // Referencia Workout
+  repetitions Int      @default(15)
+  weight      Int?     @default(10)
+  rest        Int?     @default(60)
+  workout     Workouts @relation(fields: [workoutId], references: [id], onDelete: Cascade) // Relação com Workout
+}
+
+model UserRole {
+  userId   String
+  roleId   Int
+  user     Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  roleUser RoleUser @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@id([userId, roleId])
 }
 
 // New model for Subscriptions/Payments
@@ -111,9 +89,25 @@ model Subscription {
   user        Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model WorkoutSessions {
+model Users {
+  id                    String               @id
+  name                  String
+  email                 String
+  photoUrl              String               @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
+  telegramId            String?
+  roles                 UserRole[] // Relação muitos-para-muitos com Role
+  workoutsGroups        WorkoutsGroups[]
+  PhysicalAssessments   PhysicalAssessment[]
+  NotificationsSent     Notifications[]      @relation("sender")
+  NotificationsReceived Notifications[]      @relation("receiver")
+  ClassBookings         ClassBooking[]
+  fcmToken              String? // New field for Firebase Cloud Messaging token
+  subscriptions         Subscription[] // Referencia Subscription
+}
+
+model WorkoutGroupSession {
   id             Int            @id @default(autoincrement())
-  workoutGroupId Int
+  workoutGroupId Int // Referencia WorkoutGroup
   isCompleted    Boolean        @default(false) // New field: indicates if the workout session was completed
   completedAt    DateTime? // New field: timestamp of completion
   workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id], onDelete: Cascade)
@@ -122,12 +116,9 @@ model WorkoutSessions {
 
 model Personals {
   id                          Int                          @id @default(autoincrement())
-  StudentUser                 Users                        @relation("student", fields: [studentUserId], references: [id], onDelete: Cascade)
   studentUserId               String
-  PersonalUser                Users                        @relation("personal", fields: [personalUserId], references: [id], onDelete: Cascade)
   personalUserId              String
   PersonalClassSchedule       PersonalClassSchedule[]
-  WorkoutsGroups              WorkoutsGroups[] // Personal can manage workout groups
   physicalAssessmentSchedules PhysicalAssessmentSchedule[]
   personalTrainingPlans       PersonalTrainingPlan[]
 
@@ -168,17 +159,17 @@ model PhysicalAssessment {
 
 // New model for Notifications
 model Notifications {
-  id               Int              @id @default(autoincrement())
-  senderId         String
-  receiverId       String
-  message          String
-  type             String // e.g., "workout_completed", "class_reminder", "new_assessment"
-  readStatus       Boolean          @default(false)
-  timestamp        DateTime         @default(now())
-  workoutSessionId Int?             @unique // Optional: link to a specific workout session
-  sender           Users            @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver         Users            @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
-  workoutSession   WorkoutSessions? @relation(fields: [workoutSessionId], references: [id])
+  id                    Int                  @id @default(autoincrement())
+  senderId              String
+  receiverId            String
+  message               String
+  type                  String // e.g., "workout_completed", "class_reminder", "new_assessment"
+  readStatus            Boolean              @default(false)
+  timestamp             DateTime             @default(now())
+  workoutGroupSessionId Int?                 @unique // Optional: link to a specific workout session
+  sender                Users                @relation("sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver              Users                @relation("receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  workoutGroupSession   WorkoutGroupSession? @relation(fields: [workoutGroupSessionId], references: [id]) // Referencia WorkoutSession
 }
 
 // New model for Class Bookings
@@ -204,14 +195,12 @@ model PhysicalAssessmentSchedule {
   userId     String
   personalId Int
   status     String    @default("scheduled") // e.g., "scheduled", "completed", "cancelled"
-  user       Users     @relation(fields: [userId], references: [id], onDelete: Cascade)
   personal   Personals @relation(fields: [personalId], references: [id], onDelete: Cascade)
 }
 
 // New model for Personal Training Plans
 model PersonalTrainingPlan {
   id                       Int                     @id @default(autoincrement())
-  userId                   String
   personalId               Int
   startDate                DateTime                @db.Date
   endDate                  DateTime?               @db.Date
@@ -220,16 +209,33 @@ model PersonalTrainingPlan {
   pricePerSession          Float? // New field for price per session
   billingType              String?                 @default("separate") // New field: "included" or "separate"
   status                   String                  @default("active") // e.g., "active", "paused", "completed", "cancelled"
-  user                     Users                   @relation(fields: [userId], references: [id], onDelete: Cascade)
   personal                 Personals               @relation(fields: [personalId], references: [id], onDelete: Cascade)
   classSchedules           PersonalClassSchedule[] // Relação com as aulas agendadas
 }
 
 model MotivationalPhrases {
-  id          Int    @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   title       String // Título em negrito, ex: "Continue Superando Seus Limites!"
   description String // Descrição da frase motivadora
-  isActive    Boolean @default(true) // Para ativar/desativar frases
+  isActive    Boolean  @default(true) // Para ativar/desativar frases
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+}
+
+enum RoleName {
+  STUDENT
+  PERSONAL
+  ACADEMY_OWNER
+}
+
+model RoleUser {
+  id    Int        @id @default(autoincrement())
+  name  RoleName   @unique
+  users UserRole[]
+}
+
+// Adicione este bloco generator
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "./ERD.svg"
 }

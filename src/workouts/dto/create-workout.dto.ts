@@ -1,14 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CreateWorkoutBlockDto } from '../../workouts-blocks/dto/create-workout-block.dto';
+import { CreateWorkoutsSeriesDto } from '../../workouts-series/dto/create-workouts-series.dto'; // Importar o DTO correto
 
 export class CreateWorkoutDto {
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  id?: number;
-
   @ApiProperty({ required: true })
   @IsNumber()
   exerciseId: number;
@@ -21,17 +16,12 @@ export class CreateWorkoutDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  workoutsGroupsId?: number;
+  methodId?: number;
 
-  @ApiProperty({ required: false, type: [CreateWorkoutBlockDto] })
+  @ApiProperty({ required: false, type: [CreateWorkoutsSeriesDto] })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateWorkoutBlockDto)
-  workoutBlocks?: CreateWorkoutBlockDto[];
-
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  methodId?: number;
+  @Type(() => CreateWorkoutsSeriesDto)
+  workoutSeries?: CreateWorkoutsSeriesDto[]; // Adicionado para refletir a relação 1:N com WorkoutSeries
 }

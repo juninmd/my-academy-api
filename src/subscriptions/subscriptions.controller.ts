@@ -6,7 +6,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { FirebaseJwtAuthGuard } from '../auth/firebase-jwt.guard';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { Role } from '@prisma/client';
+import { RoleName } from '@prisma/client'; // Corrigido para RoleName
 
 @ApiBearerAuth()
 @ApiTags('subscriptions')
@@ -16,42 +16,42 @@ export class SubscriptionsController {
 
   @Post()
   @UseGuards(FirebaseJwtAuthGuard, RolesGuard)
-  @Roles(Role.ACADEMY_OWNER)
+  @Roles(RoleName.ACADEMY_OWNER) // Corrigido para RoleName
   create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
     return this.subscriptionsService.create(createSubscriptionDto);
   }
 
   @Get()
   @UseGuards(FirebaseJwtAuthGuard, RolesGuard)
-  @Roles(Role.ACADEMY_OWNER)
+  @Roles(RoleName.ACADEMY_OWNER) // Corrigido para RoleName
   findAll() {
     return this.subscriptionsService.findAll();
   }
 
   @Get(':id')
   @UseGuards(FirebaseJwtAuthGuard, RolesGuard)
-  @Roles(Role.ACADEMY_OWNER)
+  @Roles(RoleName.ACADEMY_OWNER) // Corrigido para RoleName
   findOne(@Param('id') id: string) {
     return this.subscriptionsService.findOne(+id);
   }
 
   @Patch(':id')
   @UseGuards(FirebaseJwtAuthGuard, RolesGuard)
-  @Roles(Role.ACADEMY_OWNER)
+  @Roles(RoleName.ACADEMY_OWNER) // Corrigido para RoleName
   update(@Param('id') id: string, @Body() updateSubscriptionDto: UpdateSubscriptionDto) {
     return this.subscriptionsService.update(+id, updateSubscriptionDto);
   }
 
   @Delete(':id')
   @UseGuards(FirebaseJwtAuthGuard, RolesGuard)
-  @Roles(Role.ACADEMY_OWNER)
+  @Roles(RoleName.ACADEMY_OWNER) // Corrigido para RoleName
   remove(@Param('id') id: string) {
     return this.subscriptionsService.remove(+id);
   }
 
   @Get('user/:userId')
   @UseGuards(FirebaseJwtAuthGuard, RolesGuard)
-  @Roles(Role.ACADEMY_OWNER, Role.STUDENT) // Students can view their own subscriptions
+  @Roles(RoleName.ACADEMY_OWNER, RoleName.STUDENT) // Corrigido para RoleName
   findByUserId(@Param('userId') userId: string) {
     return this.subscriptionsService.findByUserId(userId);
   }

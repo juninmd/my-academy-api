@@ -1,4 +1,4 @@
-import { Users, Methods, Workouts, Personals, WorkoutSessions } from '@prisma/client';
+import { Users, Methods, Workouts, Personals, WorkoutGroupSession } from '@prisma/client';
 
 export class WorkoutsGroup {
   id: number;
@@ -11,5 +11,5 @@ export class WorkoutsGroup {
   personal?: Personals; // Adicionado para consistência com o schema
   method?: Methods;
   workouts?: Workouts[];
-  WorkoutSessions?: WorkoutSessions[]; // Adicionado para consistência com o schema
+  WorkoutGroupSession?: WorkoutGroupSession[]; // Adicionado para consistência com o schema
 }

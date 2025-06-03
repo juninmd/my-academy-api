@@ -17,7 +17,7 @@ async function main() {
       email: 'jr_acn@hotmail.com',
       name: 'Antonio',
       photoUrl: 'https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png',
-      role: 'STUDENT',
+      roles: { create: { roleUser: { connect: { name: 'STUDENT' } } } },
       fcmToken: 'sample_fcm_token_student'
     }
   });
@@ -31,7 +31,7 @@ async function main() {
       email: 'personal@gym.com',
       name: 'Carlos Silva',
       photoUrl: 'https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png',
-      role: 'PERSONAL',
+      roles: { create: { roleUser: { connect: { name: 'PERSONAL' } } } },
       fcmToken: 'sample_fcm_token_personal'
     }
   });
@@ -45,7 +45,7 @@ async function main() {
       email: 'owner@gym.com',
       name: 'Maria Academia',
       photoUrl: 'https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png',
-      role: 'ACADEMY_OWNER',
+      roles: { create: { roleUser: { connect: { name: 'ACADEMY_OWNER' } } } },
       fcmToken: 'sample_fcm_token_owner'
     }
   });
@@ -53,7 +53,7 @@ async function main() {
   // ============= RELACIONAMENTO PERSONAL-ALUNO =============
   console.log('🤝 Criando relacionamento personal-aluno...')
 
-  await prisma.personals.upsert({
+  const personalStudentRelation = await prisma.personals.upsert({
     where: {
       studentUserId_personalUserId: {
         studentUserId: 'db6i035Vjtb77a7cBDnXQVPd3oL2',
@@ -348,6 +348,19 @@ async function main() {
     { exerciseName: 'Tríceps Corda', description: 'Finalização para tríceps' }
   ];
 
+  // TREINO PEITO E TRÍCEPS
+  // Comentado temporariamente devido a erro de tipo workoutsGroupsId
+  /*
+  const workoutsPeito = [
+    { exerciseName: 'Supino reto com barra', description: 'Exercício base para peito' },
+    { exerciseName: 'Supino inclinado com barra', description: 'Foco na parte superior do peito' },
+    { exerciseName: 'Supino com halteres', description: 'Maior amplitude de movimento' },
+    { exerciseName: 'Crucifixo Reto', description: 'Isolamento para peito' },
+    { exerciseName: 'Tríceps Barra (polia alta)', description: 'Exercício base para tríceps' },
+    { exerciseName: 'Tríceps Testa Barra W', description: 'Isolamento para tríceps' },
+    { exerciseName: 'Tríceps Corda', description: 'Finalização para tríceps' }
+  ];
+
   for (const workout of workoutsPeito) {
     const exercise = await prisma.exercises.findFirst({ where: { name: workout.exerciseName } });
     if (exercise && peito) {
@@ -355,7 +368,7 @@ async function main() {
         data: {
           exerciseId: exercise.id,
           description: workout.description,
-          workoutsGroupsId: peito.id,
+          workoutsGroupsId: peito.id, // Este campo precisa ser ajustado para WorkoutsBlocks
           methodId: seriesNormais?.id
         }
       });
@@ -380,7 +393,7 @@ async function main() {
         data: {
           exerciseId: exercise.id,
           description: workout.description,
-          workoutsGroupsId: costas.id,
+          workoutsGroupsId: costas.id, // Este campo precisa ser ajustado para WorkoutsBlocks
           methodId: seriesNormais?.id
         }
       });
@@ -403,7 +416,7 @@ async function main() {
         data: {
           exerciseId: exercise.id,
           description: workout.description,
-          workoutsGroupsId: pernas.id,
+          workoutsGroupsId: pernas.id, // Este campo precisa ser ajustado para WorkoutsBlocks
           methodId: seriesNormais?.id
         }
       });
@@ -425,12 +438,13 @@ async function main() {
         data: {
           exerciseId: exercise.id,
           description: workout.description,
-          workoutsGroupsId: ombros.id,
+          workoutsGroupsId: ombros.id, // Este campo precisa ser ajustado para WorkoutsBlocks
           methodId: seriesNormais?.id
         }
       });
     }
   }
+  */
 
   // ============= SÉRIES DOS TREINOS =============
   console.log('🔢 Criando séries dos treinos...')
@@ -458,8 +472,7 @@ async function main() {
 
   await prisma.personalTrainingPlan.create({
     data: {
-      userId: 'db6i035Vjtb77a7cBDnXQVPd3oL2',
-      personalId: 1,
+      personalId: personalStudentRelation.id, // Usar o ID da relação personal-aluno
       startDate: new Date('2024-01-01'),
       endDate: new Date('2024-12-31'),
       sessionsPerWeek: 4,
@@ -568,7 +581,7 @@ async function main() {
     const date = new Date();
     date.setDate(date.getDate() - Math.floor(Math.random() * 30));
 
-    await prisma.workoutSessions.create({
+    await prisma.workoutGroupSession.create({ // Corrigido para workoutGroupSession
       data: {
         workoutGroupId: randomGroup.id,
         isCompleted: Math.random() > 0.2, // 80% completados

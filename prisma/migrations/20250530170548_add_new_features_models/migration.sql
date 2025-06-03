@@ -23,21 +23,21 @@ CREATE TABLE "Workouts" (
     "id" SERIAL NOT NULL,
     "exerciseId" INTEGER NOT NULL,
     "description" TEXT NOT NULL,
-    "workoutsGroupsId" INTEGER NOT NULL,
+    "workoutGroupId" INTEGER NOT NULL,
     "methodId" INTEGER,
 
     CONSTRAINT "Workouts_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
-CREATE TABLE "WorkoutsGroups" (
+CREATE TABLE "workoutGroup:" (
     "id" SERIAL NOT NULL,
     "name" TEXT NOT NULL,
     "image" TEXT NOT NULL,
     "userId" TEXT NOT NULL,
     "personalId" INTEGER,
 
-    CONSTRAINT "WorkoutsGroups_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "workoutGroup:_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -63,14 +63,14 @@ CREATE TABLE "WorkoutSeries" (
 );
 
 -- CreateTable
-CREATE TABLE "WorkoutSessions" (
+CREATE TABLE "WorkoutGroupSession" (
     "id" SERIAL NOT NULL,
     "date" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "workoutGroupId" INTEGER NOT NULL,
     "isCompleted" BOOLEAN NOT NULL DEFAULT false,
     "completedAt" TIMESTAMP(3),
 
-    CONSTRAINT "WorkoutSessions_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "WorkoutGroupSession_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -136,10 +136,10 @@ CREATE TABLE "ClassBooking" (
 CREATE UNIQUE INDEX "Exercises_name_key" ON "Exercises"("name");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Workouts_workoutsGroupsId_exerciseId_key" ON "Workouts"("workoutsGroupsId", "exerciseId");
+CREATE UNIQUE INDEX "Workouts_workoutGroupId_exerciseId_key" ON "Workouts"("workoutGroupId", "exerciseId");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "WorkoutsGroups_userId_name_key" ON "WorkoutsGroups"("userId", "name");
+CREATE UNIQUE INDEX "workoutGroup:_userId_name_key" ON "workoutGroup:"("userId", "name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Personals_studentUserId_personalUserId_key" ON "Personals"("studentUserId", "personalUserId");
@@ -154,19 +154,19 @@ ALTER TABLE "Workouts" ADD CONSTRAINT "Workouts_exerciseId_fkey" FOREIGN KEY ("e
 ALTER TABLE "Workouts" ADD CONSTRAINT "Workouts_methodId_fkey" FOREIGN KEY ("methodId") REFERENCES "Methods"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Workouts" ADD CONSTRAINT "Workouts_workoutsGroupsId_fkey" FOREIGN KEY ("workoutsGroupsId") REFERENCES "WorkoutsGroups"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "Workouts" ADD CONSTRAINT "Workouts_workoutGroupId_fkey" FOREIGN KEY ("workoutGroupId") REFERENCES "workoutGroup:"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "WorkoutsGroups" ADD CONSTRAINT "WorkoutsGroups_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "workoutGroup:" ADD CONSTRAINT "workoutGroup:_userId_fkey" FOREIGN KEY ("userId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "WorkoutsGroups" ADD CONSTRAINT "WorkoutsGroups_personalId_fkey" FOREIGN KEY ("personalId") REFERENCES "Personals"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "workoutGroup:" ADD CONSTRAINT "workoutGroup:_personalId_fkey" FOREIGN KEY ("personalId") REFERENCES "Personals"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "WorkoutSeries" ADD CONSTRAINT "WorkoutSeries_workoutId_fkey" FOREIGN KEY ("workoutId") REFERENCES "Workouts"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "WorkoutSessions" ADD CONSTRAINT "WorkoutSessions_workoutGroupId_fkey" FOREIGN KEY ("workoutGroupId") REFERENCES "WorkoutsGroups"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+ALTER TABLE "WorkoutGroupSession" ADD CONSTRAINT "WorkoutGroupSession_workoutGroupId_fkey" FOREIGN KEY ("workoutGroupId") REFERENCES "workoutGroup:"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Personals" ADD CONSTRAINT "Personals_studentUserId_fkey" FOREIGN KEY ("studentUserId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
@@ -187,7 +187,7 @@ ALTER TABLE "Notifications" ADD CONSTRAINT "Notifications_senderId_fkey" FOREIGN
 ALTER TABLE "Notifications" ADD CONSTRAINT "Notifications_receiverId_fkey" FOREIGN KEY ("receiverId") REFERENCES "Users"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Notifications" ADD CONSTRAINT "Notifications_workoutSessionId_fkey" FOREIGN KEY ("workoutSessionId") REFERENCES "WorkoutSessions"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+ALTER TABLE "Notifications" ADD CONSTRAINT "Notifications_workoutSessionId_fkey" FOREIGN KEY ("workoutSessionId") REFERENCES "WorkoutGroupSession"("id") ON DELETE SET NULL ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "ClassBooking" ADD CONSTRAINT "ClassBooking_personalClassScheduleId_fkey" FOREIGN KEY ("personalClassScheduleId") REFERENCES "PersonalClassSchedule"("id") ON DELETE CASCADE ON UPDATE CASCADE;

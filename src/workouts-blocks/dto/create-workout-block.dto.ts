@@ -1,10 +1,10 @@
 import { IsNumber, IsOptional, IsArray, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { CreateWorkoutsSeriesDto } from '../../workouts-series/dto/create-workouts-series.dto';
+import { CreateWorkoutDto } from '../../workouts/dto/create-workout.dto'; // Importar o DTO correto
 
 export class CreateWorkoutBlockDto {
   @IsNumber()
-  workoutId: number;
+  workoutGroupId: number; // Adicionado para referenciar WorkoutsGroups
 
   @IsNumber()
   order: number;
@@ -12,6 +12,6 @@ export class CreateWorkoutBlockDto {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateWorkoutsSeriesDto)
-  workoutSeries?: CreateWorkoutsSeriesDto[];
+  @Type(() => CreateWorkoutDto)
+  workouts?: CreateWorkoutDto[]; // Adicionado para refletir a relação 1:N com Workouts
 }

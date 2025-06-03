@@ -61,12 +61,44 @@ export class PersonalsService {
       throw new NotFoundException('Personal-student relationship not found.');
     }
 
+    const { name, observations, workoutsBlocks } = createWorkoutGroupDto; // Revertido para workoutsBlocks (plural)
     return this.prismaService.workoutsGroups.create({
       data: {
-        ...createWorkoutGroupDto,
+        name,
+        observations,
         userId: studentUserId,
         personalId: personalStudentRelation.id,
-      } as WorkoutsGroups,
+        workoutsBlocks: { // Revertido para workoutsBlocks (plural)
+          create: workoutsBlocks?.map((block) => ({
+            order: block.order,
+            workouts: {
+              create: block.workouts?.map((workout) => ({
+                exerciseId: workout.exerciseId,
+                description: workout.description,
+                methodId: workout.methodId,
+                workoutSeries: {
+                  create: workout.workoutSeries?.map((series) => ({
+                    repetitions: series.repetitions,
+                    weight: series.weight,
+                    rest: series.rest,
+                  })),
+                },
+              })),
+            },
+          })),
+        },
+      },
+      include: {
+        workoutsBlocks: { // Revertido para workoutsBlocks (plural)
+          include: {
+            workouts: {
+              include: {
+                workoutSeries: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -97,9 +129,79 @@ export class PersonalsService {
       throw new NotFoundException('Workout group not found or not associated with this student/personal.');
     }
 
-    return this.prismaService.workoutsGroups.update({
+    const { name, observations, workoutsBlocks } = updateWorkoutGroupDto; // Revertido para workoutsBlocks (plural)
+
+    // Atualiza os dados básicos do grupo de treino
+    const updatedWorkoutGroup = await this.prismaService.workoutsGroups.update({
       where: { id: workoutGroupId },
-      data: updateWorkoutGroupDto as WorkoutsGroups,
+      data: {
+        name,
+        observations,
+        userId: studentUserId,
+        personalId: personalStudentRelation.id,
+      },
+    });
+
+    // Lógica para atualizar WorkoutsBlocks, Workouts e WorkoutSeries:
+    // 1. Excluir WorkoutsBlocks, Workouts e WorkoutSeries existentes para este grupo
+    const existingworkoutsBlocks = await this.prismaService.workoutsBlocks.findMany({
+      where: { workoutGroupId: workoutGroupId },
+      select: { id: true, workouts: { select: { id: true } } },
+    });
+
+    for (const block of existingworkoutsBlocks) {
+      for (const workout of block.workouts) {
+        await this.prismaService.workoutSeries.deleteMany({
+          where: { workoutId: workout.id },
+        });
+      }
+      await this.prismaService.workouts.deleteMany({
+        where: { workoutsBlocksId: block.id },
+      });
+    }
+    await this.prismaService.workoutsBlocks.deleteMany({
+      where: { workoutGroupId: workoutGroupId },
+    });
+
+    // 2. Recriar WorkoutsBlocks, Workouts e WorkoutSeries se fornecidos
+    if (workoutsBlocks && workoutsBlocks.length > 0) { // Revertido para workoutsBlocks (plural)
+      for (const blockDto of workoutsBlocks) { // Revertido para workoutsBlocks (plural)
+        await this.prismaService.workoutsBlocks.create({
+          data: {
+            order: blockDto.order,
+            workoutGroupId: updatedWorkoutGroup.id,
+            workouts: {
+              create: blockDto.workouts?.map((workout) => ({
+                exerciseId: workout.exerciseId,
+                description: workout.description,
+                methodId: workout.methodId,
+                workoutSeries: {
+                  create: workout.workoutSeries?.map((series) => ({
+                    repetitions: series.repetitions,
+                    weight: series.weight,
+                    rest: series.rest,
+                  })),
+                },
+              })),
+            },
+          },
+        });
+      }
+    }
+
+    return this.prismaService.workoutsGroups.findUnique({
+      where: { id: workoutGroupId },
+      include: {
+        workoutsBlocks: { // Revertido para workoutsBlocks (plural)
+          include: {
+            workouts: {
+              include: {
+                workoutSeries: true,
+              },
+            },
+          },
+        },
+      },
     });
   }
 
@@ -108,16 +210,28 @@ export class PersonalsService {
       where: {
         personalUserId,
       },
-      include: { PersonalUser: true, StudentUser: true }
+      // Removido include: { PersonalUser: true, StudentUser: true }
+      // Para incluir dados de PersonalUser e StudentUser, eles devem ser buscados separadamente
+      // ou um DTO de retorno deve ser criado.
     });
   }
 
   async findStudents(personalUserId: string) {
-    const personal = await this.prismaService.personals.findMany({
+    const personalRelations = await this.prismaService.personals.findMany({
       where: { personalUserId },
-      include: { StudentUser: true, PersonalClassSchedule: true }
+      include: { PersonalClassSchedule: true } // Mantido, pois existe no schema
     });
-    return personal.map(q => ({ student: q.StudentUser, schedule: q.PersonalClassSchedule })).flat(1);
+
+    const studentsWithSchedule = [];
+    for (const relation of personalRelations) {
+      const studentUser = await this.prismaService.users.findUnique({
+        where: { id: relation.studentUserId }
+      });
+      if (studentUser) {
+        studentsWithSchedule.push({ student: studentUser, schedule: relation.PersonalClassSchedule });
+      }
+    }
+    return studentsWithSchedule.flat(1);
   }
 
   update(id: number, updateDto: UpdatePersonalDto) {

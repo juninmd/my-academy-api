@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateWorkoutsSessionsDto } from './dto/create-workouts-sessions.dto';
 import { UpdateWorkoutsSessionsDto } from './dto/update-workouts-sessions.dto';
 import { PrismaService } from '../prisma.service';
-import { WorkoutSessions } from '@prisma/client';
+import { WorkoutGroupSession } from '@prisma/client'; // Corrigido para WorkoutGroupSession
 import { TelegramService } from '../telegram/telegram.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
@@ -26,8 +26,8 @@ export class WorkoutsSessionsService {
       await this.telegramService.postChannelMessage(message, user.telegramId);
     }
 
-    return this.prismaService.workoutSessions.create({
-      data: createworkoutsDto as WorkoutSessions,
+    return this.prismaService.workoutGroupSession.create({ // Corrigido para workoutGroupSession
+      data: createworkoutsDto as WorkoutGroupSession, // Corrigido para WorkoutGroupSession
     });
   }
 
@@ -38,7 +38,7 @@ export class WorkoutsSessionsService {
       },
       orderBy: { id: 'asc' },
     });
-    const sequencies = await this.prismaService.workoutSessions.findMany({
+    const sequencies = await this.prismaService.workoutGroupSession.findMany({ // Corrigido para workoutGroupSession
       where: {
         workoutGroupId: {
           in: workoutGroups.map((x) => x.id),
@@ -65,23 +65,30 @@ export class WorkoutsSessionsService {
       where: {
         personalUserId: idUser,
       },
-      include: { StudentUser: true },
+      // Removido include: { StudentUser: true }
     });
 
     if (iAmPersonal.length > 0) {
-      students = iAmPersonal.map(q => q.StudentUser).flat(1);
+      const studentUserIds = iAmPersonal.map(p => p.studentUserId);
+      students = await this.prismaService.users.findMany({
+        where: {
+          id: { in: studentUserIds }
+        }
+      });
     }
 
     // Verifica se o usuário é um estudante e encontra seu personal
     const iAmStudent = await this.prismaService.personals.findFirst({
       where: {
-        studentUserId: idUser, // Corrigido: era personalUserId, deveria ser studentUserId
+        studentUserId: idUser,
       },
-      include: { PersonalUser: true },
+      // Removido include: { PersonalUser: true }
     });
 
     if (iAmStudent) {
-      personal = iAmStudent.PersonalUser;
+      personal = await this.prismaService.users.findUnique({
+        where: { id: iAmStudent.personalUserId }
+      });
     }
 
     // Busca os grupos de treino do usuário
@@ -93,7 +100,7 @@ export class WorkoutsSessionsService {
     });
 
     // Busca a última sessão de treino
-    const lastSession = await this.prismaService.workoutSessions.findFirst({
+    const lastSession = await this.prismaService.workoutGroupSession.findFirst({ // Corrigido para workoutGroupSession
       where: {
         workoutGroupId: {
           in: workoutGroups.map((x) => x.id),
@@ -105,7 +112,7 @@ export class WorkoutsSessionsService {
     });
 
     // Busca todas as sessões para calcular sequências
-    const sequencies = await this.prismaService.workoutSessions.findMany({
+    const sequencies = await this.prismaService.workoutGroupSession.findMany({ // Corrigido para workoutGroupSession
       where: {
         workoutGroupId: {
           in: workoutGroups.map((x) => x.id),
@@ -157,7 +164,7 @@ export class WorkoutsSessionsService {
     const startOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     const endOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
 
-    const workoutsThisMonth = await this.prismaService.workoutSessions.count({
+    const workoutsThisMonth = await this.prismaService.workoutGroupSession.count({ // Corrigido para workoutGroupSession
       where: {
         workoutGroupId: {
           in: workoutGroups.map((x) => x.id),
@@ -292,7 +299,7 @@ export class WorkoutsSessionsService {
   }
 
   findOne(id: number) {
-    return this.prismaService.workoutSessions.findUnique({
+    return this.prismaService.workoutGroupSession.findUnique({ // Corrigido para workoutGroupSession
       where: { id },
     });
   }
@@ -302,9 +309,9 @@ export class WorkoutsSessionsService {
       updateDto.completedAt = new Date();
     }
 
-    const updatedSession = await this.prismaService.workoutSessions.update({
+    const updatedSession = await this.prismaService.workoutGroupSession.update({ // Corrigido para workoutGroupSession
       where: { id },
-      data: updateDto as WorkoutSessions,
+      data: updateDto as WorkoutGroupSession, // Corrigido para WorkoutGroupSession
       include: {
         workoutsGroups: {
           include: {
@@ -323,20 +330,26 @@ export class WorkoutsSessionsService {
         where: {
           studentUserId: studentId,
         },
-        include: { PersonalUser: true },
+        // Removido include: { PersonalUser: true }
       });
 
-      if (personalRelation && personalRelation.PersonalUser) {
-        const personalTrainerId = personalRelation.PersonalUser.id;
-        const message = `O aluno ${updatedSession.workoutsGroups.user.name} completou o treino "${workoutGroupName}" em ${updatedSession.completedAt?.toLocaleDateString('pt-BR')}.`;
-
-        await this.notificationsService.create({
-          senderId: studentId,
-          receiverId: personalTrainerId,
-          message: message,
-          type: 'workout_completed',
-          workoutSessionId: updatedSession.id,
+      if (personalRelation) { // Removido personalRelation.PersonalUser
+        const personalTrainer = await this.prismaService.users.findUnique({
+          where: { id: personalRelation.personalUserId }
         });
+
+        if (personalTrainer) {
+          const personalTrainerId = personalTrainer.id;
+          const message = `O aluno ${updatedSession.workoutsGroups.user.name} completou o treino "${workoutGroupName}" em ${updatedSession.completedAt?.toLocaleDateString('pt-BR')}.`;
+
+          await this.notificationsService.create({
+            senderId: studentId,
+            receiverId: personalTrainerId,
+            message: message,
+            type: 'workout_completed',
+            workoutSessionId: updatedSession.id,
+          });
+        }
       }
     }
 
@@ -344,7 +357,7 @@ export class WorkoutsSessionsService {
   }
 
   remove(id: number) {
-    return this.prismaService.workoutSessions.delete({
+    return this.prismaService.workoutGroupSession.delete({ // Corrigido para workoutGroupSession
       where: { id },
     });
   }

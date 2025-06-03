@@ -8,62 +8,79 @@ export class WorkoutsGroupsService {
   constructor(private readonly prismaService: PrismaService) { }
 
   async create(data: CreateWorkoutsGroupDto) {
-    const workoutGroup = await this.prismaService.workoutsGroups.create({
+    const { workoutsBlocks, ...groupData } = data;
+    const createdGroup = await this.prismaService.workoutsGroups.create({
       data: {
-        name: data.name,
-        image: data.image,
-        userId: data.userId,
-        workouts: {
-          create: data.workouts.map((workout) => ({
-            description: workout.description || '',
-            method: workout.methodId ? { connect: { id: workout.methodId } } : undefined,
-            exercise: { connect: { id: workout.exerciseId } },
+        ...groupData,
+        workoutsBlocks: { // Alterado para workoutsBlocks (singular)
+          create: workoutsBlocks?.map((block) => ({
+            order: block.order,
+            workouts: {
+              create: block.workouts?.map((workout) => ({
+                exerciseId: workout.exerciseId,
+                description: workout.description,
+                methodId: workout.methodId,
+                workoutSeries: {
+                  create: workout.workoutSeries?.map((series) => ({
+                    repetitions: series.repetitions,
+                    weight: series.weight,
+                    rest: series.rest,
+                  })),
+                },
+              })),
+            },
           })),
         },
       },
       include: {
-        workouts: true, // Inclui os workouts criados para obter seus IDs
-      },
-    });
-
-    await this._createWorkoutBlocksAndSeries(workoutGroup.workouts, data.workouts);
-
-    return this.prismaService.workoutsGroups.findUnique({
-      where: { id: workoutGroup.id },
-      include: {
-        workouts: {
+        workoutsBlocks: { // Alterado para workoutsBlocks (singular)
           include: {
-            workoutBlocks: {
+            workouts: {
               include: {
                 workoutSeries: true,
+                exercise: true,
+                method: true,
               },
             },
-            exercise: true,
-            method: true,
+          },
+        },
+      },
+    });
+    return createdGroup;
+  }
+
+  findAll(userId: string) {
+    return this.prismaService.workoutsGroups.findMany({
+      where: { userId },
+      include: {
+        workoutsBlocks: { // Alterado para workoutsBlocks (singular)
+          include: {
+            workouts: {
+              include: {
+                workoutSeries: true,
+                exercise: true,
+                method: true,
+              },
+            },
           },
         },
       },
     });
   }
 
-
-  findAll(userId: string) {
-    return this.prismaService.workoutsGroups.findMany({ where: { userId } });
-  }
-
   findAllExercises(id: number) {
     return this.prismaService.workoutsGroups.findUnique({
       where: { id },
       include: {
-        workouts: {
+        workoutsBlocks: { // Alterado para workoutsBlocks (singular)
           include: {
-            workoutBlocks: {
+            workouts: {
               include: {
                 workoutSeries: true,
+                exercise: true,
+                method: true,
               },
             },
-            exercise: true,
-            method: true,
           },
         },
       },
@@ -74,15 +91,15 @@ export class WorkoutsGroupsService {
     return this.prismaService.workoutsGroups.findUnique({
       where: { id },
       include: {
-        workouts: {
+        workoutsBlocks: { // Alterado para workoutsBlocks (singular)
           include: {
-            workoutBlocks: {
+            workouts: {
               include: {
                 workoutSeries: true,
+                exercise: true,
+                method: true,
               },
             },
-            exercise: true,
-            method: true,
           },
         },
       },
@@ -90,144 +107,115 @@ export class WorkoutsGroupsService {
   }
 
   async update(id: number, data: UpdateWorkoutsGroupDto) {
-    // 1. Excluir workouts, workoutBlocks e workoutSeries existentes
-    await this.prismaService.workoutSeries.deleteMany({
-      where: {
-        workoutBlock: {
-          workout: {
-            workoutsGroupsId: id,
-          },
-        },
-      },
-    });
+    const { workoutsBlocks, ...groupData } = data; // Alterado para workoutsBlocks (singular)
 
-    await this.prismaService.workoutBlock.deleteMany({
-      where: {
-        workout: {
-          workoutsGroupsId: id,
-        },
-      },
-    });
-
-    await this.prismaService.workouts.deleteMany({
-      where: {
-        workoutsGroupsId: id,
-      },
-    });
-
-    // 2. Atualizar os dados básicos do grupo de treino
+    // 1. Atualizar os dados básicos do grupo de treino
     const updatedWorkoutGroup = await this.prismaService.workoutsGroups.update({
       where: { id },
-      data: {
-        name: data.name,
-        image: data.image,
-        userId: data.userId,
-      },
+      data: groupData,
     });
 
-    // 3. Recriar workouts, workoutBlocks e workoutSeries
-    if (data.workouts) {
-      const createdWorkouts = await Promise.all(
-        data.workouts.map((workoutDto) =>
-          this.prismaService.workouts.create({
-            data: {
-              description: workoutDto.description || '',
-              method: workoutDto.methodId ? { connect: { id: workoutDto.methodId } } : undefined,
-              exercise: { connect: { id: workoutDto.exerciseId } },
-              workoutGroup: { connect: { id: updatedWorkoutGroup.id } },
-            },
-          }),
-        ),
-      );
+    // 2. Excluir WorkoutsBlocks, Workouts e WorkoutSeries existentes para este grupo
+    const existingworkoutsBlocks = await this.prismaService.workoutsBlocks.findMany({
+      where: { workoutGroupId: id },
+      select: { id: true, workouts: { select: { id: true } } },
+    });
 
-      await this._createWorkoutBlocksAndSeries(createdWorkouts, data.workouts);
+    for (const block of existingworkoutsBlocks) {
+      for (const workout of block.workouts) {
+        await this.prismaService.workoutSeries.deleteMany({
+          where: { workoutId: workout.id },
+        });
+      }
+      await this.prismaService.workouts.deleteMany({
+        where: { workoutsBlocksId: block.id },
+      });
+    }
+    await this.prismaService.workoutsBlocks.deleteMany({
+      where: { workoutGroupId: id },
+    });
+
+    // 3. Recriar WorkoutsBlocks, Workouts e WorkoutSeries se fornecidos
+    if (workoutsBlocks && workoutsBlocks.length > 0) {
+      for (const blockDto of workoutsBlocks) {
+        await this.prismaService.workoutsBlocks.create({
+          data: {
+            order: blockDto.order,
+            workoutGroupId: updatedWorkoutGroup.id,
+            workouts: {
+              create: blockDto.workouts?.map((workout) => ({
+                exerciseId: workout.exerciseId,
+                description: workout.description,
+                methodId: workout.methodId,
+                workoutSeries: {
+                  create: workout.workoutSeries?.map((series) => ({
+                    repetitions: series.repetitions,
+                    weight: series.weight,
+                    rest: series.rest,
+                  })),
+                },
+              })),
+            },
+          },
+        });
+      }
     }
 
     // Retorna o grupo de treino atualizado com as novas relações
     return this.prismaService.workoutsGroups.findUnique({
       where: { id },
       include: {
-        workouts: {
+        workoutsBlocks: { // Alterado para workoutsBlocks (singular)
           include: {
-            workoutBlocks: {
+            workouts: {
               include: {
                 workoutSeries: true,
+                exercise: true,
+                method: true,
               },
             },
-            exercise: true,
-            method: true,
           },
         },
       },
     });
   }
+
   async remove(id: number) {
-    // 1. Excluir workoutSeries associadas aos workouts deste grupo
-    await this.prismaService.workoutSeries.deleteMany({
-      where: {
-        workoutBlock: {
-          workout: {
-            workoutsGroupsId: id,
-          },
-        },
-      },
+    // 1. Obter todos os WorkoutsBlocks associados a este grupo
+    const existingworkoutsBlocks = await this.prismaService.workoutsBlocks.findMany({
+      where: { workoutGroupId: id },
+      select: { id: true, workouts: { select: { id: true } } },
     });
 
-    // 2. Excluir workoutBlocks associados aos workouts deste grupo
-    await this.prismaService.workoutBlock.deleteMany({
-      where: {
-        workout: {
-          workoutsGroupsId: id,
-        },
-      },
-    });
+    // 2. Excluir todas as WorkoutSeries e Workouts associadas
+    for (const block of existingworkoutsBlocks) {
+      for (const workout of block.workouts) {
+        await this.prismaService.workoutSeries.deleteMany({
+          where: { workoutId: workout.id },
+        });
+      }
+      await this.prismaService.workouts.deleteMany({
+        where: { workoutsBlocksId: block.id },
+      });
+    }
 
-    // 3. Excluir workouts associados a este grupo
-    await this.prismaService.workouts.deleteMany({
-      where: {
-        workoutsGroupsId: id,
-      },
+    // 3. Excluir todos os WorkoutsBlocks associados a este grupo
+    await this.prismaService.workoutsBlocks.deleteMany({
+      where: { workoutGroupId: id },
     });
 
     // 4. Excluir o grupo de treino
     return this.prismaService.workoutsGroups.delete({
       where: { id },
-      include: { WorkoutSessions: {} }
+      include: { workoutGroupSession: {} }, // Corrigido para camelCase
     });
   }
 
-  private async _createWorkoutBlocksAndSeries(
-    createdWorkouts: any[], // Tipo mais específico seria Workouts[] do Prisma
-    workoutDtos: any[], // Tipo mais específico seria CreateWorkoutDto[]
-  ) {
-    for (let i = 0; i < workoutDtos.length; i++) {
-      const workoutDto = workoutDtos[i];
-      const createdWorkout = createdWorkouts.find(
-        (w) => w.exerciseId === workoutDto.exerciseId && w.description === workoutDto.description,
-      );
-
-      if (createdWorkout && workoutDto.workoutBlocks) {
-        for (const blockDto of workoutDto.workoutBlocks) {
-          const createdBlock = await this.prismaService.workoutBlock.create({
-            data: {
-              workoutId: createdWorkout.id,
-              order: blockDto.order,
-            },
-          });
-
-          if (blockDto.workoutSeries) {
-            await this.prismaService.workoutSeries.createMany({
-              data: blockDto.workoutSeries.map((series) => ({
-                workoutId: createdWorkout.id,
-                workoutBlockId: createdBlock.id,
-                repetitions: series.repetitions,
-                weight: series.weight,
-                rest: series.rest,
-              })),
-            });
-          }
-        }
-      }
-    }
-  }
+  // Este método não é mais necessário se a criação aninhada for usada corretamente
+  // private async _createworkoutsBlocksAndSeries(
+  //   createdWorkouts: any[],
+  //   workoutDtos: any[],
+  // ) {
+  //   // Lógica de criação aninhada movida para os métodos create e update
+  // }
 }

@@ -8,8 +8,14 @@ export class WorkoutsSeriesService {
   constructor(private readonly prismaService: PrismaService) { }
 
   create(createWorkoutsSeriesDto: CreateWorkoutsSeriesDto) {
+    const { workoutId, ...seriesData } = createWorkoutsSeriesDto;
     return this.prismaService.workoutSeries.create({
-      data: createWorkoutsSeriesDto,
+      data: {
+        ...seriesData,
+        workout: {
+          connect: { id: workoutId },
+        },
+      },
     });
   }
 
