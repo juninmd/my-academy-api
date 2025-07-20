@@ -96,7 +96,7 @@ async function bootstrap() {
       }),
     )
 
-    const port = process.env.PORT || 9000;
+    const port = process.env.PORT || 9001;
     await app.listen(port);
     logger.log(`Servidor iniciado na porta ${port}`);
     console.log(`Swagger (Scalar) disponível em http://localhost:${port}/api`); // Log do endpoint do Swagger

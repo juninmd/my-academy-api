@@ -30,6 +30,8 @@ model WorkoutsBlocks {
   order          Int // Ordem do bloco dentro de um treino
   workoutGroup   WorkoutsGroups @relation(fields: [workoutGroupId], references: [id], onDelete: Cascade) // Relação com WorkoutGroup
   workouts       Workouts[] // Relação com Workout (ajustado conforme feedback)
+
+  @@unique([workoutGroupId, order])
 }
 
 model Workouts {
@@ -49,6 +51,7 @@ model Workouts {
 model WorkoutsGroups {
   id                  Int                   @id @default(autoincrement())
   name                String
+  image               String? // Added image field
   observations        String? // New field for observations
   userId              String // User who owns this workout group (student)
   personalId          Int? // Personal who created/modified this workout group (referencia PersonalStudent)

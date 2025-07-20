@@ -105,6 +105,30 @@ Nest is [MIT licensed](LICENSE).
 <https://rich-cyan-skunk-tutu.cyclic.app>
 <https://my-academy-api.onrender.com/>
 
+## Funcionalidades da API
+
+A API My Academy oferece os seguintes módulos e funcionalidades:
+
+- **Auth**: Gerencia a autenticação de usuários, incluindo login e registro.
+- **Class Bookings**: Permite agendamento e gerenciamento de aulas.
+- **Exercises**: Gerencia o cadastro e a consulta de exercícios.
+- **Firebase**: Integração com serviços Firebase para autenticação e outras funcionalidades.
+- **Health**: Endpoint para verificar a saúde da API.
+- **Methods**: Gerencia os métodos de execução de exercícios.
+- **Notifications**: Gerencia o envio e recebimento de notificações.
+- **Personal Training Plans**: Gerencia planos de treino personalizados.
+- **Personals**: Gerencia informações de personal trainers.
+- **Physical Assessment Schedules**: Gerencia agendamentos de avaliações físicas.
+- **Physical Assessments**: Gerencia os resultados das avaliações físicas.
+- **Subscriptions**: Gerencia as assinaturas dos usuários.
+- **Telegram**: Integração com o Telegram para notificações e outras interações.
+- **Users**: Gerencia o cadastro e as informações dos usuários.
+- **Workouts**: Gerencia a criação e consulta de treinos.
+- **Workouts Blocks**: Gerencia blocos de exercícios dentro de um treino.
+- **Workouts Groups**: Gerencia grupos de treinos.
+- **Workouts Series**: Gerencia séries de exercícios dentro de um bloco de treino.
+- **Workouts Sessions**: Gerencia sessões de treino.
+
 # Construir a imagem Docker
 
 docker build -t my-academy-api .
