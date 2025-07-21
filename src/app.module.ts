@@ -21,6 +21,9 @@ import { AuthModule } from './api/auth/auth.module';
 import { SubscriptionsModule } from './api/subscriptions/subscriptions.module';
 import { PhysicalAssessmentSchedulesModule } from './api/physical-assessment-schedules/physical-assessment-schedules.module';
 import { PersonalTrainingPlansModule } from './api/personal-training-plans/personal-training-plans.module';
+import { AcademiesModule } from './api/academies/academies.module';
+import { PersonalAcademiesModule } from './api/personal-academies/personal-academies.module';
+import { StudentAcademiesModule } from './api/student-academies/student-academies.module';
 
 @Module({
   imports: [
@@ -43,6 +46,9 @@ import { PersonalTrainingPlansModule } from './api/personal-training-plans/perso
     SubscriptionsModule,
     PhysicalAssessmentSchedulesModule,
     PersonalTrainingPlansModule, // Adiciona o novo módulo de planos de treino personal
+    AcademiesModule,
+    PersonalAcademiesModule,
+    StudentAcademiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

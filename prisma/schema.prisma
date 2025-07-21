@@ -106,6 +106,9 @@ model Users {
   ClassBookings         ClassBooking[]
   fcmToken              String? // New field for Firebase Cloud Messaging token
   subscriptions         Subscription[] // Referencia Subscription
+  personalAcademies     PersonalAcademy[] // New: For users who are personal trainers
+  studentAcademies      StudentAcademy[]  // New: For users who are students
+  ownedAcademies        Academy[]
 }
 
 model WorkoutGroupSession {
@@ -235,6 +238,36 @@ model RoleUser {
   id    Int        @id @default(autoincrement())
   name  RoleName   @unique
   users UserRole[]
+}
+
+model Academy {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  address   String?
+  ownerId   String?  @unique
+  owner     Users?   @relation(fields: [ownerId], references: [id])
+  personals PersonalAcademy[]
+  students  StudentAcademy[]
+}
+
+model PersonalAcademy {
+  personalId String
+  academyId  Int
+  personal   Users    @relation(fields: [personalId], references: [id], onDelete: Cascade)
+  academy    Academy  @relation(fields: [academyId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+
+  @@id([personalId, academyId])
+}
+
+model StudentAcademy {
+  studentId  String
+  academyId  Int
+  student    Users    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  academy    Academy  @relation(fields: [academyId], references: [id], onDelete: Cascade)
+  assignedAt DateTime @default(now())
+
+  @@id([studentId, academyId])
 }
 
 // Adicione este bloco generator
