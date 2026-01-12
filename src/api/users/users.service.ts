@@ -8,8 +8,36 @@ import { Users } from '@prisma/client';
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) { }
 
-  create(createUsersDto: CreateUserDto) {
-    return this.prismaService.users.create({ data: createUsersDto as Users });
+  async create(createUserDto: CreateUserDto) {
+    const { role, ...userData } = createUserDto;
+
+    // Create user first
+    const user = await this.prismaService.users.create({
+      data: userData as Users
+    });
+
+    if (role) {
+      // Find role by name
+      const roleRecord = await this.prismaService.roleUser.findUnique({
+        where: { name: role as any } // Assuming role string matches RoleName enum
+      });
+
+      if (roleRecord) {
+        await this.prismaService.userRole.create({
+          data: {
+            userId: user.id,
+            roleId: roleRecord.id
+          }
+        });
+      }
+    } else {
+      // Default to STUDENT if no role provided?
+      // For now, let's just leave it optional or ensure frontend always sends it.
+      // It seems safer to verify if a default role is needed.
+      // Let's assume frontend sends it for now.
+    }
+
+    return user;
   }
 
   findAll() {
@@ -17,7 +45,16 @@ export class UsersService {
   }
 
   findOne(id: string) {
-    return this.prismaService.users.findUnique({ where: { id } });
+    return this.prismaService.users.findUnique({
+      where: { id },
+      include: {
+        roles: {
+          include: {
+            roleUser: true
+          }
+        }
+      }
+    });
   }
 
   findOneByEmail(email: string) {

@@ -6,16 +6,20 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { TelegramService } from '../telegram/telegram.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { UsersService } from '../users/users.service';
+import { TelegramModule } from '../telegram/telegram.module';
+import { NotificationsModule } from '../notifications/notifications.module';
+import { UsersModule } from '../users/users.module';
+import { PrismaModule } from '../../prisma.module';
 
 @Module({
-  imports: [CacheModule.register()],
-  controllers: [WorkoutsSessionsController],
-  providers: [
-    WorkoutsSessionsService,
-    PrismaService,
-    TelegramService,
-    NotificationsService,
-    UsersService,
+  imports: [
+    CacheModule.register(),
+    TelegramModule,
+    NotificationsModule,
+    UsersModule,
+    PrismaModule,
   ],
+  controllers: [WorkoutsSessionsController],
+  providers: [WorkoutsSessionsService],
 })
-export class WorkoutsSessionsModule {}
+export class WorkoutsSessionsModule { }

@@ -8,12 +8,23 @@ export class WorkoutsGroupsService {
   constructor(private readonly prismaService: PrismaService) { }
 
   async create(data: CreateWorkoutsGroupDto) {
-    const { workoutsBlocks, ...groupData } = data;
+
+    const { workouts, workoutsBlocks, ...groupData } = data;
+
+    let blocksToCreate = workoutsBlocks;
+
+    if ((!blocksToCreate || blocksToCreate.length === 0) && workouts && workouts.length > 0) {
+      blocksToCreate = [{
+        order: 1,
+        workouts: workouts as any // Type assertion for now to match CreateWorkoutBlockDto structure expectations if different
+      }];
+    }
+
     const createdGroup = await this.prismaService.workoutsGroups.create({
       data: {
         ...groupData,
         workoutsBlocks: { // Alterado para workoutsBlocks (singular)
-          create: workoutsBlocks?.map((block) => ({
+          create: blocksToCreate?.map((block) => ({
             order: block.order,
             workouts: {
               create: block.workouts?.map((workout) => ({
@@ -49,8 +60,8 @@ export class WorkoutsGroupsService {
     return createdGroup;
   }
 
-  findAll(userId: string) {
-    return this.prismaService.workoutsGroups.findMany({
+  async findAll(userId: string) {
+    const groups = await this.prismaService.workoutsGroups.findMany({
       where: { userId },
       include: {
         workoutsBlocks: { // Alterado para workoutsBlocks (singular)
@@ -66,6 +77,13 @@ export class WorkoutsGroupsService {
         },
       },
     });
+
+    return groups.map(group => ({
+      ...group,
+      workouts: group.workoutsBlocks
+        .sort((a, b) => a.order - b.order)
+        .flatMap(block => block.workouts)
+    }));
   }
 
   findAllExercises(id: number) {
@@ -87,8 +105,8 @@ export class WorkoutsGroupsService {
     });
   }
 
-  findOne(id: number) {
-    return this.prismaService.workoutsGroups.findUnique({
+  async findOne(id: number) {
+    const group = await this.prismaService.workoutsGroups.findUnique({
       where: { id },
       include: {
         workoutsBlocks: { // Alterado para workoutsBlocks (singular)
@@ -104,6 +122,15 @@ export class WorkoutsGroupsService {
         },
       },
     });
+
+    if (!group) return null;
+
+    return {
+      ...group,
+      workouts: group.workoutsBlocks
+        .sort((a, b) => a.order - b.order)
+        .flatMap(block => block.workouts)
+    };
   }
 
   async update(id: number, data: UpdateWorkoutsGroupDto) {

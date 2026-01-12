@@ -1,14 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateExerciseDto {
-  @ApiProperty({ required: true, description: 'Treino' })
+  @ApiProperty({ description: 'The name of the exercise', example: 'Supino Reto com Halteres' })
   readonly name: string;
-  @ApiProperty({ required: true, description: 'Treino' })
+
+  @ApiProperty({ description: 'URL of the exercise image', example: 'https://example.com/supino_reto.jpg' })
   readonly image: string;
-  @ApiProperty({ required: true, description: 'Treino' })
+
+  @ApiProperty({ description: 'Tips for performing the exercise correctly', example: 'Mantenha a coluna reta e o abdômen contraído.' })
   readonly tips: string;
-  @ApiProperty({ required: true, description: 'Treino' })
+
+  @ApiProperty({ description: 'Common mistakes to avoid during the exercise', example: 'Não arquear as costas ou descer demais o peso.' })
   readonly mistakes: string;
-  @ApiProperty({ description: 'Treino' })
+
+  @ApiProperty({ description: 'Detailed description of the exercise', example: 'Exercício para peito com foco na porção central.', required: false })
   readonly description?: string;
 }

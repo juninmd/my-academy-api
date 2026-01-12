@@ -4,8 +4,6 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model Exercises {
@@ -68,6 +66,8 @@ model WorkoutSeries {
   repetitions Int      @default(15)
   weight      Int?     @default(10)
   rest        Int?     @default(60)
+  time        Int?     // Tempo em segundos (para cardio/isometria)
+  calories    Int?     // Meta de calorias (para cardio)
   workout     Workouts @relation(fields: [workoutId], references: [id], onDelete: Cascade) // Relação com Workout
 }
 

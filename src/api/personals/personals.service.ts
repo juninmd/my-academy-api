@@ -8,7 +8,7 @@ import { UpdateWorkoutsGroupDto } from '../workouts-groups/dto/update-workouts-g
 
 @Injectable()
 export class PersonalsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   create(createpersonalsDto: CreatePersonalDto) {
     return this.prismaService.personals.create({
@@ -217,21 +217,33 @@ export class PersonalsService {
   }
 
   async findStudents(personalUserId: string) {
+    // 1. Find all relations for this personal
     const personalRelations = await this.prismaService.personals.findMany({
       where: { personalUserId },
-      include: { PersonalClassSchedule: true } // Mantido, pois existe no schema
+      include: { PersonalClassSchedule: true }
     });
 
-    const studentsWithSchedule = [];
-    for (const relation of personalRelations) {
-      const studentUser = await this.prismaService.users.findUnique({
-        where: { id: relation.studentUserId }
-      });
-      if (studentUser) {
-        studentsWithSchedule.push({ student: studentUser, schedule: relation.PersonalClassSchedule });
+    if (personalRelations.length === 0) return [];
+
+    // 2. Extract student IDs
+    const studentIds = personalRelations.map(r => r.studentUserId);
+
+    // 3. Fetch all students in one query
+    const students = await this.prismaService.users.findMany({
+      where: {
+        id: { in: studentIds }
       }
-    }
-    return studentsWithSchedule.flat(1);
+    });
+
+    // 4. Map back to structure (if needed) or return students with schedule attached
+    // The previous loop attached schedule to student result.
+    return students.map(student => {
+      const relation = personalRelations.find(r => r.studentUserId === student.id);
+      return {
+        student: student,
+        schedule: relation ? relation.PersonalClassSchedule : []
+      };
+    });
   }
 
   update(id: number, updateDto: UpdatePersonalDto) {
