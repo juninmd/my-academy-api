@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class WorkoutsGroupsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(data: CreateWorkoutsGroupDto) {
     return this.prismaService.workoutsGroups.create({
@@ -27,11 +27,10 @@ export class WorkoutsGroupsService {
               })),
             },
           })),
-        }
+        },
       },
     });
   }
-
 
   findAll(userId: string) {
     return this.prismaService.workoutsGroups.findMany({ where: { userId } });
@@ -68,15 +67,9 @@ export class WorkoutsGroupsService {
   }
 
   async update(id: number, data: UpdateWorkoutsGroupDto) {
-    // Primeiro, obtenha todos os workouts atuais do grupo
-    const currentGroup = await this.prismaService.workoutsGroups.findUnique({
-      where: { id },
-      include: { workouts: { include: { workoutSeries: true } } },
+    await this.prismaService.workouts.deleteMany({
+      where: { workoutsGroupsId: id },
     });
-
-    const workoutsDelete = await this.prismaService.workouts.deleteMany({ where: { workoutsGroupsId: id } })
-
-    console.log(currentGroup, workoutsDelete);
 
     // Agora, atualize o grupo de workouts como antes
     return this.prismaService.workoutsGroups.update({
@@ -112,7 +105,7 @@ export class WorkoutsGroupsService {
   remove(id: number) {
     return this.prismaService.workoutsGroups.delete({
       where: { id },
-      include: { WorkoutSessions: {} }
+      include: { WorkoutSessions: {} },
     });
   }
 }
