@@ -79,7 +79,6 @@ export class WorkoutsGroupsService {
 
     console.log(currentGroup, workoutsDelete);
 
-    // Agora, atualize o grupo de workouts como antes
     return this.prismaService.workoutsGroups.update({
       where: { id },
       data: {
