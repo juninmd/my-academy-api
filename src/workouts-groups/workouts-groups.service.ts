@@ -68,17 +68,8 @@ export class WorkoutsGroupsService {
   }
 
   async update(id: number, data: UpdateWorkoutsGroupDto) {
-    // Primeiro, obtenha todos os workouts atuais do grupo
-    const currentGroup = await this.prismaService.workoutsGroups.findUnique({
-      where: { id },
-      include: { workouts: { include: { workoutSeries: true } } },
-    });
+    await this.prismaService.workouts.deleteMany({ where: { workoutsGroupsId: id } })
 
-    const workoutsDelete = await this.prismaService.workouts.deleteMany({ where: { workoutsGroupsId: id } })
-
-    console.log(currentGroup, workoutsDelete);
-
-    // Agora, atualize o grupo de workouts como antes
     return this.prismaService.workoutsGroups.update({
       where: { id },
       data: {
