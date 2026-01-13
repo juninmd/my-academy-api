@@ -8,12 +8,38 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum Role {
+  ADMIN
+  PERSONAL
+  STUDENT
+}
+
+enum ExerciseType {
+  STRENGTH
+  CARDIO
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  OVERDUE
+  CANCELLED
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  CANCELLED
+  EXPIRED
+}
+
 model Exercises {
-  id       Int        @id @default(autoincrement())
-  name     String     @unique
+  id       Int          @id @default(autoincrement())
+  name     String       @unique
   image    String
   tips     String
   mistakes String
+  type     ExerciseType @default(STRENGTH)
   workouts Workouts[]
 }
 
@@ -56,9 +82,30 @@ model Users {
   email          String
   photoUrl       String           @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
   telegramId     String?
+  role           Role             @default(STUDENT)
+
   workoutsGroups WorkoutsGroups[]
+
+  // Relations as a Personal Trainer
   Personals      Personals[]      @relation("personal")
+  assessmentsGiven Assessment[]   @relation("personalAssessments")
+  gymsOwned      Gym[]            @relation("gymOwner")
+  personalProfile PersonalProfile?
+
+  // Relations as a Student
   Students       Personals[]      @relation("student")
+  assessments    Assessment[]     @relation("studentAssessments")
+  subscriptions  Subscription[]
+  payments       Payment[]
+}
+
+model PersonalProfile {
+  id          Int     @id @default(autoincrement())
+  userId      String  @unique
+  cref        String
+  bio         String?
+  specialties String?
+  user        Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model WorkoutSeries {
@@ -67,6 +114,12 @@ model WorkoutSeries {
   repetitions Int      @default(15)
   weight      Int?     @default(10)
   rest        Int?     @default(60)
+
+  // Cardio fields
+  time        Int?     // in seconds
+  distance    Float?   // in km
+  speed       Float?   // in km/h or pace
+
   workout     Workouts @relation(fields: [workoutId], references: [id], onDelete: Cascade)
 }
 
@@ -77,6 +130,7 @@ model WorkoutSessions {
   workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id], onDelete: Cascade)
 }
 
+// Represents the contract/relationship between a Personal and a Student
 model Personals {
   id                    Int                     @id @default(autoincrement())
   StudentUser           Users                   @relation("student", fields: [studentUserId], references: [id], onDelete: Cascade)
@@ -84,6 +138,7 @@ model Personals {
   PersonalUser          Users                   @relation("personal", fields: [personalUserId], references: [id], onDelete: Cascade)
   personalUserId        String
   PersonalClassSchedule PersonalClassSchedule[]
+  payments              Payment[]
 
   @@unique([studentUserId, personalUserId])
   @@index([personalUserId])
@@ -91,8 +146,90 @@ model Personals {
 
 model PersonalClassSchedule {
   id          Int       @id @default(autoincrement())
-  dayOfWeek   Int // Dia da semana (ex: "Monday", "Tuesday", etc.)
+  dayOfWeek   Int // Dia da semana (ex: 0=Sunday, 1=Monday, etc.)
   time        String // Horário da aula (ex: "18:30", "07:00")
   personalsId Int // Chave estrangeira para o modelo Personals
   personals   Personals @relation(fields: [personalsId], references: [id], onDelete: Cascade)
+}
+
+model Assessment {
+  id          Int      @id @default(autoincrement())
+  studentId   String
+  personalId  String
+  date        DateTime @default(now())
+
+  weight      Float
+  height      Float
+  imc         Float?
+  fatPercentage Float?
+
+  // Skinfolds (Dobras) - mm
+  triceps       Float?
+  biceps        Float?
+  subscapular   Float?
+  iliacCrest    Float?
+  supraspinale  Float?
+  abdominal     Float?
+  thigh         Float?
+  calf          Float?
+
+  // Circumferences - cm
+  waist         Float?
+  hip           Float?
+  arm           Float?
+  leg           Float?
+
+  student     Users    @relation("studentAssessments", fields: [studentId], references: [id])
+  personal    Users    @relation("personalAssessments", fields: [personalId], references: [id])
+}
+
+model Gym {
+  id            Int            @id @default(autoincrement())
+  name          String
+  address       String?
+  ownerId       String?
+  owner         Users?         @relation("gymOwner", fields: [ownerId], references: [id])
+
+  plans         Plan[]
+  subscriptions Subscription[]
+}
+
+model Plan {
+  id             Int            @id @default(autoincrement())
+  name           String
+  price          Float
+  durationMonths Int
+  gymId          Int
+  gym            Gym            @relation(fields: [gymId], references: [id])
+  subscriptions  Subscription[]
+}
+
+model Subscription {
+  id        Int                @id @default(autoincrement())
+  userId    String
+  gymId     Int
+  planId    Int?
+  startDate DateTime           @default(now())
+  endDate   DateTime?
+  status    SubscriptionStatus @default(ACTIVE)
+
+  user      Users              @relation(fields: [userId], references: [id])
+  gym       Gym                @relation(fields: [gymId], references: [id])
+  plan      Plan?              @relation(fields: [planId], references: [id])
+  payments  Payment[]
+}
+
+model Payment {
+  id                 Int           @id @default(autoincrement())
+  userId             String
+  amount             Float
+  date               DateTime      @default(now())
+  status             PaymentStatus @default(PENDING)
+
+  subscriptionId     Int?
+  personalContractId Int?
+
+  subscription       Subscription? @relation(fields: [subscriptionId], references: [id])
+  personalContract   Personals?    @relation(fields: [personalContractId], references: [id])
+  user               Users         @relation(fields: [userId], references: [id])
 }
