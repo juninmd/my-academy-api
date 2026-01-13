@@ -6,19 +6,19 @@ import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class WorkoutsGroupsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(data: CreateWorkoutsGroupDto) {
     return this.prismaService.workoutsGroups.create({
       data: {
         name: data.name,
         image: data.image,
-        userId: data.userId,
+        user: { connect: { id: data.userId } },
         workouts: {
           create: data.workouts.map((workout) => ({
-            exerciseId: workout.exerciseId,
+            exercise: { connect: { id: workout.exerciseId } },
             description: workout.description || '',
-            methodId: workout.methodId,
+            method: { connect: { id: workout.methodId } },
             workoutSeries: {
               create: workout.workoutSeries.map((series) => ({
                 repetitions: series.repetitions,
@@ -27,11 +27,10 @@ export class WorkoutsGroupsService {
               })),
             },
           })),
-        }
+        },
       },
     });
   }
-
 
   findAll(userId: string) {
     return this.prismaService.workoutsGroups.findMany({ where: { userId } });
@@ -103,7 +102,7 @@ export class WorkoutsGroupsService {
   remove(id: number) {
     return this.prismaService.workoutsGroups.delete({
       where: { id },
-      include: { WorkoutSessions: {} }
+      include: { WorkoutSessions: {} },
     });
   }
 }

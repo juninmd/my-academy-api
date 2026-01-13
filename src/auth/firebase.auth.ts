@@ -7,7 +7,6 @@ const firebase_params = configs.serviceAccount;
 
 @Injectable()
 export class PreauthMiddleware implements NestMiddleware {
-
   private defaultApp: any;
 
   constructor() {
@@ -29,11 +28,13 @@ export class PreauthMiddleware implements NestMiddleware {
         statusCode: 403,
         timestamp: new Date().toISOString(),
         path: req.url,
-        message: 'token required'
+        message: 'token required',
       });
     }
     try {
-      const decodedToken = await this.defaultApp.auth().verifyIdToken(token.replace('Bearer ', ''));
+      const decodedToken = await this.defaultApp
+        .auth()
+        .verifyIdToken(token.replace('Bearer ', ''));
 
       req['user'] = decodedToken;
       next();
@@ -43,7 +44,7 @@ export class PreauthMiddleware implements NestMiddleware {
         statusCode: 403,
         timestamp: new Date().toISOString(),
         path: req.url,
-        message: 'Access Denied'
+        message: 'Access Denied',
       });
     }
   }

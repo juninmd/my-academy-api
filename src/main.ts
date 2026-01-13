@@ -32,4 +32,4 @@ async function bootstrap() {
     process.exit(1);
   }
 }
-bootstrap().catch(err => logger.error(err));
+bootstrap().catch((err) => logger.error(err));
