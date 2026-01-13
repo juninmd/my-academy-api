@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { CreateWorkoutsSessionsDto } from './dto/create-workouts-sessions.dto';
 import { UpdateWorkoutsSessionsDto } from './dto/update-workouts-sessions.dto';
 import { PrismaService } from '../prisma.service';
@@ -7,16 +7,37 @@ import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class WorkoutsSessionsService {
-  constructor(private readonly prismaService: PrismaService, private readonly telegramService: TelegramService) { }
+  private readonly logger = new Logger(WorkoutsSessionsService.name);
+
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly telegramService: TelegramService,
+  ) {}
 
   async create(createworkoutsDto: CreateWorkoutsSessionsDto, userId: string) {
-    const user = await this.prismaService.users.findUniqueOrThrow({ where: { id: userId } });
+    const user = await this.prismaService.users.findUniqueOrThrow({
+      where: { id: userId },
+    });
     if (user.telegramId) {
       const date = new Date();
-      const dateText = `${date.getUTCDate().toString().padStart(2, '0')}/${(date.getUTCMonth() + 1).toString().padStart(2, '0')}/${date.getUTCFullYear()}`;
-      const workoutGroup = await this.prismaService.workoutsGroups.findUniqueOrThrow({ where: { id: createworkoutsDto.workoutGroupId } });
+      const dateText = `${date.getUTCDate().toString().padStart(2, '0')}/${(
+        date.getUTCMonth() + 1
+      )
+        .toString()
+        .padStart(2, '0')}/${date.getUTCFullYear()}`;
+      const workoutGroup =
+        await this.prismaService.workoutsGroups.findUniqueOrThrow({
+          where: { id: createworkoutsDto.workoutGroupId },
+        });
       const message = `${dateText} - ${workoutGroup.name}`;
-      await this.telegramService.postChannelMessage(message, user.telegramId);
+      this.telegramService
+        .postChannelMessage(message, user.telegramId)
+        .catch((err) => {
+          this.logger.error(
+            `Failed to send telegram message for user ${userId}`,
+            err,
+          );
+        });
     }
 
     return this.prismaService.workoutSessions.create({
@@ -55,7 +76,7 @@ export class WorkoutsSessionsService {
     });
 
     if (iAmPersonal.length > 0) {
-      students = iAmPersonal.map(q => q.StudentUser).flat(1);
+      students = iAmPersonal.map((q) => q.StudentUser).flat(1);
     }
 
     const iAmStudent = await this.prismaService.personals.findFirst({
@@ -63,7 +84,7 @@ export class WorkoutsSessionsService {
         personalUserId: idUser,
       },
       include: { PersonalUser: true },
-    })
+    });
 
     if (iAmStudent) {
       personal = iAmStudent.PersonalUser;
