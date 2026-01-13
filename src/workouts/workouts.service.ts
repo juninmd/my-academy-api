@@ -6,7 +6,7 @@ import { Workouts } from '@prisma/client';
 
 @Injectable()
 export class WorkoutsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(createworkoutsDto: CreateWorkoutDto) {
     return this.prismaService.workouts.create({

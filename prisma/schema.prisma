@@ -86,6 +86,7 @@ model Personals {
   PersonalClassSchedule PersonalClassSchedule[]
 
   @@unique([studentUserId, personalUserId])
+  @@index([personalUserId])
 }
 
 model PersonalClassSchedule {

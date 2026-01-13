@@ -13,7 +13,7 @@ import { UpdateWorkoutDto } from './dto/update-workout.dto';
 
 @Controller('workouts')
 export class WorkoutsController {
-  constructor(private readonly workoutsService: WorkoutsService) { }
+  constructor(private readonly workoutsService: WorkoutsService) {}
 
   @Post()
   create(@Body() createWorkoutDto: CreateWorkoutDto) {
