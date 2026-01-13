@@ -13,12 +13,12 @@ export class WorkoutsGroupsService {
       data: {
         name: data.name,
         image: data.image,
-        userId: data.userId,
+        user: { connect: { id: data.userId } },
         workouts: {
           create: data.workouts.map((workout) => ({
-            exerciseId: workout.exerciseId,
+            exercise: { connect: { id: workout.exerciseId } },
             description: workout.description || '',
-            methodId: workout.methodId,
+            method: { connect: { id: workout.methodId } },
             workoutSeries: {
               create: workout.workoutSeries.map((series) => ({
                 repetitions: series.repetitions,
