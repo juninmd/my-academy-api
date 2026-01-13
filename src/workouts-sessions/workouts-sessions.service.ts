@@ -25,16 +25,10 @@ export class WorkoutsSessionsService {
   }
 
   async findAll(userId: string, year: number, month: number) {
-    const workoutGroups = await this.prismaService.workoutsGroups.findMany({
-      where: {
-        userId: userId,
-      },
-      orderBy: { id: 'asc' },
-    });
     const sequencies = await this.prismaService.workoutSessions.findMany({
       where: {
-        workoutGroupId: {
-          in: workoutGroups.map((x) => x.id),
+        workoutsGroups: {
+          userId: userId,
         },
         date: {
           gte: new Date(year, month - 1, 1),
