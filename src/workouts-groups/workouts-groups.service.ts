@@ -6,7 +6,7 @@ import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class WorkoutsGroupsService {
-  constructor(private readonly prismaService: PrismaService) { }
+  constructor(private readonly prismaService: PrismaService) {}
 
   create(data: CreateWorkoutsGroupDto) {
     return this.prismaService.workoutsGroups.create({
@@ -27,11 +27,10 @@ export class WorkoutsGroupsService {
               })),
             },
           })),
-        }
+        },
       },
     });
   }
-
 
   findAll(userId: string) {
     return this.prismaService.workoutsGroups.findMany({ where: { userId } });
@@ -74,7 +73,9 @@ export class WorkoutsGroupsService {
       include: { workouts: { include: { workoutSeries: true } } },
     });
 
-    const workoutsDelete = await this.prismaService.workouts.deleteMany({ where: { workoutsGroupsId: id } })
+    const workoutsDelete = await this.prismaService.workouts.deleteMany({
+      where: { workoutsGroupsId: id },
+    });
 
     console.log(currentGroup, workoutsDelete);
 
@@ -112,7 +113,7 @@ export class WorkoutsGroupsService {
   remove(id: number) {
     return this.prismaService.workoutsGroups.delete({
       where: { id },
-      include: { WorkoutSessions: {} }
+      include: { WorkoutSessions: {} },
     });
   }
 }

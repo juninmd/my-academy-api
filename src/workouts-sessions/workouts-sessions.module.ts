@@ -10,4 +10,4 @@ import { TelegramService } from '../telegram/telegram.service';
   controllers: [WorkoutsSessionsController],
   providers: [WorkoutsSessionsService, PrismaService, TelegramService],
 })
-export class WorkoutsSessionsModule { }
+export class WorkoutsSessionsModule {}
