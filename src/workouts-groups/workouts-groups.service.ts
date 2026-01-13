@@ -13,12 +13,12 @@ export class WorkoutsGroupsService {
       data: {
         name: data.name,
         image: data.image,
-        userId: data.userId,
+        user: { connect: { id: data.userId } },
         workouts: {
           create: data.workouts.map((workout) => ({
-            exerciseId: workout.exerciseId,
+            exercise: { connect: { id: workout.exerciseId } },
             description: workout.description || '',
-            methodId: workout.methodId,
+            method: { connect: { id: workout.methodId } },
             workoutSeries: {
               create: workout.workoutSeries.map((series) => ({
                 repetitions: series.repetitions,
@@ -71,7 +71,12 @@ export class WorkoutsGroupsService {
       where: { workoutsGroupsId: id },
     });
 
-    // Agora, atualize o grupo de workouts como antes
+    const workoutsDelete = await this.prismaService.workouts.deleteMany({
+      where: { workoutsGroupsId: id },
+    });
+
+    console.log(currentGroup, workoutsDelete);
+
     return this.prismaService.workoutsGroups.update({
       where: { id },
       data: {
