@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateWorkoutsGroupDto } from './dto/create-workouts-group.dto';
 import { UpdateWorkoutsGroupDto } from './dto/update-workouts-group.dto';
-import { WorkoutsGroups } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
@@ -67,36 +66,38 @@ export class WorkoutsGroupsService {
   }
 
   async update(id: number, data: UpdateWorkoutsGroupDto) {
-    await this.prismaService.workouts.deleteMany({
-      where: { workoutsGroupsId: id },
-    });
-
-    const workoutsDelete = await this.prismaService.workouts.deleteMany({
-      where: { workoutsGroupsId: id },
-    });
-
-    console.log(currentGroup, workoutsDelete);
+    if (data.workouts) {
+      await this.prismaService.workouts.deleteMany({
+        where: { workoutsGroupsId: id },
+      });
+    }
 
     return this.prismaService.workoutsGroups.update({
       where: { id },
       data: {
         name: data.name,
         image: data.image,
-        userId: data.userId, // Use connect here
-        workouts: {
-          create: data.workouts.map((workout) => ({
-            exerciseId: workout.exerciseId, // Use connect here
-            description: workout.description,
-            methodId: workout.methodId,
-            workoutSeries: {
-              create: workout.workoutSeries.map((series) => ({
-                repetitions: series.repetitions,
-                weight: series.weight,
-                rest: series.rest,
+        user: data.userId ? { connect: { id: data.userId } } : undefined,
+        workouts: data.workouts
+          ? {
+              create: data.workouts.map((workout) => ({
+                exercise: { connect: { id: workout.exerciseId } },
+                description: workout.description,
+                method: workout.methodId
+                  ? { connect: { id: workout.methodId } }
+                  : undefined,
+                workoutSeries: workout.workoutSeries
+                  ? {
+                      create: workout.workoutSeries.map((series) => ({
+                        repetitions: series.repetitions,
+                        weight: series.weight,
+                        rest: series.rest,
+                      })),
+                    }
+                  : undefined,
               })),
-            },
-          })),
-        },
+            }
+          : undefined,
       },
       include: {
         workouts: {

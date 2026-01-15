@@ -1,5 +1,5 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as firebase from 'firebase-admin';
 import configs from '../configs';
 
@@ -15,7 +15,7 @@ export class PreauthMiddleware implements NestMiddleware {
     });
   }
 
-  async use(req: Request, res: Response, next: Function) {
+  async use(req: Request, res: Response, next: NextFunction) {
     if (configs.authMoc.enabled === 'true') {
       const decodedToken = JSON.parse(configs.authMoc.json);
       req['user'] = decodedToken;

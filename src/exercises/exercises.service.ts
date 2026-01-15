@@ -3,15 +3,13 @@ import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
 import { PrismaService } from '../prisma.service';
 
-import { Exercises } from '@prisma/client';
-
 @Injectable()
 export class ExercisesService {
   constructor(private readonly prismaService: PrismaService) {}
 
   create(createExerciseDto: CreateExerciseDto) {
     return this.prismaService.exercises.create({
-      data: createExerciseDto as Exercises,
+      data: createExerciseDto,
     });
   }
 
@@ -28,7 +26,7 @@ export class ExercisesService {
   update(id: number, updateDto: UpdateExerciseDto) {
     return this.prismaService.exercises.update({
       where: { id },
-      data: updateDto as Exercises,
+      data: updateDto,
     });
   }
 
