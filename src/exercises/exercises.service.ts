@@ -1,9 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
 import { PrismaService } from '../prisma.service';
-
-import { Exercises } from '@prisma/client';
 
 @Injectable()
 export class ExercisesService {
@@ -11,7 +9,7 @@ export class ExercisesService {
 
   create(createExerciseDto: CreateExerciseDto) {
     return this.prismaService.exercises.create({
-      data: createExerciseDto as Exercises,
+      data: createExerciseDto,
     });
   }
 
@@ -19,20 +17,30 @@ export class ExercisesService {
     return this.prismaService.exercises.findMany();
   }
 
-  findOne(id: number) {
-    return this.prismaService.exercises.findUnique({
+  async findOne(id: number) {
+    const exercise = await this.prismaService.exercises.findUnique({
       where: { id },
     });
+
+    if (!exercise) {
+      throw new NotFoundException(`Exercise #${id} not found`);
+    }
+
+    return exercise;
   }
 
-  update(id: number, updateDto: UpdateExerciseDto) {
+  async update(id: number, updateDto: UpdateExerciseDto) {
+    await this.findOne(id);
+
     return this.prismaService.exercises.update({
       where: { id },
-      data: updateDto as Exercises,
+      data: updateDto,
     });
   }
 
-  remove(id: number) {
+  async remove(id: number) {
+    await this.findOne(id);
+
     return this.prismaService.exercises.delete({ where: { id } });
   }
 }
