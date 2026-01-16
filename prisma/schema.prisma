@@ -34,20 +34,28 @@ enum SubscriptionStatus {
 }
 
 model Exercises {
-  id       Int          @id @default(autoincrement())
-  name     String       @unique
-  image    String
-  tips     String
-  mistakes String
-  type     ExerciseType @default(STRENGTH)
-  workouts Workouts[]
+  id        Int          @id @default(autoincrement())
+  name      String       @unique
+  image     String
+  tips      String
+  mistakes  String
+  type      ExerciseType @default(STRENGTH)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  workouts  Workouts[]
+
+  @@map("exercises")
 }
 
 model Methods {
   id          Int        @id @default(autoincrement())
   name        String
   description String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   workouts    Workouts[]
+
+  @@map("methods")
 }
 
 model Workouts {
@@ -56,12 +64,18 @@ model Workouts {
   description      String
   workoutsGroupsId Int
   methodId         Int?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
   workoutSeries    WorkoutSeries[]
   exercise         Exercises       @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
   method           Methods?        @relation(fields: [methodId], references: [id], onDelete: Cascade)
   workoutGroup     WorkoutsGroups  @relation(fields: [workoutsGroupsId], references: [id], onDelete: Cascade)
 
   @@unique([workoutsGroupsId, exerciseId])
+  @@index([exerciseId])
+  @@index([workoutsGroupsId])
+  @@index([methodId])
+  @@map("workouts")
 }
 
 model WorkoutsGroups {
@@ -69,43 +83,56 @@ model WorkoutsGroups {
   name            String
   image           String
   userId          String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
   WorkoutSessions WorkoutSessions[]
   workouts        Workouts[]
   user            Users             @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, name])
+  @@index([userId])
+  @@map("workouts_groups")
 }
 
 model Users {
-  id             String           @id
-  name           String
-  email          String
-  photoUrl       String           @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
-  telegramId     String?
-  role           Role             @default(STUDENT)
+  id         String @id
+  name       String
+  email      String @unique
+  photoUrl   String @default("https://w7.pngwing.com/pngs/620/837/png-transparent-bodybuilding-drawing-bodybuilding-physical-fitness-logo-monochrome-thumbnail.png")
+  telegramId String?
+  role       Role   @default(STUDENT)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   workoutsGroups WorkoutsGroups[]
 
   // Relations as a Personal Trainer
-  Personals      Personals[]      @relation("personal")
-  assessmentsGiven Assessment[]   @relation("personalAssessments")
-  gymsOwned      Gym[]            @relation("gymOwner")
-  personalProfile PersonalProfile?
+  Personals        Personals[]      @relation("personal")
+  assessmentsGiven Assessment[]     @relation("personalAssessments")
+  gymsOwned        Gym[]            @relation("gymOwner")
+  personalProfile  PersonalProfile?
 
   // Relations as a Student
-  Students       Personals[]      @relation("student")
-  assessments    Assessment[]     @relation("studentAssessments")
-  subscriptions  Subscription[]
-  payments       Payment[]
+  Students      Personals[]    @relation("student")
+  assessments   Assessment[]   @relation("studentAssessments")
+  subscriptions Subscription[]
+  payments      Payment[]
+
+  @@map("users")
 }
 
 model PersonalProfile {
-  id          Int     @id @default(autoincrement())
-  userId      String  @unique
+  id          Int      @id @default(autoincrement())
+  userId      String   @unique
   cref        String
   bio         String?
   specialties String?
-  user        Users   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  user        Users    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("personal_profiles")
 }
 
 model WorkoutSeries {
@@ -116,18 +143,29 @@ model WorkoutSeries {
   rest        Int?     @default(60)
 
   // Cardio fields
-  time        Int?     // in seconds
-  distance    Float?   // in km
-  speed       Float?   // in km/h or pace
+  time     Int? // in seconds
+  distance Float? // in km
+  speed    Float? // in km/h or pace
 
-  workout     Workouts @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workout Workouts @relation(fields: [workoutId], references: [id], onDelete: Cascade)
+
+  @@index([workoutId])
+  @@map("workout_series")
 }
 
 model WorkoutSessions {
   id             Int            @id @default(autoincrement())
   date           DateTime       @default(now()) @db.Date
   workoutGroupId Int
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id], onDelete: Cascade)
+
+  @@index([workoutGroupId])
+  @@map("workout_sessions")
 }
 
 // Represents the contract/relationship between a Personal and a Student
@@ -137,11 +175,15 @@ model Personals {
   studentUserId         String
   PersonalUser          Users                   @relation("personal", fields: [personalUserId], references: [id], onDelete: Cascade)
   personalUserId        String
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
   PersonalClassSchedule PersonalClassSchedule[]
   payments              Payment[]
 
   @@unique([studentUserId, personalUserId])
   @@index([personalUserId])
+  @@index([studentUserId])
+  @@map("personals")
 }
 
 model PersonalClassSchedule {
@@ -149,49 +191,68 @@ model PersonalClassSchedule {
   dayOfWeek   Int // Dia da semana (ex: 0=Sunday, 1=Monday, etc.)
   time        String // Horário da aula (ex: "18:30", "07:00")
   personalsId Int // Chave estrangeira para o modelo Personals
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
   personals   Personals @relation(fields: [personalsId], references: [id], onDelete: Cascade)
+
+  @@index([personalsId])
+  @@map("personal_class_schedules")
 }
 
 model Assessment {
-  id          Int      @id @default(autoincrement())
-  studentId   String
-  personalId  String
-  date        DateTime @default(now())
+  id         Int      @id @default(autoincrement())
+  studentId  String
+  personalId String
+  date       DateTime @default(now())
 
-  weight      Float
-  height      Float
-  imc         Float?
+  weight        Float
+  height        Float
+  imc           Float?
   fatPercentage Float?
 
   // Skinfolds (Dobras) - mm
-  triceps       Float?
-  biceps        Float?
-  subscapular   Float?
-  iliacCrest    Float?
-  supraspinale  Float?
-  abdominal     Float?
-  thigh         Float?
-  calf          Float?
+  triceps      Float?
+  biceps       Float?
+  subscapular  Float?
+  iliacCrest   Float?
+  supraspinale Float?
+  abdominal    Float?
+  thigh        Float?
+  calf         Float?
 
   // Circumferences - cm
-  waist         Float?
-  hip           Float?
-  arm           Float?
-  leg           Float?
+  waist Float?
+  hip   Float?
+  arm   Float?
+  leg   Float?
 
-  student     Users    @relation("studentAssessments", fields: [studentId], references: [id])
-  personal    Users    @relation("personalAssessments", fields: [personalId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  student  Users @relation("studentAssessments", fields: [studentId], references: [id])
+  personal Users @relation("personalAssessments", fields: [personalId], references: [id])
+
+  @@index([studentId])
+  @@index([personalId])
+  @@map("assessments")
 }
 
 model Gym {
-  id            Int            @id @default(autoincrement())
-  name          String
-  address       String?
-  ownerId       String?
-  owner         Users?         @relation("gymOwner", fields: [ownerId], references: [id])
+  id      Int     @id @default(autoincrement())
+  name    String
+  address String?
+  ownerId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner Users? @relation("gymOwner", fields: [ownerId], references: [id])
 
   plans         Plan[]
   subscriptions Subscription[]
+
+  @@index([ownerId])
+  @@map("gyms")
 }
 
 model Plan {
@@ -200,8 +261,13 @@ model Plan {
   price          Float
   durationMonths Int
   gymId          Int
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
   gym            Gym            @relation(fields: [gymId], references: [id])
   subscriptions  Subscription[]
+
+  @@index([gymId])
+  @@map("plans")
 }
 
 model Subscription {
@@ -212,24 +278,39 @@ model Subscription {
   startDate DateTime           @default(now())
   endDate   DateTime?
   status    SubscriptionStatus @default(ACTIVE)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
 
-  user      Users              @relation(fields: [userId], references: [id])
-  gym       Gym                @relation(fields: [gymId], references: [id])
-  plan      Plan?              @relation(fields: [planId], references: [id])
-  payments  Payment[]
+  user     Users     @relation(fields: [userId], references: [id])
+  gym      Gym       @relation(fields: [gymId], references: [id])
+  plan     Plan?     @relation(fields: [planId], references: [id])
+  payments Payment[]
+
+  @@index([userId])
+  @@index([gymId])
+  @@index([planId])
+  @@map("subscriptions")
 }
 
 model Payment {
-  id                 Int           @id @default(autoincrement())
-  userId             String
-  amount             Float
-  date               DateTime      @default(now())
-  status             PaymentStatus @default(PENDING)
+  id     Int           @id @default(autoincrement())
+  userId String
+  amount Float
+  date   DateTime      @default(now())
+  status PaymentStatus @default(PENDING)
 
   subscriptionId     Int?
   personalContractId Int?
 
-  subscription       Subscription? @relation(fields: [subscriptionId], references: [id])
-  personalContract   Personals?    @relation(fields: [personalContractId], references: [id])
-  user               Users         @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  subscription     Subscription? @relation(fields: [subscriptionId], references: [id])
+  personalContract Personals?    @relation(fields: [personalContractId], references: [id])
+  user             Users         @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([subscriptionId])
+  @@index([personalContractId])
+  @@map("payments")
 }

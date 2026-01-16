@@ -10,7 +10,10 @@ export class PersonalsService {
 
   create(createpersonalsDto: CreatePersonalDto) {
     return this.prismaService.personals.create({
-      data: createpersonalsDto as Personals,
+      data: {
+        studentUserId: createpersonalsDto.studentUserId,
+        personalUserId: createpersonalsDto.personalUserId,
+      },
     });
   }
 
@@ -37,9 +40,12 @@ export class PersonalsService {
   }
 
   update(id: number, updateDto: UpdatePersonalDto) {
+    const { id: _, ...data } = updateDto;
     return this.prismaService.personals.update({
       where: { id },
-      data: updateDto as Personals,
+      data: {
+        ...data,
+      },
     });
   }
 

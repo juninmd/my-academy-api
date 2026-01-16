@@ -4,8 +4,6 @@ import configs from '../configs';
 
 @Injectable()
 export class TelegramService {
-  constructor() {}
-
   async postChannelMessage(message: string, chatId: string) {
     try {
       const url = `https://api.telegram.org/bot${configs.telegramToken}/sendMessage`;
