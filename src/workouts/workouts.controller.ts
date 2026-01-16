@@ -10,32 +10,57 @@ import {
 import { WorkoutsService } from './workouts.service';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkoutDto } from './dto/update-workout.dto';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('Workouts')
 @Controller('workouts')
 export class WorkoutsController {
   constructor(private readonly workoutsService: WorkoutsService) {}
 
   @Post()
+  @ApiOperation({ summary: 'Create a new workout' })
+  @ApiResponse({
+    status: 201,
+    description: 'The workout has been successfully created.',
+  })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
   create(@Body() createWorkoutDto: CreateWorkoutDto) {
     return this.workoutsService.create(createWorkoutDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'List all workouts' })
+  @ApiResponse({ status: 200, description: 'Return all workouts.' })
   findAll() {
     return this.workoutsService.findAll();
   }
 
   @Get(':id')
+  @ApiOperation({ summary: 'Get a workout by id' })
+  @ApiResponse({ status: 200, description: 'Return the workout.' })
+  @ApiResponse({ status: 404, description: 'Workout not found.' })
   findOne(@Param('id') id: string) {
     return this.workoutsService.findOne(+id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update a workout' })
+  @ApiResponse({
+    status: 200,
+    description: 'The workout has been successfully updated.',
+  })
+  @ApiResponse({ status: 404, description: 'Workout not found.' })
   update(@Param('id') id: string, @Body() updateWorkoutDto: UpdateWorkoutDto) {
     return this.workoutsService.update(+id, updateWorkoutDto);
   }
 
   @Delete(':id')
+  @ApiOperation({ summary: 'Delete a workout' })
+  @ApiResponse({
+    status: 200,
+    description: 'The workout has been successfully deleted.',
+  })
+  @ApiResponse({ status: 404, description: 'Workout not found.' })
   remove(@Param('id') id: string) {
     return this.workoutsService.remove(+id);
   }

@@ -1,8 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreatePersonalDto {
-  @ApiProperty({ required: true })
-  id: number;
+  @ApiProperty({ required: false })
+  id?: number;
+
   @ApiProperty({ required: true })
   personalUserId: string;
+
+  @ApiProperty({ required: true })
+  studentUserId: string;
 }

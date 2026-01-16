@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { CreateWorkoutsSeriesDto } from '../../workouts-series/dto/create-workouts-series.dto';
-import { IsNumber, IsOptional, IsString, IsNotEmpty, ValidateNested, IsArray } from 'class-validator';
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsNotEmpty,
+  ValidateNested,
+  IsArray,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CreateWorkoutDto {
