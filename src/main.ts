@@ -3,6 +3,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { version, name, description } from '../package.json';
+import { apiReference } from '@scalar/nestjs-api-reference';
 
 const logger = new Logger('Bootstrap');
 async function bootstrap() {
@@ -31,6 +32,15 @@ async function bootstrap() {
       .build();
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
+
+    app.use(
+      '/reference',
+      apiReference({
+        spec: {
+          content: document,
+        },
+      }),
+    );
 
     const port = process.env.PORT || 9000;
     await app.listen(port);
