@@ -41,7 +41,10 @@ export class WorkoutsSessionsService {
     }
 
     return this.prismaService.workoutSessions.create({
-      data: createworkoutsDto as WorkoutSessions,
+      data: {
+        date: createworkoutsDto.date,
+        workoutGroupId: createworkoutsDto.workoutGroupId,
+      },
     });
   }
 
@@ -240,9 +243,12 @@ export class WorkoutsSessionsService {
   }
 
   update(id: number, updateDto: UpdateWorkoutsSessionsDto) {
+    const { id: _, ...data } = updateDto;
     return this.prismaService.workoutSessions.update({
       where: { id },
-      data: updateDto as WorkoutSessions,
+      data: {
+        ...data,
+      },
     });
   }
 

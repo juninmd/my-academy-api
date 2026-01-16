@@ -1,4 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  ConflictException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma.service';
@@ -7,7 +11,15 @@ import { PrismaService } from '../prisma.service';
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createUsersDto: CreateUserDto) {
+  async create(createUsersDto: CreateUserDto) {
+    const existing = await this.prismaService.users.findUnique({
+      where: { id: createUsersDto.id },
+    });
+
+    if (existing) {
+      throw new ConflictException('User already exists');
+    }
+
     return this.prismaService.users.create({ data: createUsersDto });
   }
 
@@ -15,18 +27,26 @@ export class UsersService {
     return this.prismaService.users.findMany();
   }
 
-  findOne(id: string) {
-    return this.prismaService.users.findUnique({ where: { id } });
+  async findOne(id: string) {
+    const user = await this.prismaService.users.findUnique({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User #${id} not found`);
+    }
+    return user;
   }
 
-  update(id: string, updateDto: UpdateUserDto) {
+  async update(id: string, updateDto: UpdateUserDto) {
+    await this.findOne(id);
+
     return this.prismaService.users.update({
       where: { id },
       data: updateDto,
     });
   }
 
-  remove(id: string) {
+  async remove(id: string) {
+    await this.findOne(id);
+
     return this.prismaService.users.delete({ where: { id } });
   }
 }

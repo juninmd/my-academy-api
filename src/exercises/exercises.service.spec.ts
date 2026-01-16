@@ -11,7 +11,15 @@ describe('ExercisesService', () => {
         ExercisesService,
         {
           provide: PrismaService,
-          useValue: {},
+          useValue: {
+            exercises: {
+              findUnique: jest.fn(),
+              create: jest.fn(),
+              findMany: jest.fn(),
+              update: jest.fn(),
+              delete: jest.fn(),
+            },
+          },
         },
       ],
     }).compile();

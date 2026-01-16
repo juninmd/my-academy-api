@@ -11,7 +11,15 @@ describe('WorkoutsSeriesService', () => {
         WorkoutsSeriesService,
         {
           provide: PrismaService,
-          useValue: {},
+          useValue: {
+            workoutSeries: {
+              findUnique: jest.fn(),
+              create: jest.fn(),
+              findMany: jest.fn(),
+              update: jest.fn(),
+              delete: jest.fn(),
+            },
+          },
         },
       ],
     }).compile();
