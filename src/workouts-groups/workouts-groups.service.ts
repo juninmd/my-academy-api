@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateWorkoutsGroupDto } from './dto/create-workouts-group.dto';
 import { UpdateWorkoutsGroupDto } from './dto/update-workouts-group.dto';
-import { WorkoutsGroups } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
@@ -70,12 +69,6 @@ export class WorkoutsGroupsService {
     await this.prismaService.workouts.deleteMany({
       where: { workoutsGroupsId: id },
     });
-
-    const workoutsDelete = await this.prismaService.workouts.deleteMany({
-      where: { workoutsGroupsId: id },
-    });
-
-    console.log(currentGroup, workoutsDelete);
 
     return this.prismaService.workoutsGroups.update({
       where: { id },

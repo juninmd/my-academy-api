@@ -1,4 +1,4 @@
-import { WorkoutSeries, Workouts } from '@prisma/client';
+import { Workouts } from '@prisma/client';
 
 export class WorkoutsSeries {
   id: number;
