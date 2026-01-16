@@ -71,11 +71,9 @@ export class WorkoutsGroupsService {
       where: { workoutsGroupsId: id },
     });
 
-    const workoutsDelete = await this.prismaService.workouts.deleteMany({
+    await this.prismaService.workouts.deleteMany({
       where: { workoutsGroupsId: id },
     });
-
-    console.log(currentGroup, workoutsDelete);
 
     return this.prismaService.workoutsGroups.update({
       where: { id },
