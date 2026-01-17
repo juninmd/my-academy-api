@@ -7,19 +7,21 @@ import { PrismaService } from '../prisma.service';
 export class WorkoutsGroupsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(data: CreateWorkoutsGroupDto) {
+  create(data: CreateWorkoutsGroupDto): Promise<WorkoutsGroups> {
     return this.prismaService.workoutsGroups.create({
       data: {
         name: data.name,
         image: data.image,
         user: { connect: { id: data.userId } },
         workouts: {
-          create: data.workouts.map((workout) => ({
+          create: data.workouts?.map((workout) => ({
             exercise: { connect: { id: workout.exerciseId } },
             description: workout.description || '',
-            method: { connect: { id: workout.methodId } },
+            method: workout.methodId
+              ? { connect: { id: workout.methodId } }
+              : undefined,
             workoutSeries: {
-              create: workout.workoutSeries.map((series) => ({
+              create: workout.workoutSeries?.map((series) => ({
                 repetitions: series.repetitions,
                 weight: series.weight,
                 rest: series.rest,
@@ -31,11 +33,11 @@ export class WorkoutsGroupsService {
     });
   }
 
-  findAll(userId: string) {
+  findAll(userId: string): Promise<WorkoutsGroups[]> {
     return this.prismaService.workoutsGroups.findMany({ where: { userId } });
   }
 
-  findAllExercises(id: number) {
+  findAllExercises(id: number): Promise<WorkoutsGroups> {
     return this.prismaService.workoutsGroups.findUnique({
       where: { id },
       include: {
@@ -50,7 +52,7 @@ export class WorkoutsGroupsService {
     });
   }
 
-  findOne(id: number) {
+  findOne(id: number): Promise<WorkoutsGroups> {
     return this.prismaService.workoutsGroups.findUnique({
       where: { id },
       include: {
@@ -90,20 +92,21 @@ export class WorkoutsGroupsService {
             },
           })),
         },
-      },
-      include: {
-        workouts: {
-          include: {
-            workoutSeries: true,
+        include: {
+          workouts: {
+            include: {
+              workoutSeries: true,
+            },
           },
         },
-      },
+      });
     });
   }
-  remove(id: number) {
+
+  remove(id: number): Promise<WorkoutsGroups> {
     return this.prismaService.workoutsGroups.delete({
       where: { id },
-      include: { WorkoutSessions: {} },
+      include: { WorkoutSessions: true },
     });
   }
 }
