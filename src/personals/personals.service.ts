@@ -6,7 +6,7 @@ import { Personals } from '@prisma/client';
 
 @Injectable()
 export class PersonalsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   create(createpersonalsDto: CreatePersonalDto) {
     return this.prismaService.personals.create({
@@ -19,21 +19,16 @@ export class PersonalsService {
       where: {
         personalUserId,
       },
-      include: { PersonalUser: true, StudentUser: true },
+      include: { PersonalUser: true, StudentUser: true }
     });
   }
 
   async findStudents(personalUserId: string) {
     const personal = await this.prismaService.personals.findMany({
       where: { personalUserId },
-      include: { StudentUser: true, PersonalClassSchedule: true },
+      include: { StudentUser: true, PersonalClassSchedule: true }
     });
-    return personal
-      .map((q) => ({
-        student: q.StudentUser,
-        schedule: q.PersonalClassSchedule,
-      }))
-      .flat(1);
+    return personal.map(q => ({ student: q.StudentUser, schedule: q.PersonalClassSchedule })).flat(1);
   }
 
   update(id: number, updateDto: UpdatePersonalDto) {

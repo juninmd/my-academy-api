@@ -15,7 +15,7 @@ import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 
 @Controller('exercises')
 export class ExercisesController {
-  constructor(private readonly exercisesService: ExercisesService) {}
+  constructor(private readonly exercisesService: ExercisesService) { }
 
   @Post()
   create(@Body() createExerciseDto: CreateExerciseDto) {

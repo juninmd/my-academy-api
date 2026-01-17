@@ -6,7 +6,7 @@ import { UpdateMethodDto } from './dto/update-method.dto';
 
 @Injectable()
 export class MethodsService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(private readonly prismaService: PrismaService) { }
 
   create(createMethodsDto: CreateMethodDto) {
     return this.prismaService.methods.create({

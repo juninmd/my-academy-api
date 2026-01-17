@@ -9,4 +9,4 @@ import { CacheModule } from '@nestjs/cache-manager';
   controllers: [MethodsController],
   providers: [MethodsService, PrismaService],
 })
-export class MethodsModule {}
+export class MethodsModule { }

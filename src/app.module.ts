@@ -33,8 +33,7 @@ export class AppModule {
   configure(consumer: MiddlewareConsumer) {
     if (process.env.FIREBASE_ENABLED === 'true') {
       consumer.apply(PreauthMiddleware).forRoutes({
-        path: '*',
-        method: RequestMethod.ALL,
+        path: '*', method: RequestMethod.ALL
       });
     }
   }

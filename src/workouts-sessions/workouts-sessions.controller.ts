@@ -17,26 +17,16 @@ import { UpdateWorkoutsSessionsDto } from './dto/update-workouts-sessions.dto';
 export class WorkoutsSessionsController {
   constructor(
     private readonly workoutsSessionsService: WorkoutsSessionsService,
-  ) {}
+  ) { }
 
   @Post()
-  create(
-    @Body() createWorkoutsSessionsDto: CreateWorkoutsSessionsDto,
-    @Req() req,
-  ) {
-    return this.workoutsSessionsService.create(
-      createWorkoutsSessionsDto,
-      req.user.uid,
-    );
+  create(@Body() createWorkoutsSessionsDto: CreateWorkoutsSessionsDto, @Req() req) {
+    return this.workoutsSessionsService.create(createWorkoutsSessionsDto, req.user.uid);
   }
 
   @Get(':idUser')
   findAll(@Param('idUser') idUser: string, @Query() query: any) {
-    return this.workoutsSessionsService.findAll(
-      idUser,
-      +query.year,
-      +query.month,
-    );
+    return this.workoutsSessionsService.findAll(idUser, +query.year, +query.month);
   }
 
   @Get(':idUser/summary')

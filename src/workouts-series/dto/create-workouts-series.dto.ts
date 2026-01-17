@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateWorkoutsSeriesDto {
+
   @ApiProperty({ required: false })
   id: number;
 
