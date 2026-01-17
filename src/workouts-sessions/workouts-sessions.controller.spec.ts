@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { WorkoutsSessionsController } from './workouts-sessions.controller';
 import { WorkoutsSessionsService } from './workouts-sessions.service';
 import { PrismaService } from '../prisma.service';
+import { TelegramService } from '../telegram/telegram.service';
 
 describe('WorkoutsSessionsController', () => {
   let controller: WorkoutsSessionsController;
@@ -9,7 +10,14 @@ describe('WorkoutsSessionsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [WorkoutsSessionsController],
-      providers: [WorkoutsSessionsService, PrismaService],
+      providers: [
+        WorkoutsSessionsService,
+        PrismaService,
+        {
+          provide: TelegramService,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     controller = module.get<WorkoutsSessionsController>(
