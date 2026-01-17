@@ -1,13 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkoutDto } from './dto/update-workout.dto';
+import { Workouts } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class WorkoutsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createWorkoutDto: CreateWorkoutDto) {
+  create(createWorkoutDto: CreateWorkoutDto): Promise<Workouts> {
     const { workoutSeries, id, ...rest } = createWorkoutDto;
 
     return this.prismaService.workouts.create({
@@ -27,13 +28,13 @@ export class WorkoutsService {
     });
   }
 
-  findAll() {
+  findAll(): Promise<Workouts[]> {
     return this.prismaService.workouts.findMany({
       include: { workoutSeries: true },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Workouts> {
     const workout = await this.prismaService.workouts.findUnique({
       where: { id },
       include: { workoutSeries: true },
@@ -46,7 +47,7 @@ export class WorkoutsService {
     return workout;
   }
 
-  async update(id: number, updateDto: UpdateWorkoutDto) {
+  async update(id: number, updateDto: UpdateWorkoutDto): Promise<Workouts> {
     await this.findOne(id);
 
     const { workoutSeries, id: _, ...rest } = updateDto;
@@ -57,7 +58,7 @@ export class WorkoutsService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<Workouts> {
     await this.findOne(id);
 
     return this.prismaService.workouts.delete({ where: { id } });

@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { WorkoutsService } from './workouts.service';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
@@ -39,8 +40,8 @@ export class WorkoutsController {
   @ApiOperation({ summary: 'Get a workout by id' })
   @ApiResponse({ status: 200, description: 'Return the workout.' })
   @ApiResponse({ status: 404, description: 'Workout not found.' })
-  findOne(@Param('id') id: string) {
-    return this.workoutsService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.workoutsService.findOne(id);
   }
 
   @Patch(':id')
@@ -50,8 +51,11 @@ export class WorkoutsController {
     description: 'The workout has been successfully updated.',
   })
   @ApiResponse({ status: 404, description: 'Workout not found.' })
-  update(@Param('id') id: string, @Body() updateWorkoutDto: UpdateWorkoutDto) {
-    return this.workoutsService.update(+id, updateWorkoutDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateWorkoutDto: UpdateWorkoutDto,
+  ) {
+    return this.workoutsService.update(id, updateWorkoutDto);
   }
 
   @Delete(':id')
@@ -61,7 +65,7 @@ export class WorkoutsController {
     description: 'The workout has been successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'Workout not found.' })
-  remove(@Param('id') id: string) {
-    return this.workoutsService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.workoutsService.remove(id);
   }
 }

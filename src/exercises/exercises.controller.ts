@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseInterceptors,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ExercisesService } from './exercises.service';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
@@ -43,8 +44,8 @@ export class ExercisesController {
   @ApiOperation({ summary: 'Get an exercise by id' })
   @ApiResponse({ status: 200, description: 'Return the exercise.' })
   @ApiResponse({ status: 404, description: 'Exercise not found.' })
-  findOne(@Param('id') id: string) {
-    return this.exercisesService.findOne(+id);
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.exercisesService.findOne(id);
   }
 
   @Patch(':id')
@@ -54,8 +55,11 @@ export class ExercisesController {
     description: 'The exercise has been successfully updated.',
   })
   @ApiResponse({ status: 404, description: 'Exercise not found.' })
-  update(@Param('id') id: string, @Body() updateDto: UpdateExerciseDto) {
-    return this.exercisesService.update(+id, updateDto);
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateDto: UpdateExerciseDto,
+  ) {
+    return this.exercisesService.update(id, updateDto);
   }
 
   @Delete(':id')
@@ -65,7 +69,7 @@ export class ExercisesController {
     description: 'The exercise has been successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'Exercise not found.' })
-  remove(@Param('id') id: string) {
-    return this.exercisesService.remove(+id);
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.exercisesService.remove(id);
   }
 }
