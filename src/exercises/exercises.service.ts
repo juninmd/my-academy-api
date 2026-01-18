@@ -9,8 +9,16 @@ export class ExercisesService {
   constructor(private readonly prismaService: PrismaService) {}
 
   create(createExerciseDto: CreateExerciseDto): Promise<Exercises> {
+    const { name, image, tips, mistakes, type } = createExerciseDto;
+
     return this.prismaService.exercises.create({
-      data: createExerciseDto,
+      data: {
+        name,
+        image,
+        tips,
+        mistakes,
+        type,
+      },
     });
   }
 
@@ -33,9 +41,17 @@ export class ExercisesService {
   async update(id: number, updateDto: UpdateExerciseDto): Promise<Exercises> {
     await this.findOne(id);
 
+    const { name, image, tips, mistakes, type } = updateDto;
+
     return this.prismaService.exercises.update({
       where: { id },
-      data: updateDto,
+      data: {
+        name,
+        image,
+        tips,
+        mistakes,
+        type,
+      },
     });
   }
 

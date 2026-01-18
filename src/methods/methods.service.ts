@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Methods } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
 import { CreateMethodDto } from './dto/create-method.dto';
@@ -8,28 +8,44 @@ import { UpdateMethodDto } from './dto/update-method.dto';
 export class MethodsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createMethodsDto: CreateMethodDto) {
+  create(createMethodsDto: CreateMethodDto): Promise<Methods> {
+    const { name, description } = createMethodsDto;
     return this.prismaService.methods.create({
-      data: createMethodsDto as Methods,
+      data: {
+        name,
+        description,
+      },
     });
   }
 
-  findAll() {
+  findAll(): Promise<Methods[]> {
     return this.prismaService.methods.findMany();
   }
 
-  findOne(id: number) {
-    return this.prismaService.methods.findUnique({ where: { id } });
+  async findOne(id: number): Promise<Methods> {
+    const method = await this.prismaService.methods.findUnique({
+      where: { id },
+    });
+    if (!method) {
+      throw new NotFoundException(`Method #${id} not found`);
+    }
+    return method;
   }
 
-  update(id: number, updateDto: UpdateMethodDto) {
+  async update(id: number, updateDto: UpdateMethodDto): Promise<Methods> {
+    await this.findOne(id);
+    const { name, description } = updateDto;
     return this.prismaService.methods.update({
       where: { id },
-      data: updateDto as Methods,
+      data: {
+        name,
+        description,
+      },
     });
   }
 
-  remove(id: number) {
+  async remove(id: number): Promise<Methods> {
+    await this.findOne(id);
     return this.prismaService.methods.delete({ where: { id } });
   }
 }

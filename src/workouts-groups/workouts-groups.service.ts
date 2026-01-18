@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { CreateWorkoutsGroupDto } from './dto/create-workouts-group.dto';
 import { UpdateWorkoutsGroupDto } from './dto/update-workouts-group.dto';
 import { PrismaService } from '../prisma.service';
+import { WorkoutsGroups } from '@prisma/client';
 
 @Injectable()
 export class WorkoutsGroupsService {
@@ -77,14 +78,14 @@ export class WorkoutsGroupsService {
       data: {
         name: data.name,
         image: data.image,
-        userId: data.userId, // Use connect here
+        userId: data.userId,
         workouts: {
-          create: data.workouts.map((workout) => ({
-            exerciseId: workout.exerciseId, // Use connect here
+          create: data.workouts?.map((workout) => ({
+            exerciseId: workout.exerciseId,
             description: workout.description,
             methodId: workout.methodId,
             workoutSeries: {
-              create: workout.workoutSeries.map((series) => ({
+              create: workout.workoutSeries?.map((series) => ({
                 repetitions: series.repetitions,
                 weight: series.weight,
                 rest: series.rest,
@@ -92,14 +93,14 @@ export class WorkoutsGroupsService {
             },
           })),
         },
-        include: {
-          workouts: {
-            include: {
-              workoutSeries: true,
-            },
+      },
+      include: {
+        workouts: {
+          include: {
+            workoutSeries: true,
           },
         },
-      });
+      },
     });
   }
 

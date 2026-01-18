@@ -12,6 +12,7 @@ import { WorkoutsService } from './workouts.service';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkoutDto } from './dto/update-workout.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Workouts } from '@prisma/client';
 
 @ApiTags('Workouts')
 @Controller('workouts')
@@ -25,14 +26,14 @@ export class WorkoutsController {
     description: 'The workout has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  create(@Body() createWorkoutDto: CreateWorkoutDto) {
+  create(@Body() createWorkoutDto: CreateWorkoutDto): Promise<Workouts> {
     return this.workoutsService.create(createWorkoutDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'List all workouts' })
   @ApiResponse({ status: 200, description: 'Return all workouts.' })
-  findAll() {
+  findAll(): Promise<Workouts[]> {
     return this.workoutsService.findAll();
   }
 
@@ -40,7 +41,7 @@ export class WorkoutsController {
   @ApiOperation({ summary: 'Get a workout by id' })
   @ApiResponse({ status: 200, description: 'Return the workout.' })
   @ApiResponse({ status: 404, description: 'Workout not found.' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Workouts> {
     return this.workoutsService.findOne(id);
   }
 
@@ -54,7 +55,7 @@ export class WorkoutsController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateWorkoutDto: UpdateWorkoutDto,
-  ) {
+  ): Promise<Workouts> {
     return this.workoutsService.update(id, updateWorkoutDto);
   }
 
@@ -65,7 +66,7 @@ export class WorkoutsController {
     description: 'The workout has been successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'Workout not found.' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<Workouts> {
     return this.workoutsService.remove(id);
   }
 }
