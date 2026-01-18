@@ -2,18 +2,27 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkoutDto } from './dto/update-workout.dto';
 import { PrismaService } from '../prisma.service';
+import { Workouts } from '@prisma/client';
 
 @Injectable()
 export class WorkoutsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createWorkoutDto: CreateWorkoutDto) {
-    const { workoutSeries, id, ...rest } = createWorkoutDto;
+  create(createWorkoutDto: CreateWorkoutDto): Promise<Workouts> {
+    const {
+      exerciseId,
+      description,
+      workoutsGroupsId,
+      methodId,
+      workoutSeries,
+    } = createWorkoutDto;
 
     return this.prismaService.workouts.create({
       data: {
-        ...rest,
-        description: rest.description || '',
+        exerciseId,
+        description: description ?? '',
+        workoutsGroupsId,
+        methodId,
         workoutSeries: workoutSeries
           ? {
               create: workoutSeries.map((series) => ({
@@ -27,13 +36,13 @@ export class WorkoutsService {
     });
   }
 
-  findAll() {
+  findAll(): Promise<Workouts[]> {
     return this.prismaService.workouts.findMany({
       include: { workoutSeries: true },
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<Workouts> {
     const workout = await this.prismaService.workouts.findUnique({
       where: { id },
       include: { workoutSeries: true },
@@ -46,18 +55,23 @@ export class WorkoutsService {
     return workout;
   }
 
-  async update(id: number, updateDto: UpdateWorkoutDto) {
+  async update(id: number, updateDto: UpdateWorkoutDto): Promise<Workouts> {
     await this.findOne(id);
 
-    const { workoutSeries, id: _, ...rest } = updateDto;
+    const { exerciseId, description, workoutsGroupsId, methodId } = updateDto;
 
     return this.prismaService.workouts.update({
       where: { id },
-      data: rest,
+      data: {
+        exerciseId,
+        description,
+        workoutsGroupsId,
+        methodId,
+      },
     });
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<Workouts> {
     await this.findOne(id);
 
     return this.prismaService.workouts.delete({ where: { id } });

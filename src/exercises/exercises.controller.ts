@@ -14,6 +14,7 @@ import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Exercises } from '@prisma/client';
 
 @ApiTags('Exercises')
 @Controller('exercises')
@@ -27,7 +28,7 @@ export class ExercisesController {
     description: 'The exercise has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  create(@Body() createExerciseDto: CreateExerciseDto) {
+  create(@Body() createExerciseDto: CreateExerciseDto): Promise<Exercises> {
     return this.exercisesService.create(createExerciseDto);
   }
 
@@ -36,7 +37,7 @@ export class ExercisesController {
   @CacheTTL(60)
   @ApiOperation({ summary: 'List all exercises' })
   @ApiResponse({ status: 200, description: 'Return all exercises.' })
-  findAll() {
+  findAll(): Promise<Exercises[]> {
     return this.exercisesService.findAll();
   }
 
@@ -44,7 +45,7 @@ export class ExercisesController {
   @ApiOperation({ summary: 'Get an exercise by id' })
   @ApiResponse({ status: 200, description: 'Return the exercise.' })
   @ApiResponse({ status: 404, description: 'Exercise not found.' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<Exercises> {
     return this.exercisesService.findOne(id);
   }
 
@@ -58,7 +59,7 @@ export class ExercisesController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateDto: UpdateExerciseDto,
-  ) {
+  ): Promise<Exercises> {
     return this.exercisesService.update(id, updateDto);
   }
 
@@ -69,7 +70,7 @@ export class ExercisesController {
     description: 'The exercise has been successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'Exercise not found.' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<Exercises> {
     return this.exercisesService.remove(id);
   }
 }
