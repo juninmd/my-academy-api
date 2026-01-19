@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { CreateWorkoutsSeriesDto } from '../../workouts-series/dto/create-workouts-series.dto';
+import { CreateWorkoutSeriesNestedDto } from '../../workouts-series/dto/create-workout-series-nested.dto';
 import {
   IsNumber,
   IsOptional,
@@ -11,11 +11,6 @@ import {
 import { Type } from 'class-transformer';
 
 export class CreateWorkoutDto {
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsNumber()
-  id?: number;
-
   @ApiProperty({ required: true })
   @IsNumber()
   @IsNotEmpty()
@@ -31,12 +26,12 @@ export class CreateWorkoutDto {
   @IsNotEmpty()
   workoutsGroupsId: number;
 
-  @ApiProperty({ required: false, type: [CreateWorkoutsSeriesDto] })
+  @ApiProperty({ required: false, type: [CreateWorkoutSeriesNestedDto] })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => CreateWorkoutsSeriesDto)
-  workoutSeries?: CreateWorkoutsSeriesDto[];
+  @Type(() => CreateWorkoutSeriesNestedDto)
+  workoutSeries?: CreateWorkoutSeriesNestedDto[];
 
   @ApiProperty({ required: false })
   @IsOptional()

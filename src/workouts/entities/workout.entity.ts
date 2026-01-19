@@ -1,13 +1,16 @@
-import { Exercises, WorkoutSeries, WorkoutSessions } from '@prisma/client';
-import { WorkoutsGroup } from '../../workouts-groups/entities/workouts-group.entity';
+import { Exercises, WorkoutsGroups } from '@prisma/client';
+import { WorkoutsSeries } from '../../workouts-series/entities/workout-series.entity';
 
 export class Workout {
   id: number;
   exerciseId: number;
   description: string;
-  workoutGroupId: number;
-  Exercise: Exercises;
-  workoutGroup: WorkoutsGroup;
-  WorkoutSeries?: WorkoutSeries[];
-  WorkoutSessions?: WorkoutSessions[];
+  workoutsGroupsId: number;
+  methodId: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+
+  exercise?: Exercises;
+  workoutGroup?: WorkoutsGroups;
+  workoutSeries?: WorkoutsSeries[];
 }

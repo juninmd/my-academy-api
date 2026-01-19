@@ -6,45 +6,65 @@ import {
   Patch,
   Param,
   Delete,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { WorkoutsSeriesService } from './workouts-series.service';
 import { CreateWorkoutsSeriesDto } from './dto/create-workouts-series.dto';
 import { UpdateWorkoutsSeriesDto } from './dto/update-workouts-series.dto';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('Workouts Series')
 @Controller('workouts-series')
 export class WorkoutsSeriesController {
-  constructor(private readonly exercisesSeriesService: WorkoutsSeriesService) {}
+  constructor(private readonly workoutsSeriesService: WorkoutsSeriesService) {}
 
   @Post()
-  create(
-    @Body()
-    createExercisesSerCreateWorkoutsSeriesDto: CreateWorkoutsSeriesDto,
-  ) {
-    return this.exercisesSeriesService.create(
-      createExercisesSerCreateWorkoutsSeriesDto,
-    );
+  @ApiOperation({ summary: 'Create a new workout series' })
+  @ApiResponse({
+    status: 201,
+    description: 'The workout series has been successfully created.',
+  })
+  create(@Body() createWorkoutsSeriesDto: CreateWorkoutsSeriesDto) {
+    return this.workoutsSeriesService.create(createWorkoutsSeriesDto);
   }
 
   @Get()
+  @ApiOperation({ summary: 'List all workout series' })
+  @ApiResponse({ status: 200, description: 'Return all workout series.' })
   findAll() {
-    return this.exercisesSeriesService.findAll();
+    return this.workoutsSeriesService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.exercisesSeriesService.findOne(+id);
+  @ApiOperation({ summary: 'Get a workout series by id' })
+  @ApiResponse({ status: 200, description: 'Return the workout series.' })
+  @ApiResponse({ status: 404, description: 'Workout series not found.' })
+  findOne(@Param('id', ParseIntPipe) id: number) {
+    return this.workoutsSeriesService.findOne(id);
   }
 
   @Patch(':id')
+  @ApiOperation({ summary: 'Update a workout series' })
+  @ApiResponse({
+    status: 200,
+    description: 'The workout series has been successfully updated.',
+  })
+  @ApiResponse({ status: 404, description: 'Workout series not found.' })
   update(
-    @Param('id') id: string,
-    @Body() updateExercisesSeriesDto: UpdateWorkoutsSeriesDto,
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateWorkoutsSeriesDto: UpdateWorkoutsSeriesDto,
   ) {
-    return this.exercisesSeriesService.update(+id, updateExercisesSeriesDto);
+    return this.workoutsSeriesService.update(id, updateWorkoutsSeriesDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.exercisesSeriesService.remove(+id);
+  @ApiOperation({ summary: 'Delete a workout series' })
+  @ApiResponse({
+    status: 200,
+    description: 'The workout series has been successfully deleted.',
+  })
+  @ApiResponse({ status: 404, description: 'Workout series not found.' })
+  remove(@Param('id', ParseIntPipe) id: number) {
+    return this.workoutsSeriesService.remove(id);
   }
 }
