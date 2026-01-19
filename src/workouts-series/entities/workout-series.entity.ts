@@ -5,6 +5,11 @@ export class WorkoutsSeries {
   workoutId: number;
   repetitions: number;
   weight: number | null;
-  rest: number;
-  Workouts?: Workouts[];
+  rest: number | null;
+  time: number | null;
+  distance: number | null;
+  speed: number | null;
+  createdAt: Date;
+  updatedAt: Date;
+  workout?: Workouts;
 }

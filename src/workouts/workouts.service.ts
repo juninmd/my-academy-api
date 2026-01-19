@@ -2,13 +2,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkoutDto } from './dto/update-workout.dto';
 import { PrismaService } from '../prisma.service';
-import { Workouts } from '@prisma/client';
+import { Workout } from './entities/workout.entity';
 
 @Injectable()
 export class WorkoutsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createWorkoutDto: CreateWorkoutDto): Promise<Workouts> {
+  async create(createWorkoutDto: CreateWorkoutDto): Promise<Workout> {
     const {
       exerciseId,
       description,
@@ -29,20 +29,24 @@ export class WorkoutsService {
                 repetitions: series.repetitions,
                 weight: series.weight,
                 rest: series.rest,
+                time: series.time,
+                distance: series.distance,
+                speed: series.speed,
               })),
             }
           : undefined,
       },
-    });
+      include: { workoutSeries: true },
+    }) as unknown as Promise<Workout>;
   }
 
-  findAll(): Promise<Workouts[]> {
+  async findAll(): Promise<Workout[]> {
     return this.prismaService.workouts.findMany({
       include: { workoutSeries: true },
-    });
+    }) as unknown as Promise<Workout[]>;
   }
 
-  async findOne(id: number): Promise<Workouts> {
+  async findOne(id: number): Promise<Workout> {
     const workout = await this.prismaService.workouts.findUnique({
       where: { id },
       include: { workoutSeries: true },
@@ -52,13 +56,52 @@ export class WorkoutsService {
       throw new NotFoundException(`Workout #${id} not found`);
     }
 
-    return workout;
+    return workout as unknown as Workout;
   }
 
-  async update(id: number, updateDto: UpdateWorkoutDto): Promise<Workouts> {
+  async update(id: number, updateDto: UpdateWorkoutDto): Promise<Workout> {
     await this.findOne(id);
 
-    const { exerciseId, description, workoutsGroupsId, methodId } = updateDto;
+    const { exerciseId, description, workoutsGroupsId, methodId, workoutSeries } =
+      updateDto;
+
+    if (workoutSeries) {
+      return this.prismaService.$transaction(async (tx) => {
+        // Update scalar fields
+        await tx.workouts.update({
+          where: { id },
+          data: {
+            exerciseId,
+            description,
+            workoutsGroupsId,
+            methodId,
+          },
+        });
+
+        // Delete existing series
+        await tx.workoutSeries.deleteMany({
+          where: { workoutId: id },
+        });
+
+        // Re-create series
+        return tx.workouts.update({
+          where: { id },
+          data: {
+            workoutSeries: {
+              create: workoutSeries.map((series) => ({
+                repetitions: series.repetitions,
+                weight: series.weight,
+                rest: series.rest,
+                time: series.time,
+                distance: series.distance,
+                speed: series.speed,
+              })),
+            },
+          },
+          include: { workoutSeries: true },
+        });
+      }) as unknown as Promise<Workout>;
+    }
 
     return this.prismaService.workouts.update({
       where: { id },
@@ -68,12 +111,16 @@ export class WorkoutsService {
         workoutsGroupsId,
         methodId,
       },
-    });
+      include: { workoutSeries: true },
+    }) as unknown as Promise<Workout>;
   }
 
-  async remove(id: number): Promise<Workouts> {
+  async remove(id: number): Promise<Workout> {
     await this.findOne(id);
 
-    return this.prismaService.workouts.delete({ where: { id } });
+    return this.prismaService.workouts.delete({
+      where: { id },
+      include: { workoutSeries: true },
+    }) as unknown as Workout;
   }
 }
