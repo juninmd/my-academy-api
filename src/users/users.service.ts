@@ -6,13 +6,13 @@ import {
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from '../prisma.service';
-import { Users } from '@prisma/client';
+import { User } from './entities/user.entity';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create(createUsersDto: CreateUserDto): Promise<Users> {
+  async create(createUsersDto: CreateUserDto): Promise<User> {
     const existing = await this.prismaService.users.findUnique({
       where: { id: createUsersDto.id },
     });
@@ -34,11 +34,11 @@ export class UsersService {
     });
   }
 
-  findAll(): Promise<Users[]> {
+  findAll(): Promise<User[]> {
     return this.prismaService.users.findMany();
   }
 
-  async findOne(id: string): Promise<Users> {
+  async findOne(id: string): Promise<User> {
     const user = await this.prismaService.users.findUnique({ where: { id } });
     if (!user) {
       throw new NotFoundException(`User #${id} not found`);
@@ -46,7 +46,7 @@ export class UsersService {
     return user;
   }
 
-  async update(id: string, updateDto: UpdateUserDto): Promise<Users> {
+  async update(id: string, updateDto: UpdateUserDto): Promise<User> {
     await this.findOne(id);
 
     const { name, email, photoUrl, telegramId } = updateDto;
@@ -62,7 +62,7 @@ export class UsersService {
     });
   }
 
-  async remove(id: string): Promise<Users> {
+  async remove(id: string): Promise<User> {
     await this.findOne(id);
 
     return this.prismaService.users.delete({ where: { id } });

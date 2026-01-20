@@ -108,13 +108,13 @@ model Users {
   workoutsGroups WorkoutsGroups[]
 
   // Relations as a Personal Trainer
-  Personals        Personals[]      @relation("personal")
+  personals        Personals[]      @relation("personal")
   assessmentsGiven Assessment[]     @relation("personalAssessments")
   gymsOwned        Gym[]            @relation("gymOwner")
   personalProfile  PersonalProfile?
 
   // Relations as a Student
-  Students      Personals[]    @relation("student")
+  students      Personals[]    @relation("student")
   assessments   Assessment[]   @relation("studentAssessments")
   subscriptions Subscription[]
   payments      Payment[]

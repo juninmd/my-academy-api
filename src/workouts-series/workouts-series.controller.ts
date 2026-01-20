@@ -12,6 +12,7 @@ import { WorkoutsSeriesService } from './workouts-series.service';
 import { CreateWorkoutsSeriesDto } from './dto/create-workouts-series.dto';
 import { UpdateWorkoutsSeriesDto } from './dto/update-workouts-series.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { WorkoutSeries } from './entities/workout-series.entity';
 
 @ApiTags('Workouts Series')
 @Controller('workouts-series')
@@ -24,14 +25,14 @@ export class WorkoutsSeriesController {
     status: 201,
     description: 'The workout series has been successfully created.',
   })
-  create(@Body() createWorkoutsSeriesDto: CreateWorkoutsSeriesDto) {
+  create(@Body() createWorkoutsSeriesDto: CreateWorkoutsSeriesDto): Promise<WorkoutSeries> {
     return this.workoutsSeriesService.create(createWorkoutsSeriesDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'List all workout series' })
   @ApiResponse({ status: 200, description: 'Return all workout series.' })
-  findAll() {
+  findAll(): Promise<WorkoutSeries[]> {
     return this.workoutsSeriesService.findAll();
   }
 
@@ -39,7 +40,7 @@ export class WorkoutsSeriesController {
   @ApiOperation({ summary: 'Get a workout series by id' })
   @ApiResponse({ status: 200, description: 'Return the workout series.' })
   @ApiResponse({ status: 404, description: 'Workout series not found.' })
-  findOne(@Param('id', ParseIntPipe) id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number): Promise<WorkoutSeries> {
     return this.workoutsSeriesService.findOne(id);
   }
 
@@ -53,7 +54,7 @@ export class WorkoutsSeriesController {
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateWorkoutsSeriesDto: UpdateWorkoutsSeriesDto,
-  ) {
+  ): Promise<WorkoutSeries> {
     return this.workoutsSeriesService.update(id, updateWorkoutsSeriesDto);
   }
 
@@ -64,7 +65,7 @@ export class WorkoutsSeriesController {
     description: 'The workout series has been successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'Workout series not found.' })
-  remove(@Param('id', ParseIntPipe) id: number) {
+  remove(@Param('id', ParseIntPipe) id: number): Promise<WorkoutSeries> {
     return this.workoutsSeriesService.remove(id);
   }
 }

@@ -37,13 +37,13 @@ export class WorkoutsService {
           : undefined,
       },
       include: { workoutSeries: true },
-    }) as unknown as Promise<Workout>;
+    });
   }
 
   async findAll(): Promise<Workout[]> {
     return this.prismaService.workouts.findMany({
       include: { workoutSeries: true },
-    }) as unknown as Promise<Workout[]>;
+    });
   }
 
   async findOne(id: number): Promise<Workout> {
@@ -56,7 +56,7 @@ export class WorkoutsService {
       throw new NotFoundException(`Workout #${id} not found`);
     }
 
-    return workout as unknown as Workout;
+    return workout;
   }
 
   async update(id: number, updateDto: UpdateWorkoutDto): Promise<Workout> {
@@ -100,7 +100,7 @@ export class WorkoutsService {
           },
           include: { workoutSeries: true },
         });
-      }) as unknown as Promise<Workout>;
+      });
     }
 
     return this.prismaService.workouts.update({
@@ -112,7 +112,7 @@ export class WorkoutsService {
         methodId,
       },
       include: { workoutSeries: true },
-    }) as unknown as Promise<Workout>;
+    });
   }
 
   async remove(id: number): Promise<Workout> {
@@ -121,6 +121,6 @@ export class WorkoutsService {
     return this.prismaService.workouts.delete({
       where: { id },
       include: { workoutSeries: true },
-    }) as unknown as Workout;
+    });
   }
 }

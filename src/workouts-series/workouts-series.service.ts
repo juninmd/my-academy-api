@@ -6,12 +6,13 @@ import {
 import { PrismaService } from '../prisma.service';
 import { CreateWorkoutsSeriesDto } from './dto/create-workouts-series.dto';
 import { UpdateWorkoutsSeriesDto } from './dto/update-workouts-series.dto';
+import { WorkoutSeries } from './entities/workout-series.entity';
 
 @Injectable()
 export class WorkoutsSeriesService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createWorkoutsSeriesDto: CreateWorkoutsSeriesDto) {
+  create(createWorkoutsSeriesDto: CreateWorkoutsSeriesDto): Promise<WorkoutSeries> {
     const { id, ...data } = createWorkoutsSeriesDto;
 
     if (!data.workoutId) {
@@ -26,11 +27,11 @@ export class WorkoutsSeriesService {
     });
   }
 
-  findAll() {
+  findAll(): Promise<WorkoutSeries[]> {
     return this.prismaService.workoutSeries.findMany();
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<WorkoutSeries> {
     const series = await this.prismaService.workoutSeries.findUnique({
       where: { id },
     });
@@ -40,7 +41,7 @@ export class WorkoutsSeriesService {
     return series;
   }
 
-  async update(id: number, updateDto: UpdateWorkoutsSeriesDto) {
+  async update(id: number, updateDto: UpdateWorkoutsSeriesDto): Promise<WorkoutSeries> {
     await this.findOne(id);
     const { id: _, ...data } = updateDto;
     return this.prismaService.workoutSeries.update({
@@ -49,7 +50,7 @@ export class WorkoutsSeriesService {
     });
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<WorkoutSeries> {
     await this.findOne(id);
     return this.prismaService.workoutSeries.delete({
       where: { id },
