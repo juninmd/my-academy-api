@@ -1,5 +1,5 @@
 import { Exercises, WorkoutsGroups } from '@prisma/client';
-import { WorkoutsSeries } from '../../workouts-series/entities/workout-series.entity';
+import { WorkoutSeries } from '../../workouts-series/entities/workout-series.entity';
 
 export class Workout {
   id: number;
@@ -12,5 +12,5 @@ export class Workout {
 
   exercise?: Exercises;
   workoutGroup?: WorkoutsGroups;
-  workoutSeries?: WorkoutsSeries[];
+  workoutSeries?: WorkoutSeries[];
 }

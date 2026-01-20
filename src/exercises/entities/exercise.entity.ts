@@ -6,5 +6,5 @@ export class Exercise {
   image: string;
   tips: string;
   mistakes: string;
-  Workouts?: Workouts[];
+  workouts?: Workouts[];
 }

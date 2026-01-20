@@ -11,7 +11,7 @@ import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Users } from '@prisma/client';
+import { User } from './entities/user.entity';
 
 @ApiTags('Users')
 @Controller('users')
@@ -25,14 +25,14 @@ export class UsersController {
     description: 'The user has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  create(@Body() createUserDto: CreateUserDto): Promise<Users> {
+  create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
   }
 
   @Get()
   @ApiOperation({ summary: 'List all users' })
   @ApiResponse({ status: 200, description: 'Return all users.' })
-  findAll(): Promise<Users[]> {
+  findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
@@ -40,7 +40,7 @@ export class UsersController {
   @ApiOperation({ summary: 'Get a user by id' })
   @ApiResponse({ status: 200, description: 'Return the user.' })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  findOne(@Param('id') id: string): Promise<Users> {
+  findOne(@Param('id') id: string): Promise<User> {
     return this.usersService.findOne(id);
   }
 
@@ -54,7 +54,7 @@ export class UsersController {
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-  ): Promise<Users> {
+  ): Promise<User> {
     return this.usersService.update(id, updateUserDto);
   }
 
@@ -65,7 +65,7 @@ export class UsersController {
     description: 'The user has been successfully deleted.',
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
-  remove(@Param('id') id: string): Promise<Users> {
+  remove(@Param('id') id: string): Promise<User> {
     return this.usersService.remove(id);
   }
 }

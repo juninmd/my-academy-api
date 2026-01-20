@@ -1,6 +1,6 @@
 import { Workouts } from '@prisma/client';
 
-export class WorkoutsSeries {
+export class WorkoutSeries {
   id: number;
   workoutId: number;
   repetitions: number;
