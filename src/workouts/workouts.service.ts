@@ -3,6 +3,7 @@ import { CreateWorkoutDto } from './dto/create-workout.dto';
 import { UpdateWorkoutDto } from './dto/update-workout.dto';
 import { PrismaService } from '../prisma.service';
 import { Workout } from './entities/workout.entity';
+import { CreateWorkoutSeriesNestedDto } from '../workouts-series/dto/create-workout-series-nested.dto';
 
 @Injectable()
 export class WorkoutsService {
@@ -25,14 +26,7 @@ export class WorkoutsService {
         methodId,
         workoutSeries: workoutSeries
           ? {
-              create: workoutSeries.map((series) => ({
-                repetitions: series.repetitions,
-                weight: series.weight,
-                rest: series.rest,
-                time: series.time,
-                distance: series.distance,
-                speed: series.speed,
-              })),
+              create: this.mapToSeriesCreate(workoutSeries),
             }
           : undefined,
       },
@@ -67,35 +61,21 @@ export class WorkoutsService {
 
     if (workoutSeries) {
       return this.prismaService.$transaction(async (tx) => {
-        // Update scalar fields
-        await tx.workouts.update({
+        // Delete existing series
+        await tx.workoutSeries.deleteMany({
+          where: { workoutId: id },
+        });
+
+        // Update workout and re-create series
+        return tx.workouts.update({
           where: { id },
           data: {
             exerciseId,
             description,
             workoutsGroupsId,
             methodId,
-          },
-        });
-
-        // Delete existing series
-        await tx.workoutSeries.deleteMany({
-          where: { workoutId: id },
-        });
-
-        // Re-create series
-        return tx.workouts.update({
-          where: { id },
-          data: {
             workoutSeries: {
-              create: workoutSeries.map((series) => ({
-                repetitions: series.repetitions,
-                weight: series.weight,
-                rest: series.rest,
-                time: series.time,
-                distance: series.distance,
-                speed: series.speed,
-              })),
+              create: this.mapToSeriesCreate(workoutSeries),
             },
           },
           include: { workoutSeries: true },
@@ -122,5 +102,16 @@ export class WorkoutsService {
       where: { id },
       include: { workoutSeries: true },
     });
+  }
+
+  private mapToSeriesCreate(series: CreateWorkoutSeriesNestedDto[]) {
+    return series.map((item) => ({
+      repetitions: item.repetitions,
+      weight: item.weight,
+      rest: item.rest,
+      time: item.time,
+      distance: item.distance,
+      speed: item.speed,
+    }));
   }
 }
