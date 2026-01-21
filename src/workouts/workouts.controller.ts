@@ -24,6 +24,7 @@ export class WorkoutsController {
   @ApiResponse({
     status: 201,
     description: 'The workout has been successfully created.',
+    type: Workout,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   create(@Body() createWorkoutDto: CreateWorkoutDto): Promise<Workout> {
@@ -32,14 +33,22 @@ export class WorkoutsController {
 
   @Get()
   @ApiOperation({ summary: 'List all workouts' })
-  @ApiResponse({ status: 200, description: 'Return all workouts.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all workouts.',
+    type: [Workout],
+  })
   findAll(): Promise<Workout[]> {
     return this.workoutsService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a workout by id' })
-  @ApiResponse({ status: 200, description: 'Return the workout.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return the workout.',
+    type: Workout,
+  })
   @ApiResponse({ status: 404, description: 'Workout not found.' })
   findOne(@Param('id', ParseIntPipe) id: number): Promise<Workout> {
     return this.workoutsService.findOne(id);
@@ -50,6 +59,7 @@ export class WorkoutsController {
   @ApiResponse({
     status: 200,
     description: 'The workout has been successfully updated.',
+    type: Workout,
   })
   @ApiResponse({ status: 404, description: 'Workout not found.' })
   update(
@@ -64,6 +74,7 @@ export class WorkoutsController {
   @ApiResponse({
     status: 200,
     description: 'The workout has been successfully deleted.',
+    type: Workout,
   })
   @ApiResponse({ status: 404, description: 'Workout not found.' })
   remove(@Param('id', ParseIntPipe) id: number): Promise<Workout> {
