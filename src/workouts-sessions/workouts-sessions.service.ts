@@ -154,7 +154,7 @@ export class WorkoutsSessionsService {
     };
   }
 
-  calculateSequence(sequences: any[], currentDate: Date): number {
+  calculateSequence(sequences: WorkoutSessions[], currentDate: Date): number {
     if (sequences.length === 0) {
       return 0;
     }
@@ -163,7 +163,7 @@ export class WorkoutsSessionsService {
     let currentSequence = 0;
 
     for (let i = 0; i < sequences.length; i++) {
-      const sequence = new Date(sequences[i].date);
+      const sequence = sequences[i].date;
       const currentDayOfWeek = sequence.getUTCDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
 
       if (currentDayOfWeek !== 0) {
@@ -171,7 +171,7 @@ export class WorkoutsSessionsService {
         if (i === 0) {
           currentSequence++;
         } else {
-          const previousDate = new Date(sequences[i - 1].date);
+          const previousDate = sequences[i - 1].date;
           const diffTime = Math.abs(
             sequence.getTime() - previousDate.getTime(),
           );
