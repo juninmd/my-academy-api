@@ -10,20 +10,12 @@ export class WorkoutsService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createWorkoutDto: CreateWorkoutDto): Promise<Workout> {
-    const {
-      exerciseId,
-      description,
-      workoutsGroupsId,
-      methodId,
-      workoutSeries,
-    } = createWorkoutDto;
+    const { workoutSeries, ...workoutData } = createWorkoutDto;
 
     return this.prismaService.workouts.create({
       data: {
-        exerciseId,
-        description: description ?? '',
-        workoutsGroupsId,
-        methodId,
+        ...workoutData,
+        description: workoutData.description ?? '',
         workoutSeries: workoutSeries
           ? {
               create: this.mapToSeriesCreate(workoutSeries),
@@ -56,8 +48,7 @@ export class WorkoutsService {
   async update(id: number, updateDto: UpdateWorkoutDto): Promise<Workout> {
     await this.findOne(id);
 
-    const { exerciseId, description, workoutsGroupsId, methodId, workoutSeries } =
-      updateDto;
+    const { workoutSeries, ...workoutData } = updateDto;
 
     if (workoutSeries) {
       return this.prismaService.$transaction(async (tx) => {
@@ -70,10 +61,7 @@ export class WorkoutsService {
         return tx.workouts.update({
           where: { id },
           data: {
-            exerciseId,
-            description,
-            workoutsGroupsId,
-            methodId,
+            ...workoutData,
             workoutSeries: {
               create: this.mapToSeriesCreate(workoutSeries),
             },
@@ -85,12 +73,7 @@ export class WorkoutsService {
 
     return this.prismaService.workouts.update({
       where: { id },
-      data: {
-        exerciseId,
-        description,
-        workoutsGroupsId,
-        methodId,
-      },
+      data: workoutData,
       include: { workoutSeries: true },
     });
   }
