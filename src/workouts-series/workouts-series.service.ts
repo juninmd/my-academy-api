@@ -15,7 +15,7 @@ export class WorkoutsSeriesService {
   create(
     createWorkoutsSeriesDto: CreateWorkoutsSeriesDto,
   ): Promise<WorkoutSeries> {
-    const { id, ...data } = createWorkoutsSeriesDto;
+    const { id: _, ...data } = createWorkoutsSeriesDto;
 
     if (!data.workoutId) {
       throw new BadRequestException('workoutId is required');

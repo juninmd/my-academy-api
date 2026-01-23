@@ -10,7 +10,10 @@ describe('WorkoutsSessionsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         WorkoutsSessionsService,
-        PrismaService,
+        {
+          provide: PrismaService,
+          useValue: {},
+        },
         {
           provide: TelegramService,
           useValue: {

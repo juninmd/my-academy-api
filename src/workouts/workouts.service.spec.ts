@@ -8,7 +8,6 @@ import { Workout } from './entities/workout.entity';
 
 describe('WorkoutsService', () => {
   let service: WorkoutsService;
-  let prismaService: PrismaService;
 
   const mockWorkout: Workout = {
     id: 1,
@@ -47,7 +46,6 @@ describe('WorkoutsService', () => {
     }).compile();
 
     service = module.get<WorkoutsService>(WorkoutsService);
-    prismaService = module.get<PrismaService>(PrismaService);
   });
 
   afterEach(() => {
