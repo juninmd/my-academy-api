@@ -78,20 +78,20 @@ describe('WorkoutsSeriesService', () => {
     });
 
     it('should throw BadRequestException if workoutId is missing', async () => {
-        const dto: CreateWorkoutsSeriesDto = {
-            repetitions: 10,
-            weight: 20,
-            rest: 60,
-            time: 0,
-            distance: 0,
-            speed: 0,
-        } as any;
+      const dto: CreateWorkoutsSeriesDto = {
+        repetitions: 10,
+        weight: 20,
+        rest: 60,
+        time: 0,
+        distance: 0,
+        speed: 0,
+      } as any;
 
-        try {
-            await service.create(dto);
-        } catch (error) {
-            expect(error).toBeInstanceOf(BadRequestException);
-        }
+      try {
+        await service.create(dto);
+      } catch (error) {
+        expect(error).toBeInstanceOf(BadRequestException);
+      }
     });
   });
 
@@ -112,7 +112,9 @@ describe('WorkoutsSeriesService', () => {
 
       const result = await service.findOne(1);
 
-      expect(prismaMock.workoutSeries.findUnique).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(prismaMock.workoutSeries.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
       expect(result).toEqual(mockSeries);
     });
 
@@ -127,7 +129,10 @@ describe('WorkoutsSeriesService', () => {
     it('should update a series', async () => {
       const dto: UpdateWorkoutsSeriesDto = { repetitions: 15 };
       prismaMock.workoutSeries.findUnique.mockResolvedValue(mockSeries);
-      prismaMock.workoutSeries.update.mockResolvedValue({ ...mockSeries, ...dto });
+      prismaMock.workoutSeries.update.mockResolvedValue({
+        ...mockSeries,
+        ...dto,
+      });
 
       const result = await service.update(1, dto);
 
@@ -146,7 +151,9 @@ describe('WorkoutsSeriesService', () => {
 
       const result = await service.remove(1);
 
-      expect(prismaMock.workoutSeries.delete).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(prismaMock.workoutSeries.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
       expect(result).toEqual(mockSeries);
     });
   });

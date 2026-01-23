@@ -65,7 +65,14 @@ describe('WorkoutsService', () => {
       description: 'Test',
       methodId: 1,
       workoutSeries: [
-        { repetitions: 10, weight: 10, rest: 60, time: 0, distance: 0, speed: 0 },
+        {
+          repetitions: 10,
+          weight: 10,
+          rest: 60,
+          time: 0,
+          distance: 0,
+          speed: 0,
+        },
       ],
     };
 
@@ -127,7 +134,10 @@ describe('WorkoutsService', () => {
 
     it('should update a workout without series change', async () => {
       prismaMock.workouts.findUnique.mockResolvedValue(mockWorkout);
-      prismaMock.workouts.update.mockResolvedValue({ ...mockWorkout, ...updateWorkoutDto });
+      prismaMock.workouts.update.mockResolvedValue({
+        ...mockWorkout,
+        ...updateWorkoutDto,
+      });
 
       const result = await service.update(1, updateWorkoutDto);
 
@@ -141,12 +151,21 @@ describe('WorkoutsService', () => {
 
     it('should update a workout with series change using transaction', async () => {
       const updateWithSeriesDto: UpdateWorkoutDto = {
-        workoutSeries: [{ repetitions: 12, weight: 15, rest: 45, time: 0, distance: 0, speed: 0 }],
+        workoutSeries: [
+          {
+            repetitions: 12,
+            weight: 15,
+            rest: 45,
+            time: 0,
+            distance: 0,
+            speed: 0,
+          },
+        ],
       };
 
       prismaMock.workouts.findUnique.mockResolvedValue(mockWorkout);
       prismaMock.$transaction.mockImplementation(async (callback) => {
-          return await callback(prismaMock);
+        return await callback(prismaMock);
       });
       prismaMock.workouts.update.mockResolvedValue(mockWorkout);
 
@@ -154,7 +173,9 @@ describe('WorkoutsService', () => {
 
       expect(prismaMock.$transaction).toHaveBeenCalled();
       // Inside transaction checks are implicit if transaction mock executes callback
-      expect(prismaMock.workoutSeries.deleteMany).toHaveBeenCalledWith({ where: { workoutId: 1 } });
+      expect(prismaMock.workoutSeries.deleteMany).toHaveBeenCalledWith({
+        where: { workoutId: 1 },
+      });
     });
   });
 

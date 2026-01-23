@@ -12,7 +12,9 @@ import { WorkoutSeries } from './entities/workout-series.entity';
 export class WorkoutsSeriesService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createWorkoutsSeriesDto: CreateWorkoutsSeriesDto): Promise<WorkoutSeries> {
+  create(
+    createWorkoutsSeriesDto: CreateWorkoutsSeriesDto,
+  ): Promise<WorkoutSeries> {
     const { id, ...data } = createWorkoutsSeriesDto;
 
     if (!data.workoutId) {
@@ -41,7 +43,10 @@ export class WorkoutsSeriesService {
     return series;
   }
 
-  async update(id: number, updateDto: UpdateWorkoutsSeriesDto): Promise<WorkoutSeries> {
+  async update(
+    id: number,
+    updateDto: UpdateWorkoutsSeriesDto,
+  ): Promise<WorkoutSeries> {
     await this.findOne(id);
     const { id: _, ...data } = updateDto;
     return this.prismaService.workoutSeries.update({

@@ -69,7 +69,9 @@ describe('UsersService', () => {
 
       const result = await service.create(createUserDto);
 
-      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({ where: { id: createUserDto.id } });
+      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({
+        where: { id: createUserDto.id },
+      });
       expect(prismaMock.users.create).toHaveBeenCalledWith({
         data: {
           id: createUserDto.id,
@@ -85,8 +87,12 @@ describe('UsersService', () => {
     it('should throw ConflictException if user already exists', async () => {
       prismaMock.users.findUnique.mockResolvedValue(mockUser);
 
-      await expect(service.create(createUserDto)).rejects.toThrow(ConflictException);
-      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({ where: { id: createUserDto.id } });
+      await expect(service.create(createUserDto)).rejects.toThrow(
+        ConflictException,
+      );
+      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({
+        where: { id: createUserDto.id },
+      });
       expect(prismaMock.users.create).not.toHaveBeenCalled();
     });
   });
@@ -108,7 +114,9 @@ describe('UsersService', () => {
 
       const result = await service.findOne('123');
 
-      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({ where: { id: '123' } });
+      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({
+        where: { id: '123' },
+      });
       expect(result).toEqual(mockUser);
     });
 
@@ -116,7 +124,9 @@ describe('UsersService', () => {
       prismaMock.users.findUnique.mockResolvedValue(null);
 
       await expect(service.findOne('999')).rejects.toThrow(NotFoundException);
-      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({ where: { id: '999' } });
+      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({
+        where: { id: '999' },
+      });
     });
   });
 
@@ -127,11 +137,16 @@ describe('UsersService', () => {
 
     it('should update a user if found', async () => {
       prismaMock.users.findUnique.mockResolvedValue(mockUser); // for findOne check
-      prismaMock.users.update.mockResolvedValue({ ...mockUser, ...updateUserDto });
+      prismaMock.users.update.mockResolvedValue({
+        ...mockUser,
+        ...updateUserDto,
+      });
 
       const result = await service.update('123', updateUserDto);
 
-      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({ where: { id: '123' } });
+      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({
+        where: { id: '123' },
+      });
       expect(prismaMock.users.update).toHaveBeenCalledWith({
         where: { id: '123' },
         data: expect.objectContaining(updateUserDto),
@@ -142,7 +157,9 @@ describe('UsersService', () => {
     it('should throw NotFoundException if user to update not found', async () => {
       prismaMock.users.findUnique.mockResolvedValue(null);
 
-      await expect(service.update('999', updateUserDto)).rejects.toThrow(NotFoundException);
+      await expect(service.update('999', updateUserDto)).rejects.toThrow(
+        NotFoundException,
+      );
       expect(prismaMock.users.update).not.toHaveBeenCalled();
     });
   });
@@ -154,8 +171,12 @@ describe('UsersService', () => {
 
       const result = await service.remove('123');
 
-      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({ where: { id: '123' } });
-      expect(prismaMock.users.delete).toHaveBeenCalledWith({ where: { id: '123' } });
+      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({
+        where: { id: '123' },
+      });
+      expect(prismaMock.users.delete).toHaveBeenCalledWith({
+        where: { id: '123' },
+      });
       expect(result).toEqual(mockUser);
     });
 

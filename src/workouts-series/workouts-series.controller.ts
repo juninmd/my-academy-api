@@ -25,7 +25,9 @@ export class WorkoutsSeriesController {
     status: 201,
     description: 'The workout series has been successfully created.',
   })
-  create(@Body() createWorkoutsSeriesDto: CreateWorkoutsSeriesDto): Promise<WorkoutSeries> {
+  create(
+    @Body() createWorkoutsSeriesDto: CreateWorkoutsSeriesDto,
+  ): Promise<WorkoutSeries> {
     return this.workoutsSeriesService.create(createWorkoutsSeriesDto);
   }
 
