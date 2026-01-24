@@ -1,45 +1,38 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateWorkoutsGroupDto } from './dto/create-workouts-group.dto';
 import { UpdateWorkoutsGroupDto } from './dto/update-workouts-group.dto';
 import { PrismaService } from '../prisma.service';
-import { WorkoutsGroups } from '@prisma/client';
+import { WorkoutsGroup } from './entities/workouts-group.entity';
+import { CreateWorkoutNestedDto } from '../workouts/dto/create-workout-nested.dto';
 
 @Injectable()
 export class WorkoutsGroupsService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(data: CreateWorkoutsGroupDto): Promise<WorkoutsGroups> {
+  async create(data: CreateWorkoutsGroupDto): Promise<WorkoutsGroup> {
+    const { name, image, userId, workouts } = data;
     return this.prismaService.workoutsGroups.create({
       data: {
-        name: data.name,
-        image: data.image,
-        user: { connect: { id: data.userId } },
+        name,
+        image,
+        userId,
         workouts: {
-          create: data.workouts?.map((workout) => ({
-            exercise: { connect: { id: workout.exerciseId } },
-            description: workout.description || '',
-            method: workout.methodId
-              ? { connect: { id: workout.methodId } }
-              : undefined,
-            workoutSeries: {
-              create: workout.workoutSeries?.map((series) => ({
-                repetitions: series.repetitions,
-                weight: series.weight,
-                rest: series.rest,
-              })),
-            },
-          })),
+          create: this.mapWorkoutsCreate(workouts),
         },
       },
     });
   }
 
-  findAll(userId: string): Promise<WorkoutsGroups[]> {
+  async findAll(userId: string): Promise<WorkoutsGroup[]> {
     return this.prismaService.workoutsGroups.findMany({ where: { userId } });
   }
 
-  findAllExercises(id: number): Promise<WorkoutsGroups> {
-    return this.prismaService.workoutsGroups.findUnique({
+  async findAllExercises(id: number): Promise<WorkoutsGroup> {
+    return this.findOne(id);
+  }
+
+  async findOne(id: number): Promise<WorkoutsGroup> {
+    const group = await this.prismaService.workoutsGroups.findUnique({
       where: { id },
       include: {
         workouts: {
@@ -51,63 +44,68 @@ export class WorkoutsGroupsService {
         },
       },
     });
+    if (!group) {
+      throw new NotFoundException(`WorkoutsGroup #${id} not found`);
+    }
+    return group;
   }
 
-  findOne(id: number): Promise<WorkoutsGroups> {
-    return this.prismaService.workoutsGroups.findUnique({
-      where: { id },
-      include: {
-        workouts: {
-          include: {
-            workoutSeries: true,
-            exercise: true,
-            method: true,
+  async update(id: number, data: UpdateWorkoutsGroupDto): Promise<WorkoutsGroup> {
+    await this.findOne(id);
+
+    const { name, image, userId, workouts } = data;
+
+    return this.prismaService.$transaction(async (tx) => {
+      // Delete existing workouts
+      await tx.workouts.deleteMany({
+        where: { workoutsGroupsId: id },
+      });
+
+      return tx.workoutsGroups.update({
+        where: { id },
+        data: {
+          name,
+          image,
+          userId,
+          workouts: {
+            create: this.mapWorkoutsCreate(workouts),
           },
         },
-      },
-    });
-  }
-
-  async update(id: number, data: UpdateWorkoutsGroupDto) {
-    await this.prismaService.workouts.deleteMany({
-      where: { workoutsGroupsId: id },
-    });
-
-    return this.prismaService.workoutsGroups.update({
-      where: { id },
-      data: {
-        name: data.name,
-        image: data.image,
-        userId: data.userId,
-        workouts: {
-          create: data.workouts?.map((workout) => ({
-            exerciseId: workout.exerciseId,
-            description: workout.description,
-            methodId: workout.methodId,
-            workoutSeries: {
-              create: workout.workoutSeries?.map((series) => ({
-                repetitions: series.repetitions,
-                weight: series.weight,
-                rest: series.rest,
-              })),
+        include: {
+          workouts: {
+            include: {
+              workoutSeries: true,
             },
-          })),
-        },
-      },
-      include: {
-        workouts: {
-          include: {
-            workoutSeries: true,
           },
         },
-      },
+      });
     });
   }
 
-  remove(id: number): Promise<WorkoutsGroups> {
+  async remove(id: number): Promise<WorkoutsGroup> {
+    await this.findOne(id);
     return this.prismaService.workoutsGroups.delete({
       where: { id },
       include: { WorkoutSessions: true },
     });
+  }
+
+  private mapWorkoutsCreate(workouts?: CreateWorkoutNestedDto[]) {
+    if (!workouts) return [];
+    return workouts.map((workout) => ({
+      exerciseId: workout.exerciseId,
+      description: workout.description || '',
+      methodId: workout.methodId,
+      workoutSeries: {
+        create: workout.workoutSeries?.map((series) => ({
+          repetitions: series.repetitions,
+          weight: series.weight,
+          rest: series.rest,
+          time: series.time,
+          distance: series.distance,
+          speed: series.speed,
+        })),
+      },
+    }));
   }
 }
