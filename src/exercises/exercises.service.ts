@@ -1,14 +1,14 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateExerciseDto } from './dto/create-exercise.dto';
 import { UpdateExerciseDto } from './dto/update-exercise.dto';
-import { Exercises } from '@prisma/client';
 import { PrismaService } from '../prisma.service';
+import { Exercise } from './entities/exercise.entity';
 
 @Injectable()
 export class ExercisesService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  create(createExerciseDto: CreateExerciseDto): Promise<Exercises> {
+  async create(createExerciseDto: CreateExerciseDto): Promise<Exercise> {
     const { name, image, tips, mistakes, type } = createExerciseDto;
 
     return this.prismaService.exercises.create({
@@ -22,11 +22,11 @@ export class ExercisesService {
     });
   }
 
-  findAll(): Promise<Exercises[]> {
+  async findAll(): Promise<Exercise[]> {
     return this.prismaService.exercises.findMany();
   }
 
-  async findOne(id: number): Promise<Exercises> {
+  async findOne(id: number): Promise<Exercise> {
     const exercise = await this.prismaService.exercises.findUnique({
       where: { id },
     });
@@ -38,7 +38,7 @@ export class ExercisesService {
     return exercise;
   }
 
-  async update(id: number, updateDto: UpdateExerciseDto): Promise<Exercises> {
+  async update(id: number, updateDto: UpdateExerciseDto): Promise<Exercise> {
     await this.findOne(id);
 
     const { name, image, tips, mistakes, type } = updateDto;
@@ -55,7 +55,7 @@ export class ExercisesService {
     });
   }
 
-  async remove(id: number): Promise<Exercises> {
+  async remove(id: number): Promise<Exercise> {
     await this.findOne(id);
 
     return this.prismaService.exercises.delete({ where: { id } });
