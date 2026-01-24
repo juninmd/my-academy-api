@@ -4,7 +4,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 enum Role {
@@ -42,8 +43,42 @@ model Exercises {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   workouts  Workouts[]
+  exerciseLogs ExerciseLog[]
 
   @@map("exercises")
+}
+
+model ExerciseLog {
+  id         Int      @id @default(autoincrement())
+  userId     String
+  exerciseId Int
+  date       DateTime @default(now())
+  notes      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user     Users             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exercise Exercises         @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  sets     ExerciseLogSet[]
+
+  @@index([userId])
+  @@index([exerciseId])
+  @@map("exercise_logs")
+}
+
+model ExerciseLogSet {
+  id            Int         @id @default(autoincrement())
+  exerciseLogId Int
+  reps          Int
+  weight        Int
+  rpe           Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  exerciseLog ExerciseLog @relation(fields: [exerciseLogId], references: [id], onDelete: Cascade)
+
+  @@index([exerciseLogId])
+  @@map("exercise_log_sets")
 }
 
 model Methods {
@@ -117,6 +152,7 @@ model Users {
   assessments   Assessment[]   @relation("studentAssessments")
   subscriptions Subscription[]
   payments      Payment[]
+  exerciseLogs  ExerciseLog[]
 
   @@map("users")
 }

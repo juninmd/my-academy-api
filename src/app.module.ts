@@ -11,6 +11,7 @@ import { WorkoutsGroupsModule } from './workouts-groups/workouts-groups.module';
 import { WorkoutsSessionsModule } from './workouts-sessions/workouts-sessions.module';
 import { PreauthMiddleware } from './auth/firebase.auth';
 import { HealthModule } from './health/health.module';
+import { ExerciseLogsModule } from './exercise-logs/exercise-logs.module';
 import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
@@ -25,6 +26,7 @@ import { TelegramModule } from './telegram/telegram.module';
     WorkoutsGroupsModule,
     HealthModule,
     TelegramModule,
+    ExerciseLogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
