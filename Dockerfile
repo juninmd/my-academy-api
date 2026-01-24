@@ -1,8 +1,8 @@
 # Use a imagem oficial do Node.js como base
-FROM node:alpine
+FROM node:20-alpine
 
 WORKDIR /usr/src/app
 COPY . /usr/src/app
-RUN npm install
+RUN npm install -g pnpm && pnpm install
 EXPOSE 5000
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]
