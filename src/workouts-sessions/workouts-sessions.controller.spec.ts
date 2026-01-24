@@ -12,7 +12,10 @@ describe('WorkoutsSessionsController', () => {
       controllers: [WorkoutsSessionsController],
       providers: [
         WorkoutsSessionsService,
-        PrismaService,
+        {
+          provide: PrismaService,
+          useValue: {},
+        },
         {
           provide: TelegramService,
           useValue: {},
