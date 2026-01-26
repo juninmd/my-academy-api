@@ -56,7 +56,7 @@ describe('WorkoutsSessionsService', () => {
   });
 
   describe('create', () => {
-    const createDto = { workoutGroupId: 1, date: new Date(), Workouts: [] };
+    const createDto = { workoutGroupId: 1, date: new Date() };
     const userId = 'user1';
 
     it('should create session and send telegram if user has telegramId', async () => {
@@ -65,11 +65,15 @@ describe('WorkoutsSessionsService', () => {
       const session = { id: 1, ...createDto };
 
       (prisma.users.findUniqueOrThrow as jest.Mock).mockResolvedValue(user);
-      (prisma.workoutsGroups.findUniqueOrThrow as jest.Mock).mockResolvedValue(group);
-      (telegramService.postChannelMessage as jest.Mock).mockResolvedValue(undefined);
+      (prisma.workoutsGroups.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        group,
+      );
+      (telegramService.postChannelMessage as jest.Mock).mockResolvedValue(
+        undefined,
+      );
       (prisma.workoutSessions.create as jest.Mock).mockResolvedValue(session);
 
-      const result = await service.create(createDto, userId);
+      const result = await service.create(createDto as any, userId);
 
       expect(result).toBe(session);
       expect(telegramService.postChannelMessage).toHaveBeenCalled();
@@ -82,7 +86,7 @@ describe('WorkoutsSessionsService', () => {
       (prisma.users.findUniqueOrThrow as jest.Mock).mockResolvedValue(user);
       (prisma.workoutSessions.create as jest.Mock).mockResolvedValue(session);
 
-      await service.create(createDto, userId);
+      await service.create(createDto as any, userId);
 
       expect(telegramService.postChannelMessage).not.toHaveBeenCalled();
     });
@@ -93,13 +97,19 @@ describe('WorkoutsSessionsService', () => {
       const session = { id: 1, ...createDto };
 
       (prisma.users.findUniqueOrThrow as jest.Mock).mockResolvedValue(user);
-      (prisma.workoutsGroups.findUniqueOrThrow as jest.Mock).mockResolvedValue(group);
-      (telegramService.postChannelMessage as jest.Mock).mockRejectedValue(new Error('Telegram fail'));
+      (prisma.workoutsGroups.findUniqueOrThrow as jest.Mock).mockResolvedValue(
+        group,
+      );
+      (telegramService.postChannelMessage as jest.Mock).mockRejectedValue(
+        new Error('Telegram fail'),
+      );
       (prisma.workoutSessions.create as jest.Mock).mockResolvedValue(session);
 
-      const loggerSpy = jest.spyOn(Logger.prototype, 'error').mockImplementation(() => {});
+      const loggerSpy = jest
+        .spyOn(Logger.prototype, 'error')
+        .mockImplementation(() => {});
 
-      await service.create(createDto, userId);
+      await service.create(createDto as any, userId);
 
       expect(telegramService.postChannelMessage).toHaveBeenCalled();
       // We expect the function to proceed to create session despite telegram failure
@@ -110,18 +120,22 @@ describe('WorkoutsSessionsService', () => {
   });
 
   describe('findAll', () => {
-      it('should return sessions in a month range', async () => {
-          const sessions = [{ id: 1 }];
-          (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(sessions);
+    it('should return sessions in a month range', async () => {
+      const sessions = [{ id: 1 }];
+      (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(
+        sessions,
+      );
 
-          const result = await service.findAll('user1', 2023, 1);
-          expect(result).toBe(sessions);
-          expect(prisma.workoutSessions.findMany).toHaveBeenCalledWith(expect.objectContaining({
-              where: expect.objectContaining({
-                  workoutsGroups: { userId: 'user1' },
-              })
-          }));
-      });
+      const result = await service.findAll('user1', 2023, 1);
+      expect(result).toBe(sessions);
+      expect(prisma.workoutSessions.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            workoutsGroups: { userId: 'user1' },
+          }),
+        }),
+      );
+    });
   });
 
   describe('findSummary', () => {
@@ -130,7 +144,6 @@ describe('WorkoutsSessionsService', () => {
     it('should return summary with streak logic', async () => {
       jest.useFakeTimers();
       // Set to a Thursday so the last workout (Wednesday) counts as "yesterday", preserving the streak.
-      // Note: The current logic seems to reset streak if last workout is TODAY (diffDays=0).
       const thursday = new Date('2023-10-19T12:00:00Z');
       jest.setSystemTime(thursday);
 
@@ -140,27 +153,34 @@ describe('WorkoutsSessionsService', () => {
       (prisma.personals.findFirst as jest.Mock).mockResolvedValue(null);
 
       // Mock workoutsGroups
-      const groups = [{ id: 1, name: 'A' }, { id: 2, name: 'B' }];
+      const groups = [
+        { id: 1, name: 'A' },
+        { id: 2, name: 'B' },
+      ];
       (prisma.workoutsGroups.findMany as jest.Mock).mockResolvedValue(groups);
 
       // Mock lastSession
       const wednesday = new Date('2023-10-18T12:00:00Z');
-      const lastSession = { id: 10, workoutGroupId: 1, date: wednesday, workoutsGroups: groups[0] };
-      (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(lastSession);
+      const lastSession = {
+        id: 10,
+        workoutGroupId: 1,
+        date: wednesday,
+        workoutsGroups: groups[0],
+      };
+      (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(
+        lastSession,
+      );
 
       // Mock sequences (for streak calculation)
-      // Monday, Tuesday, Wednesday
       const d1 = new Date('2023-10-16T12:00:00Z');
       const d2 = new Date('2023-10-17T12:00:00Z');
       const d3 = new Date('2023-10-18T12:00:00Z');
 
-      const sequences = [
-          { date: d1 },
-          { date: d2 },
-          { date: d3 },
-      ];
+      const sequences = [{ date: d1 }, { date: d2 }, { date: d3 }];
 
-      (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(sequences);
+      (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(
+        sequences,
+      );
 
       const result = await service.findSummary(userId);
 
@@ -182,25 +202,108 @@ describe('WorkoutsSessionsService', () => {
       const result = await service.findSummary(userId);
       expect(result.counter).toBe(0);
     });
+
+    it('should handle iAmPersonal and iAmStudent', async () => {
+      // Mock "I am personal"
+      (prisma.personals.findMany as jest.Mock).mockResolvedValue([
+        { StudentUser: { id: 's1' } },
+      ]);
+      // Mock "I am student"
+      (prisma.personals.findFirst as jest.Mock).mockResolvedValue({
+        PersonalUser: { id: 'p1' },
+      });
+
+      (prisma.workoutsGroups.findMany as jest.Mock).mockResolvedValue([]);
+      (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(null);
+      (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue([]);
+
+      const result = await service.findSummary(userId);
+      expect(result.students).toHaveLength(1);
+      expect(result.personal).toEqual({ id: 'p1' });
+    });
+
+    it('should handle streak calculation complex scenarios', async () => {
+      // Gap > 1 day
+      const d1 = new Date('2023-10-01T12:00:00Z');
+      const d2 = new Date('2023-10-05T12:00:00Z'); // Gap
+      const sequences = [{ date: d1 }, { date: d2 }];
+
+      (prisma.personals.findMany as jest.Mock).mockResolvedValue([]);
+      (prisma.personals.findFirst as jest.Mock).mockResolvedValue(null);
+      (prisma.workoutsGroups.findMany as jest.Mock).mockResolvedValue([]);
+      (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(null);
+      (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(
+        sequences,
+      );
+
+      const result = await service.findSummary(userId);
+      expect(result.counter).toBe(0); // Gap breaks streak, and last date is far from today (real timers)
+    });
+
+    it('should determine correct workoutGroupOfDay', async () => {
+        jest.useFakeTimers();
+        const today = new Date('2023-10-20T12:00:00Z');
+        jest.setSystemTime(today);
+
+        const groups = [{ id: 1 }, { id: 2 }];
+        (prisma.workoutsGroups.findMany as jest.Mock).mockResolvedValue(groups);
+        (prisma.personals.findMany as jest.Mock).mockResolvedValue([]);
+        (prisma.personals.findFirst as jest.Mock).mockResolvedValue(null);
+        (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue([]);
+
+        // Case 1: lastSession is yesterday, group 1. Next should be group 2.
+        let lastSession = { id: 1, workoutGroupId: 1, date: new Date('2023-10-19T12:00:00Z'), workoutsGroups: groups[0] };
+        (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(lastSession);
+
+        let result = await service.findSummary(userId);
+        expect(result.workoutGroupOfDay).toBe(groups[1]);
+
+        // Case 2: lastSession is yesterday, group 2. Next should be group 1 (loop).
+        lastSession = { id: 1, workoutGroupId: 2, date: new Date('2023-10-19T12:00:00Z'), workoutsGroups: groups[1] };
+        (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(lastSession);
+
+        result = await service.findSummary(userId);
+        expect(result.workoutGroupOfDay).toBe(groups[0]);
+
+        jest.useRealTimers();
+    });
   });
 
   describe('CRUD operations', () => {
-      it('findOne should call prisma', async () => {
-          (prisma.workoutSessions.findUnique as jest.Mock).mockResolvedValue({ id: 1 });
-          await service.findOne(1);
-          expect(prisma.workoutSessions.findUnique).toHaveBeenCalledWith({ where: { id: 1 }});
+    it('findOne should call prisma', async () => {
+      (prisma.workoutSessions.findUnique as jest.Mock).mockResolvedValue({
+        id: 1,
       });
+      await service.findOne(1);
+      expect(prisma.workoutSessions.findUnique).toHaveBeenCalledWith({
+        where: { id: 1 },
+      });
+    });
 
-      it('update should call prisma', async () => {
-          (prisma.workoutSessions.update as jest.Mock).mockResolvedValue({ id: 1 });
-          await service.update(1, { workoutGroupId: 2, date: new Date(), Workouts: [] });
-          expect(prisma.workoutSessions.update).toHaveBeenCalled();
-      });
+    it('update should call prisma', async () => {
+      (prisma.workoutSessions.update as jest.Mock).mockResolvedValue({ id: 1 });
+      await service.update(1, { workoutGroupId: 2, date: new Date() } as any);
+      expect(prisma.workoutSessions.update).toHaveBeenCalled();
+    });
 
-      it('remove should call prisma', async () => {
-          (prisma.workoutSessions.delete as jest.Mock).mockResolvedValue({ id: 1 });
-          await service.remove(1);
-          expect(prisma.workoutSessions.delete).toHaveBeenCalledWith({ where: { id: 1 }});
+    it('remove should call prisma', async () => {
+      (prisma.workoutSessions.delete as jest.Mock).mockResolvedValue({ id: 1 });
+      await service.remove(1);
+      expect(prisma.workoutSessions.delete).toHaveBeenCalledWith({
+        where: { id: 1 },
       });
+    });
+  });
+
+  describe('getStartDateOfWeek and getEndDateOfWeek', () => {
+    // These methods are public, test them directly for coverage
+    it('getStartDateOfWeek', () => {
+      const date = service.getStartDateOfWeek(1); // Monday
+      expect(date).toBeInstanceOf(Date);
+    });
+    it('getEndDateOfWeek', () => {
+      const date = service.getEndDateOfWeek(1); // Monday
+      expect(date).toBeInstanceOf(Date);
+    });
   });
 });

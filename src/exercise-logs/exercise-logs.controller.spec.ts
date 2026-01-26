@@ -35,9 +35,16 @@ describe('ExerciseLogsController', () => {
         userId: '1',
         exerciseId: 1,
         date: '2023-01-01',
-        sets: []
+        sets: [],
       };
-      const result = { id: 1, ...dto, date: new Date(dto.date), createdAt: new Date(), updatedAt: new Date(), notes: null };
+      const result = {
+        id: 1,
+        ...dto,
+        date: new Date(dto.date),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        notes: null,
+      };
       (service.create as jest.Mock).mockResolvedValue(result);
 
       expect(await controller.create(dto)).toBe(result);

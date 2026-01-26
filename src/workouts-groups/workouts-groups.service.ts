@@ -50,7 +50,10 @@ export class WorkoutsGroupsService {
     return group;
   }
 
-  async update(id: number, data: UpdateWorkoutsGroupDto): Promise<WorkoutsGroup> {
+  async update(
+    id: number,
+    data: UpdateWorkoutsGroupDto,
+  ): Promise<WorkoutsGroup> {
     await this.findOne(id);
 
     const { name, image, userId, workouts } = data;
