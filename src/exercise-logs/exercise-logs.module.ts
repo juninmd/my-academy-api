@@ -4,7 +4,7 @@ import { ExerciseLogsController } from './exercise-logs.controller';
 import { PrismaService } from '../prisma.service';
 
 @Module({
-    controllers: [ExerciseLogsController],
-    providers: [ExerciseLogsService, PrismaService],
+  controllers: [ExerciseLogsController],
+  providers: [ExerciseLogsService, PrismaService],
 })
-export class ExerciseLogsModule { }
+export class ExerciseLogsModule {}

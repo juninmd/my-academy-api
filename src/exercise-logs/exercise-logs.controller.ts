@@ -6,22 +6,22 @@ import { ExerciseLogsService } from './exercise-logs.service';
 @ApiTags('Exercise Logs')
 @Controller('exercise-logs')
 export class ExerciseLogsController {
-    constructor(private readonly exerciseLogsService: ExerciseLogsService) { }
+  constructor(private readonly exerciseLogsService: ExerciseLogsService) {}
 
-    @Post()
-    create(@Body() createExerciseLogDto: CreateExerciseLogDto) {
-        return this.exerciseLogsService.create(createExerciseLogDto);
-    }
+  @Post()
+  create(@Body() createExerciseLogDto: CreateExerciseLogDto) {
+    return this.exerciseLogsService.create(createExerciseLogDto);
+  }
 
-    @Get()
-    findAll(
-        @Query('userId') userId: string,
-        @Query('exerciseId') exerciseId?: string,
-    ) {
-        // Handle json-server style or generic params
-        return this.exerciseLogsService.findAll(
-            userId,
-            exerciseId ? +exerciseId : undefined,
-        );
-    }
+  @Get()
+  findAll(
+    @Query('userId') userId: string,
+    @Query('exerciseId') exerciseId?: string,
+  ) {
+    // Handle json-server style or generic params
+    return this.exerciseLogsService.findAll(
+      userId,
+      exerciseId ? +exerciseId : undefined,
+    );
+  }
 }

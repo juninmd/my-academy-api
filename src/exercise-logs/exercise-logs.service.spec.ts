@@ -46,7 +46,7 @@ describe('ExerciseLogsService', () => {
         date: new Date(dto.date),
         notes: null,
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
       };
 
       (prisma.exerciseLog.create as jest.Mock).mockResolvedValue(result);
