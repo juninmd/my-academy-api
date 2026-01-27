@@ -90,6 +90,25 @@ describe('WorkoutsService', () => {
       });
       expect(result).toEqual(mockWorkout);
     });
+
+    it('should create a workout without description and series', async () => {
+      prismaMock.workouts.create.mockResolvedValue(mockWorkout);
+
+      const dto: CreateWorkoutDto = {
+        exerciseId: 1,
+        workoutsGroupsId: 1,
+      };
+
+      await service.create(dto);
+
+      expect(prismaMock.workouts.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          description: '',
+          workoutSeries: undefined,
+        }),
+        include: { workoutSeries: true },
+      });
+    });
   });
 
   describe('findAll', () => {

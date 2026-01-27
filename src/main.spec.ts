@@ -49,9 +49,33 @@ jest.mock('../package.json', () => ({
 }));
 
 describe('Main', () => {
-  it('should bootstrap', async () => {
+  let mockExit: jest.SpyInstance;
+
+  beforeEach(() => {
+    mockExit = jest.spyOn(process, 'exit').mockImplementation((() => {}) as any);
+  });
+
+  afterEach(() => {
+    mockExit.mockRestore();
+    jest.clearAllMocks();
+  });
+
+  it('should bootstrap successfully', async () => {
     jest.isolateModules(() => {
         require('./main');
     });
+    await new Promise(resolve => setTimeout(resolve, 100));
+    expect(NestFactory.create).toHaveBeenCalled();
+  });
+
+  it('should handle error during bootstrap', async () => {
+    (NestFactory.create as jest.Mock).mockRejectedValueOnce(new Error('Bootstrap failed'));
+
+    jest.isolateModules(() => {
+        require('./main');
+    });
+
+    await new Promise(resolve => setTimeout(resolve, 100));
+    expect(mockExit).toHaveBeenCalledWith(1);
   });
 });
