@@ -51,6 +51,10 @@ describe('WorkoutsSessionsService', () => {
     telegramService = module.get<TelegramService>(TelegramService);
   });
 
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
@@ -112,9 +116,7 @@ describe('WorkoutsSessionsService', () => {
       await service.create(createDto as any, userId);
 
       expect(telegramService.postChannelMessage).toHaveBeenCalled();
-      // We expect the function to proceed to create session despite telegram failure
       expect(prisma.workoutSessions.create).toHaveBeenCalled();
-      // And log error
       expect(loggerSpy).toHaveBeenCalled();
     });
   });
@@ -138,106 +140,110 @@ describe('WorkoutsSessionsService', () => {
     });
   });
 
-  describe('findSummary', () => {
+  describe('findSummary & calculateSequence', () => {
     const userId = 'user1';
 
-    it('should return summary with streak logic', async () => {
-      jest.useFakeTimers();
-      // Set to a Thursday so the last workout (Wednesday) counts as "yesterday", preserving the streak.
-      const thursday = new Date('2023-10-19T12:00:00Z');
-      jest.setSystemTime(thursday);
-
-      // Mock "I am personal" -> empty
-      (prisma.personals.findMany as jest.Mock).mockResolvedValue([]);
-      // Mock "I am student" -> null
-      (prisma.personals.findFirst as jest.Mock).mockResolvedValue(null);
-
-      // Mock workoutsGroups
-      const groups = [
-        { id: 1, name: 'A' },
-        { id: 2, name: 'B' },
-      ];
-      (prisma.workoutsGroups.findMany as jest.Mock).mockResolvedValue(groups);
-
-      // Mock lastSession
-      const wednesday = new Date('2023-10-18T12:00:00Z');
-      const lastSession = {
-        id: 10,
-        workoutGroupId: 1,
-        date: wednesday,
-        workoutsGroups: groups[0],
-      };
-      (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(
-        lastSession,
-      );
-
-      // Mock sequences (for streak calculation)
-      const d1 = new Date('2023-10-16T12:00:00Z');
-      const d2 = new Date('2023-10-17T12:00:00Z');
-      const d3 = new Date('2023-10-18T12:00:00Z');
-
-      const sequences = [{ date: d1 }, { date: d2 }, { date: d3 }];
-
-      (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(
-        sequences,
-      );
-
-      const result = await service.findSummary(userId);
-
-      expect(result.workoutGroupOfDay).toBeDefined();
-      expect(result.counter).toBeGreaterThan(0);
-      expect(prisma.personals.findMany).toHaveBeenCalled();
-      expect(prisma.workoutsGroups.findMany).toHaveBeenCalled();
-
-      jest.useRealTimers();
+    beforeEach(() => {
+        // Default mocks
+        (prisma.personals.findMany as jest.Mock).mockResolvedValue([]);
+        (prisma.personals.findFirst as jest.Mock).mockResolvedValue(null);
+        (prisma.workoutsGroups.findMany as jest.Mock).mockResolvedValue([]);
+        (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(null);
+        (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue([]);
     });
 
     it('should return 0 streak if empty sessions', async () => {
-      (prisma.personals.findMany as jest.Mock).mockResolvedValue([]);
-      (prisma.personals.findFirst as jest.Mock).mockResolvedValue(null);
-      (prisma.workoutsGroups.findMany as jest.Mock).mockResolvedValue([]);
-      (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(null);
-      (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue([]);
-
       const result = await service.findSummary(userId);
       expect(result.counter).toBe(0);
     });
 
     it('should handle iAmPersonal and iAmStudent', async () => {
-      // Mock "I am personal"
       (prisma.personals.findMany as jest.Mock).mockResolvedValue([
         { StudentUser: { id: 's1' } },
       ]);
-      // Mock "I am student"
       (prisma.personals.findFirst as jest.Mock).mockResolvedValue({
         PersonalUser: { id: 'p1' },
       });
-
-      (prisma.workoutsGroups.findMany as jest.Mock).mockResolvedValue([]);
-      (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(null);
-      (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue([]);
 
       const result = await service.findSummary(userId);
       expect(result.students).toHaveLength(1);
       expect(result.personal).toEqual({ id: 'p1' });
     });
 
-    it('should handle streak calculation complex scenarios', async () => {
-      // Gap > 1 day
-      const d1 = new Date('2023-10-01T12:00:00Z');
-      const d2 = new Date('2023-10-05T12:00:00Z'); // Gap
-      const sequences = [{ date: d1 }, { date: d2 }];
+    it('should calculate sequence with consecutive days', async () => {
+      // Mon 16, Tue 17, Wed 18 (Today is Thu 19)
+      jest.useFakeTimers();
+      const thursday = new Date('2023-10-19T12:00:00Z');
+      jest.setSystemTime(thursday);
 
-      (prisma.personals.findMany as jest.Mock).mockResolvedValue([]);
-      (prisma.personals.findFirst as jest.Mock).mockResolvedValue(null);
-      (prisma.workoutsGroups.findMany as jest.Mock).mockResolvedValue([]);
-      (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(null);
-      (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(
-        sequences,
-      );
+      const d1 = new Date('2023-10-16T12:00:00Z');
+      const d2 = new Date('2023-10-17T12:00:00Z');
+      const d3 = new Date('2023-10-18T12:00:00Z');
+
+      const sequences = [{ date: d1 }, { date: d2 }, { date: d3 }];
+      (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(sequences);
 
       const result = await service.findSummary(userId);
-      expect(result.counter).toBe(0); // Gap breaks streak, and last date is far from today (real timers)
+      // d1 (1), d2(2), d3(3). Gap to today is 1 day. So 3.
+      expect(result.counter).toBe(3);
+    });
+
+    it('should calculate sequence across weekend (Sat -> Mon)', async () => {
+        // Sat 14, Mon 16 (Today is Tue 17 to avoid same-day gap issue)
+        jest.useFakeTimers();
+        const tuesday = new Date('2023-10-17T12:00:00Z');
+        jest.setSystemTime(tuesday);
+
+        const d1 = new Date('2023-10-14T12:00:00Z'); // Sat
+        const d2 = new Date('2023-10-16T12:00:00Z'); // Mon
+
+        const sequences = [{ date: d1 }, { date: d2 }];
+        (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(sequences);
+
+        const result = await service.findSummary(userId);
+        // d1(1), d2 is Mon and prev is Sat -> increment -> 2.
+        // Last date Mon 16. Today Tue 17. diffDays = 1. OK.
+        expect(result.counter).toBe(2);
+    });
+
+    it('should break sequence if gap is large', async () => {
+        jest.useFakeTimers();
+        const friday = new Date('2023-10-20T12:00:00Z');
+        jest.setSystemTime(friday);
+
+        const d1 = new Date('2023-10-01T12:00:00Z');
+        const d2 = new Date('2023-10-05T12:00:00Z');
+
+        const sequences = [{ date: d1 }, { date: d2 }];
+        (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(sequences);
+
+        const result = await service.findSummary(userId);
+        // Gap > 1. Counter resets.
+        // Also gap from last date (5th) to today (20th) is large.
+        expect(result.counter).toBe(0);
+    });
+
+    it('should handle same day sequence (reset to 1)', async () => {
+       jest.useFakeTimers();
+       // To hit the "else { currentSequence = 1 }" block, we need diffDays != 1 AND diffDays <= 1.
+       // Since diffDays = ceil(diffTime), it must be 0. So identical timestamps.
+       const today = new Date('2023-10-21T09:00:00Z'); // Saturday. <24h from Friday 10:00
+       jest.setSystemTime(today);
+
+       const d1 = new Date('2023-10-20T10:00:00Z');
+       const d2 = new Date('2023-10-20T10:00:00Z'); // Same time
+
+       const sequences = [{ date: d1 }, { date: d2 }];
+       (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(sequences);
+
+       const result = await service.findSummary(userId);
+       // i=0 -> seq=1.
+       // i=1 -> diffDays=0. canIncrement=false.
+       // diffDays > 1 (0>1) false.
+       // else -> currentSequence = 1.
+       // End loop.
+       // LastDate 20th. Today 21st. diffDays=1. OK.
+       expect(result.counter).toBe(1);
     });
 
     it('should determine correct workoutGroupOfDay', async () => {
@@ -247,9 +253,6 @@ describe('WorkoutsSessionsService', () => {
 
         const groups = [{ id: 1 }, { id: 2 }];
         (prisma.workoutsGroups.findMany as jest.Mock).mockResolvedValue(groups);
-        (prisma.personals.findMany as jest.Mock).mockResolvedValue([]);
-        (prisma.personals.findFirst as jest.Mock).mockResolvedValue(null);
-        (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue([]);
 
         // Case 1: lastSession is yesterday, group 1. Next should be group 2.
         let lastSession = { id: 1, workoutGroupId: 1, date: new Date('2023-10-19T12:00:00Z'), workoutsGroups: groups[0] };
@@ -265,7 +268,55 @@ describe('WorkoutsSessionsService', () => {
         result = await service.findSummary(userId);
         expect(result.workoutGroupOfDay).toBe(groups[0]);
 
-        jest.useRealTimers();
+         // Case 3: No last session -> Group 0
+         (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(null);
+         result = await service.findSummary(userId);
+         expect(result.workoutGroupOfDay).toBe(groups[0]);
+
+         // Case 4: Last session is today -> Return that group
+         lastSession = { id: 1, workoutGroupId: 2, date: new Date('2023-10-20T10:00:00Z'), workoutsGroups: groups[1] };
+         (prisma.workoutSessions.findFirst as jest.Mock).mockResolvedValue(lastSession);
+         result = await service.findSummary(userId);
+         expect(result.workoutGroupOfDay).toBe(groups[1]);
+    });
+
+    it('should ignore Sunday in calculateSequence loop', async () => {
+        jest.useFakeTimers();
+        const monday = new Date('2023-10-23T12:00:00Z');
+        jest.setSystemTime(monday);
+
+        // Sunday 22nd
+        const sunday = new Date('2023-10-22T12:00:00Z');
+        const saturday = new Date('2023-10-21T12:00:00Z');
+
+        const sequences = [{ date: saturday }, { date: sunday }];
+        (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(sequences);
+
+        const result = await service.findSummary(userId);
+        // Sunday is skipped in loop. Saturday is processed (i=0 -> seq=1).
+        // Then loop finishes.
+        // Last date is Sunday. diffTime from Mon to Sun is 1 day.
+
+        expect(result.counter).toBe(1);
+    });
+
+    it('should maintain streak if last workout was Saturday and today is Monday (end check)', async () => {
+        jest.useFakeTimers();
+        const monday = new Date('2023-10-16T12:00:00Z');
+        jest.setSystemTime(monday);
+
+        const saturday = new Date('2023-10-14T12:00:00Z');
+        const sequences = [{ date: saturday }];
+        (prisma.workoutSessions.findMany as jest.Mock).mockResolvedValue(sequences);
+
+        const result = await service.findSummary(userId);
+
+        // i=0. seq=1.
+        // End loop.
+        // LastDate Sat. Current Mon. diffDays=2.
+        // (Sat && Mon) is True.
+        // Streak maintained.
+        expect(result.counter).toBe(1);
     });
   });
 
@@ -296,13 +347,12 @@ describe('WorkoutsSessionsService', () => {
   });
 
   describe('getStartDateOfWeek and getEndDateOfWeek', () => {
-    // These methods are public, test them directly for coverage
     it('getStartDateOfWeek', () => {
-      const date = service.getStartDateOfWeek(1); // Monday
+      const date = service.getStartDateOfWeek(1);
       expect(date).toBeInstanceOf(Date);
     });
     it('getEndDateOfWeek', () => {
-      const date = service.getEndDateOfWeek(1); // Monday
+      const date = service.getEndDateOfWeek(1);
       expect(date).toBeInstanceOf(Date);
     });
   });

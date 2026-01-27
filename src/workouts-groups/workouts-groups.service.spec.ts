@@ -80,6 +80,66 @@ describe('WorkoutsGroupsService', () => {
         }),
       });
     });
+
+    it('should create a workout group without workouts (undefined)', async () => {
+      const dto: CreateWorkoutsGroupDto = {
+        name: 'Group B',
+        image: 'img.jpg',
+        userId: 'user1',
+        workouts: undefined,
+      };
+
+      const result = {
+        id: 2,
+        ...dto,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      (prisma.workoutsGroups.create as jest.Mock).mockResolvedValue(result);
+
+      await service.create(dto);
+
+      expect(prisma.workoutsGroups.create).toHaveBeenCalledWith({
+        data: expect.objectContaining({
+          name: dto.name,
+          workouts: {
+            create: [],
+          },
+        }),
+      });
+    });
+
+    it('should create workouts with defaults (no description)', async () => {
+      const dto: CreateWorkoutsGroupDto = {
+        name: 'Group C',
+        image: 'img.jpg',
+        userId: 'user1',
+        workouts: [
+          {
+            exerciseId: 1,
+            // description missing
+            methodId: 2,
+            workoutSeries: [],
+          },
+        ],
+      };
+
+      const result = {
+        id: 3,
+        ...dto,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      (prisma.workoutsGroups.create as jest.Mock).mockResolvedValue(result);
+
+      await service.create(dto);
+
+      // Verify description became ''
+      // accessing the call arguments
+      const createCall = (prisma.workoutsGroups.create as jest.Mock).mock.calls[0][0];
+      const mappedWorkouts = createCall.data.workouts.create;
+      expect(mappedWorkouts[0].description).toBe('');
+    });
   });
 
   describe('update', () => {
