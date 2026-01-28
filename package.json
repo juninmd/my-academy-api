@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   },
   "scripts": {
     "prebuild": "rimraf dist",
@@ -28,7 +28,8 @@
     "prisma:push": "prisma db push",
     "prisma:format": "prisma format",
     "prisma:pull": "prisma db pull",
-    "prisma:seed": "ts-node prisma/seed.ts"
+    "prisma:seed": "ts-node prisma/seed.ts",
+    "prepare": "husky"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^3.0.0",
@@ -38,8 +39,8 @@
     "@nestjs/swagger": "^11.0.0",
     "@prisma/adapter-pg": "^7.3.0",
     "@prisma/client": "^7.3.0",
-    "@scalar/nestjs-api-reference": "latest",
-    "axios": "latest",
+    "@scalar/nestjs-api-reference": "^1.0.20",
+    "axios": "^1.13.4",
     "cache-manager": "latest",
     "class-transformer": "latest",
     "class-validator": "latest",
@@ -48,6 +49,9 @@
     "reflect-metadata": "latest",
     "rimraf": "latest",
     "rxjs": "^7.8.0"
+  },
+  "lint-staged": {
+    "*.ts": "eslint --fix"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
@@ -58,14 +62,16 @@
     "@types/node": "latest",
     "@types/pg": "^8.16.0",
     "@types/supertest": "latest",
-    "@typescript-eslint/eslint-plugin": "latest",
-    "@typescript-eslint/parser": "latest",
+    "@typescript-eslint/eslint-plugin": "^8.54.0",
+    "@typescript-eslint/parser": "^8.54.0",
     "dotenv": "^17.2.3",
     "eslint": "^9.0.0",
     "eslint-config-prettier": "latest",
     "eslint-plugin-prettier": "latest",
-    "globals": "^17.1.0",
+    "globals": "^17.2.0",
+    "husky": "^9.1.7",
     "jest": "^29.0.0",
+    "lint-staged": "^16.2.7",
     "prettier": "latest",
     "prisma": "^7.3.0",
     "source-map-support": "latest",
@@ -75,7 +81,7 @@
     "ts-node": "latest",
     "tsconfig-paths": "latest",
     "typescript": "latest",
-    "typescript-eslint": "^8.53.1"
+    "typescript-eslint": "^8.54.0"
   },
   "jest": {
     "moduleFileExtensions": [
