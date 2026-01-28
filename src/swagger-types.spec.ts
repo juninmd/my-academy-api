@@ -80,8 +80,9 @@ describe('Swagger Types Coverage', () => {
         // key often has a prefix like ':'
         const cleanKey = key.substring(1);
         const metadata = Reflect.getMetadata(
-          `swagger/apiModelProperties:${cleanKey}`,
+          'swagger/apiModelProperties',
           Cls.prototype,
+          cleanKey,
         );
 
         if (metadata && typeof metadata.type === 'function') {

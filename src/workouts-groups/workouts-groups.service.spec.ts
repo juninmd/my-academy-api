@@ -140,6 +140,66 @@ describe('WorkoutsGroupsService', () => {
       const mappedWorkouts = createCall.data.workouts.create;
       expect(mappedWorkouts[0].description).toBe('');
     });
+
+    it('should create workouts with empty string description', async () => {
+      const dto: CreateWorkoutsGroupDto = {
+        name: 'Group D',
+        image: 'img.jpg',
+        userId: 'user1',
+        workouts: [
+          {
+            exerciseId: 1,
+            description: '',
+            methodId: 2,
+            workoutSeries: [],
+          },
+        ],
+      };
+
+      const result = {
+        id: 4,
+        ...dto,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      (prisma.workoutsGroups.create as jest.Mock).mockResolvedValue(result);
+
+      await service.create(dto);
+
+      const createCall = (prisma.workoutsGroups.create as jest.Mock).mock.calls[0][0];
+      const mappedWorkouts = createCall.data.workouts.create;
+      expect(mappedWorkouts[0].description).toBe('');
+    });
+
+    it('should create workouts with undefined workoutSeries', async () => {
+      const dto: CreateWorkoutsGroupDto = {
+        name: 'Group E',
+        image: 'img.jpg',
+        userId: 'user1',
+        workouts: [
+          {
+            exerciseId: 1,
+            description: 'desc',
+            methodId: 2,
+            workoutSeries: undefined,
+          },
+        ],
+      };
+
+      const result = {
+        id: 5,
+        ...dto,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      (prisma.workoutsGroups.create as jest.Mock).mockResolvedValue(result);
+
+      await service.create(dto);
+
+      const createCall = (prisma.workoutsGroups.create as jest.Mock).mock.calls[0][0];
+      const mappedWorkouts = createCall.data.workouts.create;
+      expect(mappedWorkouts[0].workoutSeries.create).toBeUndefined();
+    });
   });
 
   describe('update', () => {

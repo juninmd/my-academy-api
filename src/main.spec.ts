@@ -1,5 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule } from '@nestjs/swagger';
+import { Logger } from '@nestjs/common';
 
 jest.mock('@nestjs/core', () => {
     const original = jest.requireActual('@nestjs/core');
@@ -13,6 +14,13 @@ jest.mock('@nestjs/core', () => {
                 listen: jest.fn(),
             }),
         },
+    };
+});
+
+jest.mock('@nestjs/common', () => {
+    const original = jest.requireActual('@nestjs/common');
+    return {
+        ...original,
         Logger: jest.fn().mockReturnValue({
             log: jest.fn(),
             error: jest.fn(),
@@ -77,5 +85,22 @@ describe('Main', () => {
 
     await new Promise(resolve => setTimeout(resolve, 100));
     expect(mockExit).toHaveBeenCalledWith(1);
+  });
+
+  it('should handle error in global catch block', async () => {
+     (NestFactory.create as jest.Mock).mockRejectedValueOnce(new Error('Bootstrap failed'));
+
+     // Make logger.error throw to trigger outer catch
+     const loggerInstance = new Logger();
+     (loggerInstance.error as jest.Mock).mockImplementationOnce(() => {
+         throw new Error('Logger error');
+     });
+
+     jest.isolateModules(() => {
+         require('./main');
+     });
+
+     await new Promise(resolve => setTimeout(resolve, 100));
+     expect(loggerInstance.error).toHaveBeenCalledTimes(2);
   });
 });
