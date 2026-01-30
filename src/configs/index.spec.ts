@@ -1,4 +1,3 @@
-
 describe('Config', () => {
   const originalEnv = process.env;
 
@@ -27,6 +26,7 @@ describe('Config', () => {
     process.env.AUTH_MOC_JSON = '{}';
     process.env.TELEGRAM_TOKEN = 'telegram-token';
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const config = require('./index').default;
 
     expect(config.serviceAccount).toEqual({
@@ -52,6 +52,7 @@ describe('Config', () => {
   it('should handle undefined private key', () => {
     delete process.env.SA_PRIVATE_KEY;
 
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
     const config = require('./index').default;
     expect(config.serviceAccount.privateKey).toBe('');
   });

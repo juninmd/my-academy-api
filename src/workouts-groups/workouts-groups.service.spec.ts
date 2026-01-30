@@ -136,7 +136,8 @@ describe('WorkoutsGroupsService', () => {
 
       // Verify description became ''
       // accessing the call arguments
-      const createCall = (prisma.workoutsGroups.create as jest.Mock).mock.calls[0][0];
+      const createCall = (prisma.workoutsGroups.create as jest.Mock).mock
+        .calls[0][0];
       const mappedWorkouts = createCall.data.workouts.create;
       expect(mappedWorkouts[0].description).toBe('');
     });
@@ -166,7 +167,8 @@ describe('WorkoutsGroupsService', () => {
 
       await service.create(dto);
 
-      const createCall = (prisma.workoutsGroups.create as jest.Mock).mock.calls[0][0];
+      const createCall = (prisma.workoutsGroups.create as jest.Mock).mock
+        .calls[0][0];
       const mappedWorkouts = createCall.data.workouts.create;
       expect(mappedWorkouts[0].description).toBe('');
     });
@@ -196,7 +198,8 @@ describe('WorkoutsGroupsService', () => {
 
       await service.create(dto);
 
-      const createCall = (prisma.workoutsGroups.create as jest.Mock).mock.calls[0][0];
+      const createCall = (prisma.workoutsGroups.create as jest.Mock).mock
+        .calls[0][0];
       const mappedWorkouts = createCall.data.workouts.create;
       expect(mappedWorkouts[0].workoutSeries.create).toBeUndefined();
     });
