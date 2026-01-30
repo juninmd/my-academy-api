@@ -35,5 +35,4 @@ lerna-debug.log*
 !.vscode/launch.json
 !.vscode/extensions.json
 prisma/prisma-client
-pnpm-lock.yaml
 service-account.json
