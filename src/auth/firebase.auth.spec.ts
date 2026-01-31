@@ -29,7 +29,9 @@ describe('PreauthMiddleware', () => {
   let mockConsoleError: jest.SpyInstance;
 
   beforeEach(() => {
-    mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+    mockConsoleError = jest
+      .spyOn(console, 'error')
+      .mockImplementation(() => {});
     mockVerifyIdToken = jest.fn();
     (firebase.initializeApp as jest.Mock).mockReturnValue({
       auth: () => ({

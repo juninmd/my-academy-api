@@ -23,6 +23,7 @@ export class UsersController {
   @ApiResponse({
     status: 201,
     description: 'The user has been successfully created.',
+    type: User,
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
@@ -31,14 +32,22 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'List all users' })
-  @ApiResponse({ status: 200, description: 'Return all users.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return all users.',
+    type: [User],
+  })
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get a user by id' })
-  @ApiResponse({ status: 200, description: 'Return the user.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Return the user.',
+    type: User,
+  })
   @ApiResponse({ status: 404, description: 'User not found.' })
   findOne(@Param('id') id: string): Promise<User> {
     return this.usersService.findOne(id);
@@ -49,6 +58,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'The user has been successfully updated.',
+    type: User,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
   update(
@@ -63,6 +73,7 @@ export class UsersController {
   @ApiResponse({
     status: 200,
     description: 'The user has been successfully deleted.',
+    type: User,
   })
   @ApiResponse({ status: 404, description: 'User not found.' })
   remove(@Param('id') id: string): Promise<User> {
