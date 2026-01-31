@@ -19,8 +19,8 @@ describe('CreateWorkoutsGroupDto', () => {
             {
               repetitions: 12,
               weight: 50,
-            }
-          ]
+            },
+          ],
         },
       ],
     };
@@ -34,7 +34,9 @@ describe('CreateWorkoutsGroupDto', () => {
 
     // Check nested series transformation
     expect(instance.workouts![0].workoutSeries).toBeDefined();
-    expect(instance.workouts![0].workoutSeries![0]).toBeInstanceOf(CreateWorkoutSeriesNestedDto);
+    expect(instance.workouts![0].workoutSeries![0]).toBeInstanceOf(
+      CreateWorkoutSeriesNestedDto,
+    );
     expect(instance.workouts![0].workoutSeries![0].repetitions).toBe(12);
   });
 });

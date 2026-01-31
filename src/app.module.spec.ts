@@ -24,25 +24,25 @@ describe('AppModule', () => {
     process.env.FIREBASE_ENABLED = 'true';
 
     const consumer = {
-        apply: jest.fn().mockReturnThis(),
-        forRoutes: jest.fn().mockReturnThis(),
+      apply: jest.fn().mockReturnThis(),
+      forRoutes: jest.fn().mockReturnThis(),
     };
 
     appModule.configure(consumer as unknown as MiddlewareConsumer);
 
     expect(consumer.apply).toHaveBeenCalledWith(PreauthMiddleware);
     expect(consumer.forRoutes).toHaveBeenCalledWith({
-        path: '*',
-        method: RequestMethod.ALL,
+      path: '*',
+      method: RequestMethod.ALL,
     });
   });
 
-   it('should NOT apply middleware if FIREBASE_ENABLED is false', () => {
+  it('should NOT apply middleware if FIREBASE_ENABLED is false', () => {
     process.env.FIREBASE_ENABLED = 'false';
 
     const consumer = {
-        apply: jest.fn().mockReturnThis(),
-        forRoutes: jest.fn().mockReturnThis(),
+      apply: jest.fn().mockReturnThis(),
+      forRoutes: jest.fn().mockReturnThis(),
     };
 
     appModule.configure(consumer as unknown as MiddlewareConsumer);

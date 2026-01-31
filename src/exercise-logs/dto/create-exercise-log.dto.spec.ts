@@ -1,5 +1,8 @@
 import { plainToInstance } from 'class-transformer';
-import { CreateExerciseLogDto, CreateSetLogDto } from './create-exercise-log.dto';
+import {
+  CreateExerciseLogDto,
+  CreateSetLogDto,
+} from './create-exercise-log.dto';
 
 describe('CreateExerciseLogDto', () => {
   it('should transform nested sets correctly', () => {

@@ -14,31 +14,41 @@ import { Method } from './methods/entities/method.entity';
 @Controller('dummy')
 class DummyController {
   @Get('user')
-  getUser(): User { return new User(); }
+  getUser(): User {
+    return new User();
+  }
 
   @Get('group')
-  getGroup(): WorkoutsGroup { return new WorkoutsGroup(); }
+  getGroup(): WorkoutsGroup {
+    return new WorkoutsGroup();
+  }
 
   @Get('workout')
-  getWorkout(): Workout { return new Workout(); }
+  getWorkout(): Workout {
+    return new Workout();
+  }
 
   @Get('exercise')
-  getExercise(): Exercise { return new Exercise(); }
+  getExercise(): Exercise {
+    return new Exercise();
+  }
 
   @Get('method')
-  getMethod(): Method { return new Method(); }
+  getMethod(): Method {
+    return new Method();
+  }
 
   @Get('create-user')
-  createUser(@Body() dto: CreateUserDto) {}
+  createUser(@Body() _dto: CreateUserDto) {}
 
   @Get('create-group')
-  createGroup(@Body() dto: CreateWorkoutsGroupDto) {}
+  createGroup(@Body() _dto: CreateWorkoutsGroupDto) {}
 
   @Get('create-workout')
-  createWorkout(@Body() dto: CreateWorkoutDto) {}
+  createWorkout(@Body() _dto: CreateWorkoutDto) {}
 
   @Get('create-log')
-  createLog(@Body() dto: CreateExerciseLogDto) {}
+  createLog(@Body() _dto: CreateExerciseLogDto) {}
 }
 
 @Module({ controllers: [DummyController] })
@@ -86,12 +96,12 @@ describe('Swagger Types Coverage', () => {
         );
 
         if (metadata && typeof metadata.type === 'function') {
-           // This triggers the () => Type arrow function
-           try {
-             metadata.type();
-           } catch (e) {
-             // ignore
-           }
+          // This triggers the () => Type arrow function
+          try {
+            metadata.type();
+          } catch (_e) {
+            // ignore
+          }
         }
       });
     });
