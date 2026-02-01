@@ -98,7 +98,15 @@
       "**/*.(t|j)s"
     ],
     "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
+    "testEnvironment": "node",
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    }
   },
   "packageManager": "pnpm@8.14.3+sha1.872b21adeaae4e71acd5c551ba848d927d6aa446"
 }
