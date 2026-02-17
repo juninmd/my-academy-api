@@ -199,6 +199,8 @@ model WorkoutSessions {
   workoutsGroups WorkoutsGroups @relation(fields: [workoutGroupId], references: [id], onDelete: Cascade)
 
   @@index([workoutGroupId])
+  @@index([date])
+  @@index([workoutGroupId, date])
   @@map("workout_sessions")
 }
 
