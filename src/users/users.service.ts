@@ -34,7 +34,10 @@ export class UsersService {
     });
   }
 
-  async findAll(): Promise<User[]> {
+  async findAll(email?: string): Promise<User[]> {
+    if (email) {
+      return this.prismaService.users.findMany({ where: { email } });
+    }
     return this.prismaService.users.findMany();
   }
 

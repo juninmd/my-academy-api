@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Query,
 } from '@nestjs/common';
 import { PersonalsService } from './personals.service';
 import { CreatePersonalDto } from './dto/create-personal.dto';
@@ -21,7 +22,7 @@ export class PersonalsController {
   }
 
   @Get()
-  findAll(@Param('personalUserId') personalUserId: string) {
+  findAll(@Query('personalUserId') personalUserId?: string) {
     return this.personalsService.findAll(personalUserId);
   }
 

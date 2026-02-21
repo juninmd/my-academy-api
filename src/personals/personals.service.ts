@@ -16,11 +16,10 @@ export class PersonalsService {
     });
   }
 
-  findAll(personalUserId: string) {
+  findAll(personalUserId?: string) {
+    const where = personalUserId ? { personalUserId } : undefined;
     return this.prismaService.personals.findMany({
-      where: {
-        personalUserId,
-      },
+      where,
       include: { PersonalUser: true, StudentUser: true },
     });
   }
