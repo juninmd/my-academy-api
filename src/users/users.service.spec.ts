@@ -134,7 +134,6 @@ describe('UsersService', () => {
     };
 
     it('should update a user if found', async () => {
-      prismaMock.users.findUnique.mockResolvedValue(mockUser); // for findOne check
       prismaMock.users.update.mockResolvedValue({
         ...mockUser,
         ...updateUserDto,
@@ -142,9 +141,6 @@ describe('UsersService', () => {
 
       const result = await service.update('123', updateUserDto);
 
-      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({
-        where: { id: '123' },
-      });
       expect(prismaMock.users.update).toHaveBeenCalledWith({
         where: { id: '123' },
         data: expect.objectContaining(updateUserDto),
@@ -153,25 +149,23 @@ describe('UsersService', () => {
     });
 
     it('should throw NotFoundException if user to update not found', async () => {
-      prismaMock.users.findUnique.mockResolvedValue(null);
+      const error = new Error('Record to update not found.');
+      (error as any).code = 'P2025';
+      prismaMock.users.update.mockRejectedValue(error);
 
       await expect(service.update('999', updateUserDto)).rejects.toThrow(
         NotFoundException,
       );
-      expect(prismaMock.users.update).not.toHaveBeenCalled();
+      expect(prismaMock.users.update).toHaveBeenCalled();
     });
   });
 
   describe('remove', () => {
     it('should remove a user if found', async () => {
-      prismaMock.users.findUnique.mockResolvedValue(mockUser); // for findOne check
       prismaMock.users.delete.mockResolvedValue(mockUser);
 
       const result = await service.remove('123');
 
-      expect(prismaMock.users.findUnique).toHaveBeenCalledWith({
-        where: { id: '123' },
-      });
       expect(prismaMock.users.delete).toHaveBeenCalledWith({
         where: { id: '123' },
       });
@@ -179,10 +173,12 @@ describe('UsersService', () => {
     });
 
     it('should throw NotFoundException if user to remove not found', async () => {
-      prismaMock.users.findUnique.mockResolvedValue(null);
+      const error = new Error('Record to delete not found.');
+      (error as any).code = 'P2025';
+      prismaMock.users.delete.mockRejectedValue(error);
 
       await expect(service.remove('999')).rejects.toThrow(NotFoundException);
-      expect(prismaMock.users.delete).not.toHaveBeenCalled();
+      expect(prismaMock.users.delete).toHaveBeenCalled();
     });
   });
 });
