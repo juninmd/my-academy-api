@@ -60,6 +60,17 @@ describe('PersonalsService', () => {
         include: { PersonalUser: true, StudentUser: true },
       });
     });
+
+    it('should return all personals when personalUserId is not provided', async () => {
+      const result = [{ id: 1 }];
+      (prisma.personals.findMany as jest.Mock).mockResolvedValue(result);
+
+      expect(await service.findAll()).toBe(result);
+      expect(prisma.personals.findMany).toHaveBeenCalledWith({
+        where: undefined,
+        include: { PersonalUser: true, StudentUser: true },
+      });
+    });
   });
 
   describe('findStudents', () => {
