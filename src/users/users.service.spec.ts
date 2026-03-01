@@ -104,6 +104,15 @@ describe('UsersService', () => {
       expect(prismaMock.users.findMany).toHaveBeenCalled();
       expect(result).toEqual([mockUser]);
     });
+
+    it('should return an array of users by email', async () => {
+      prismaMock.users.findMany.mockResolvedValue([mockUser]);
+
+      const result = await service.findAll('test@example.com');
+
+      expect(prismaMock.users.findMany).toHaveBeenCalledWith({ where: { email: 'test@example.com' } });
+      expect(result).toEqual([mockUser]);
+    });
   });
 
   describe('findOne', () => {
@@ -158,6 +167,16 @@ describe('UsersService', () => {
       );
       expect(prismaMock.users.update).toHaveBeenCalled();
     });
+
+    it('should throw Error if generic error is thrown', async () => {
+      const error = new Error('Some error');
+      prismaMock.users.update.mockRejectedValue(error);
+
+      await expect(service.update('999', updateUserDto)).rejects.toThrow(
+        Error,
+      );
+      expect(prismaMock.users.update).toHaveBeenCalled();
+    });
   });
 
   describe('remove', () => {
@@ -178,6 +197,14 @@ describe('UsersService', () => {
       prismaMock.users.delete.mockRejectedValue(error);
 
       await expect(service.remove('999')).rejects.toThrow(NotFoundException);
+      expect(prismaMock.users.delete).toHaveBeenCalled();
+    });
+
+    it('should throw Error if generic error is thrown', async () => {
+      const error = new Error('Some error');
+      prismaMock.users.delete.mockRejectedValue(error);
+
+      await expect(service.remove('999')).rejects.toThrow(Error);
       expect(prismaMock.users.delete).toHaveBeenCalled();
     });
   });
